@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>English untuk Guru Cikal</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;700&display=swap">
+<style>
+:root{--bg:#fdeef3;--card:#fff;--ink:#3a1226;--mute:#7a5568;--line:#f3c9d9;--pri:#d6336c;--prib:#fff;--lime:#ffd166;--limeink:#3a1226;--ok:#1d8a4f;--okbg:#daf3df;--bad:#b3261e;--badbg:#fde0dc;--dot:rgba(214,51,108,.13);--blob:rgba(255,150,190,.35);
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1f0d17;--card:#2d1423;--ink:#ffe9f1;--mute:#d6a5bb;--line:#4d2639;--pri:#ff7eb0;--prib:#2a0f1d;--lime:#ffd166;--limeink:#3a1226;--ok:#5ad68a;--okbg:#12382a;--bad:#ff8d78;--badbg:#4a2020;--dot:rgba(255,126,176,.12);--blob:rgba(255,126,176,.14)}}
+:root[data-theme="dark"]{--bg:#1f0d17;--card:#2d1423;--ink:#ffe9f1;--mute:#d6a5bb;--line:#4d2639;--pri:#ff7eb0;--prib:#2a0f1d;--lime:#ffd166;--limeink:#3a1226;--ok:#5ad68a;--okbg:#12382a;--bad:#ff8d78;--badbg:#4a2020;--dot:rgba(255,126,176,.12);--blob:rgba(255,126,176,.14)}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background-color:var(--bg);background-image:radial-gradient(circle at 15% 0,var(--blob) 0,transparent 45%),radial-gradient(circle at 100% 100%,var(--blob) 0,transparent 40%),radial-gradient(var(--dot) 2px,transparent 2.5px),radial-gradient(var(--dot) 1.5px,transparent 2px);background-size:auto,auto,32px 32px,32px 32px;background-position:0 0,0 0,0 0,16px 16px;color:var(--ink);font:400 17px/1.5 Nunito,system-ui,sans-serif}
+main{max-width:640px;margin:0 auto;padding:18px 16px 56px}
+h1{font:600 27px/1.15 Fredoka,Nunito,sans-serif;margin:0 0 4px}
+.sub{color:var(--mute);margin:0;font-size:15px}
+.hero{display:flex;gap:14px;align-items:center;padding:4px 0 14px}
+.sprout{width:78px;height:78px;flex:none;border-radius:50%;background:var(--lime);display:grid;place-items:center;font-size:42px}
+.stats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.pill{background:var(--card);border:1px solid var(--line);border-radius:99px;padding:4px 12px;font-weight:700;font-size:15px}
+button{font:inherit;cursor:pointer;border:0;border-radius:12px;color:inherit}
+button:focus-visible,select:focus-visible,input:focus-visible,.scene:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+.chips{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.chip{padding:8px 4px;background:var(--card);border:2px solid var(--line);font-weight:700;display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.chip small{font-weight:400;color:var(--mute)}
+.chip.on,.tabs button.on,.seg button.on{background:var(--pri);border-color:var(--pri);color:var(--prib)}
+.chip.on small{color:inherit;opacity:.85}
+.tabs,.seg{display:flex;gap:6px;background:var(--card);padding:5px;border-radius:16px;border:1px solid var(--line)}
+.tabs button,.seg button{flex:1;padding:10px 6px;background:none;font-weight:700;color:var(--mute)}
+.tabs button.on,.seg button.on{color:var(--prib)}
+.seg{margin-bottom:12px}
+.row{margin:12px 0}
+select,.search{width:100%;font:inherit;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.search{margin-bottom:10px}
+.bar{height:10px;background:var(--line);border-radius:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--pri);transition:width .4s}
+.meta{display:flex;justify-content:space-between;color:var(--mute);font-size:15px;margin:6px 0 12px}
+.scene{perspective:1100px;height:290px;cursor:pointer;border-radius:26px}
+.scene.in{animation:pop .3s ease-out}
+.card{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.3,.8,.3,1)}
+.card.flipped{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:26px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:26px 22px 22px;text-align:center;border:2px solid var(--line);background:var(--card)}
+.back{transform:rotateY(180deg);background:var(--pri);color:var(--prib);border-color:var(--pri)}
+.tag{position:absolute;top:14px;left:18px;font-size:13px;color:var(--mute)}
+.back .tag{color:inherit;opacity:.8}
+.en{font:600 44px/1.1 Fredoka,Nunito,sans-serif;word-break:break-word}
+.en.long{font-size:26px}
+.id{font:700 30px/1.2 Nunito,sans-serif}
+.ex{font-style:italic;opacity:.9}
+.hint{font-size:14px;color:var(--mute)}
+.say{background:var(--lime);color:var(--limeink);font-weight:700;padding:8px 16px;border-radius:99px}
+.say.big{padding:16px 30px;font-size:20px}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.btn{padding:14px;background:var(--card);border:2px solid var(--line);font-weight:700}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.btn.pri{background:var(--lime);border-color:var(--lime);color:var(--limeink)}
+.q{font:600 24px/1.25 Fredoka,Nunito,sans-serif;margin:8px 0 14px}
+.opts{display:grid;gap:10px}
+.opt{padding:14px 16px;background:var(--card);border:2px solid var(--line);text-align:left;font-weight:700}
+.opt.right{background:var(--okbg);border-color:var(--ok)}
+.opt.wrong{background:var(--badbg);border-color:var(--bad);animation:shake .3s}
+.fb{margin-top:12px;font-weight:700;color:var(--pri)}
+.score{font:600 60px/1 Fredoka,sans-serif;text-align:center;margin:18px 0 6px}
+.list{display:grid;gap:8px;margin-bottom:14px}
+.li{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.li .w{flex:1}.li b{display:block}.li span{color:var(--mute);font-size:15px}
+.li button{background:var(--bg);padding:8px 12px}
+.li input{width:22px;height:22px;accent-color:var(--ok)}
+.center{text-align:center}
+.reset{margin-top:28px;background:none;color:var(--mute);text-decoration:underline;font-size:15px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--pri);color:var(--prib);padding:10px 18px;border-radius:99px;font-weight:700;opacity:0;pointer-events:none;z-index:10}
+.toast.show{animation:tst 1.6s ease forwards}
+.cf{position:fixed;top:-14px;width:9px;height:14px;border-radius:2px;z-index:9;pointer-events:none;animation:fall var(--d) linear forwards}
+@keyframes pop{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes tst{0%{opacity:0;transform:translate(-50%,20px)}12%,80%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-6px)}}
+@keyframes fall{to{transform:translateY(105vh) rotate(var(--r))}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+  <header class="hero"><div class="sprout" id="sprout" aria-hidden="true">🌱</div><div><h1>English untuk Guru Cikal</h1><p class="sub" id="sub"></p></div></header>
+  <div class="stats" id="stats"></div>
+  <div class="chips" id="lv" role="group" aria-label="Level"></div>
+  <div class="tabs">
+    <button data-tab="card" class="on">Kartu</button>
+    <button data-tab="quiz">Kuis</button>
+    <button data-tab="list">Daftar</button>
+  </div>
+  <div class="row"><select id="cat" aria-label="Pilih tema"></select></div>
+  <div id="view"></div>
+  <button class="reset" id="reset">Hapus progres hafalan</button>
+</main>
+<div id="toast" class="toast" role="status"></div>
+<script>
+const RAW={
+"A2 · Kelas & benda":"Classroom=Ruang kelas;Whiteboard=Papan tulis;Marker=Spidol;Eraser=Penghapus;Notebook=Buku tulis;Textbook=Buku paket;Worksheet=Lembar kerja;Desk=Meja siswa;Projector=Proyektor;Chart=Bagan;Poster=Poster;Folder=Map;Scissors=Gunting;Glue=Lem;Ruler=Penggaris;Pencil case=Kotak pensil;Backpack=Ransel;Library=Perpustakaan;Playground=Lapangan bermain;Locker=Loker",
+"A2 · Mata pelajaran":"Subject=Mata pelajaran;Math=Matematika;Science=IPA;Social studies=IPS;Language arts=Seni bahasa;Art=Seni rupa;Music=Musik;Physical education=Pendidikan jasmani;Religion=Agama;Geography=Geografi;History=Sejarah;Biology=Biologi;Chemistry=Kimia;Physics=Fisika;Computer=Komputer;Reading=Membaca;Writing=Menulis;Speaking=Berbicara;Listening=Menyimak;Grammar=Tata bahasa",
+"A2 · Mengajar":"Lesson=Pelajaran;Lesson plan=Rencana pembelajaran;Learning goal=Tujuan pembelajaran;Activity=Kegiatan;Instruction=Petunjuk;Explain=Menjelaskan;Demonstrate=Memperagakan;Practice=Berlatih;Review=Mengulas;Group work=Kerja kelompok;Pair work=Kerja berpasangan;Discussion=Diskusi;Homework=Pekerjaan rumah;Example=Contoh;Answer=Jawaban;Question=Pertanyaan;Topic=Topik;Skill=Keterampilan;Materials=Bahan ajar;Handout=Lembar tugas",
+"A2 · Penilaian":"Assessment=Penilaian;Test=Ujian;Quiz=Kuis;Exam=Ujian akhir;Score=Nilai;Grade=Tingkat kelas;Rubric=Rubrik;Feedback=Umpan balik;Progress=Kemajuan;Portfolio=Portofolio;Formative=Formatif;Summative=Sumatif;Report card=Rapor;Attendance=Kehadiran;Pass=Lulus;Fail=Tidak lulus;Improve=Meningkatkan;Strength=Kekuatan;Weakness=Kelemahan;Evaluate=Menilai",
+"A2 · Pembelajaran projek":"Project-based learning=Pembelajaran berbasis projek;Inquiry=Penyelidikan;Curiosity=Rasa ingin tahu;Collaboration=Kolaborasi;Creativity=Kreativitas;Critical thinking=Berpikir kritis;Reflection=Refleksi;Presentation=Presentasi;Exhibition=Pameran;Research=Riset;Experiment=Percobaan;Observe=Mengamati;Investigate=Menyelidiki;Create=Menciptakan;Solve=Memecahkan;Share=Berbagi;Independent=Mandiri;Student-centered=Berpusat pada siswa;Differentiation=Diferensiasi;Choice=Pilihan",
+"A2 · Perilaku & emosi siswa":"Behavior=Perilaku;Respect=Hormat;Kind=Baik hati;Polite=Sopan;Listen=Mendengarkan;Focus=Fokus;Attention=Perhatian;Rule=Aturan;Take turns=Bergiliran;Raise your hand=Angkat tangan;Calm=Tenang;Angry=Marah;Proud=Bangga;Nervous=Gugup;Confident=Percaya diri;Shy=Pemalu;Brave=Berani;Mistake=Kesalahan;Try again=Coba lagi;Encourage=Menyemangati",
+"A2 · Murid & orang tua":"Parent=Orang tua;Guardian=Wali;Student=Murid;Class=Kelas;Meeting=Pertemuan;Conference=Konferensi;Concern=Kekhawatiran;Support=Dukungan;Develop=Berkembang;Report=Laporan;Update=Kabar terbaru;Appointment=Janji temu;Discuss=Membahas;Together=Bersama-sama;Allergy=Alergi;Sick=Sakit;Absent=Tidak hadir;Pick up=Menjemput;Permission=Izin;Notice=Pemberitahuan",
+"A2 · Tugas guru PIC":"Person in charge=Penanggung jawab;Coordinate=Mengoordinasi;Organize=Mengatur;Plan=Merencanakan;Prepare=Menyiapkan;Manage=Mengelola;Delegate=Mendelegasikan;Follow up=Menindaklanjuti;Monitor=Memantau;Responsibility=Tanggung jawab;Deadline=Batas waktu;Agenda=Agenda;Minutes=Notulen;Schedule=Jadwal;Priority=Prioritas;Progress report=Laporan kemajuan;Event=Acara;Budget=Anggaran;Team=Tim;Goal=Target",
+"A2 · Rapat & kolaborasi":"Propose=Mengusulkan;Suggest=Menyarankan;Agree=Setuju;Disagree=Tidak setuju;Decide=Memutuskan;Decision=Keputusan;Opinion=Pendapat;Idea=Ide;Problem=Masalah;Solution=Solusi;Clarify=Memperjelas;Confirm=Memastikan;Postpone=Menunda;Cancel=Membatalkan;Approve=Menyetujui;Assign=Menugaskan;Remind=Mengingatkan;Available=Tersedia;Request=Permintaan;Reschedule=Menjadwal ulang",
+"A2 · Instruksi di kelas":"Please sit down.=Silakan duduk.;Open your books.=Buka buku kalian.;Listen carefully.=Dengarkan baik-baik.;Raise your hand if you know.=Angkat tangan jika tahu.;Work in groups of four.=Bekerja dalam kelompok empat orang.;Any questions?=Ada pertanyaan?;Please be quiet.=Mohon tenang.;Time is up.=Waktu habis.;Let's start the lesson.=Mari kita mulai pelajaran.;Well done!=Bagus sekali!;Try again.=Coba lagi.;Clean up, please.=Tolong rapikan.;Line up, please.=Silakan berbaris.;Take out your pencils.=Keluarkan pensil kalian.;Turn to page ten.=Buka halaman sepuluh.;Share with your partner.=Bagikan dengan pasanganmu.;What do you think?=Menurutmu bagaimana?;Please explain your answer.=Tolong jelaskan jawabanmu.;Finish your work.=Selesaikan pekerjaanmu.;See you tomorrow, class.=Sampai jumpa besok, anak-anak.",
+"A2 · Kalimat untuk orang tua & rapat":"Thank you for coming.=Terima kasih sudah datang.;Your child is doing well.=Anak Anda berkembang dengan baik.;Your child needs more support.=Anak Anda butuh dukungan lebih.;Can we schedule a meeting?=Bisakah kita jadwalkan pertemuan?;I will follow up with you.=Saya akan menindaklanjuti kepada Anda.;Please let me know.=Mohon kabari saya.;I am the person in charge.=Saya penanggung jawabnya.;Let me explain the plan.=Izinkan saya menjelaskan rencananya.;I will send the details by email.=Saya akan kirim detailnya lewat email.;We need to finish this by Friday.=Kita harus menyelesaikan ini sebelum Jumat.;Could you share your ideas?=Bisakah Anda membagikan ide Anda?;I agree with your idea.=Saya setuju dengan ide Anda.;I'm sorry, could you repeat that?=Maaf, bisakah Anda mengulanginya?;Let's decide together.=Mari kita putuskan bersama.;Thank you for your support.=Terima kasih atas dukungan Anda.",
+"B2 · Command words Cambridge":"Analyse=Menganalisis;Justify=Membenarkan dengan alasan;Outline=Menguraikan garis besar;State=Menyatakan;Describe=Menggambarkan;Compare=Membandingkan;Contrast=Membedakan;Assess=Mengkaji;Define=Mendefinisikan;Sketch=Membuat sketsa;Calculate=Menghitung;Deduce=Menyimpulkan secara logis;Identify=Mengidentifikasi;Predict=Memprediksi;Summarise=Merangkum;Illustrate=Mengilustrasikan;Examine=Menelaah;Interpret=Menafsirkan;Comment=Berkomentar;Estimate=Memperkirakan",
+"B2 · Sistem Cambridge":"Syllabus=Silabus;Scheme of work=Rencana kerja kurikulum;Mark scheme=Skema penilaian;Past paper=Soal tahun lalu;Examiner=Penguji;Checkpoint=Tes Checkpoint;Learner attributes=Atribut pelajar;Cambridge Pathway=Jalur Cambridge;Stage=Tahap;Progression=Progresi;Moderation=Moderasi;Standardisation=Standardisasi;Criteria=Kriteria;Descriptor=Deskriptor;Candidate=Peserta ujian;Coursework=Tugas koursework;Practical=Praktikum;Oral exam=Ujian lisan;Marking=Pemeriksaan;Cohort=Angkatan",
+"B2 · Pedagogi":"Scaffolding=Pendampingan bertahap;Learning intention=Maksud pembelajaran;Success criteria=Kriteria keberhasilan;Metacognition=Metakognisi;Higher-order thinking=Berpikir tingkat tinggi;Prior knowledge=Pengetahuan awal;Misconception=Miskonsepsi;Retrieval practice=Latihan mengingat kembali;Plenary=Sesi penutup;Starter activity=Kegiatan pembuka;Questioning=Teknik bertanya;Engagement=Keterlibatan;Mixed-ability=Kemampuan beragam;Extension task=Tugas pengayaan;Intervention=Intervensi;Peer assessment=Penilaian teman sebaya;Self-assessment=Penilaian diri;Cognitive load=Beban kognitif;Modelling=Pemodelan contoh;Consolidate=Memantapkan",
+"B2 · Asesmen lanjutan":"Assessment for learning=Penilaian untuk pembelajaran;Benchmark=Tolok ukur;Baseline=Data awal;Attainment=Capaian;Achievement gap=Kesenjangan capaian;Criterion-referenced=Berbasis kriteria;Norm-referenced=Berbasis norma;Reliable=Andal;Valid=Valid;Moderate=Memoderasi;Track=Melacak;Target grade=Target nilai;Mastery=Penguasaan;Annotate=Memberi catatan;Verbal feedback=Umpan balik lisan;Written feedback=Umpan balik tertulis;Next steps=Langkah selanjutnya;Exceed=Melampaui;Fall behind=Tertinggal;Meet expectations=Memenuhi harapan",
+"B2 · Karakter & kesejahteraan murid":"Responsible=Bertanggung jawab;Reflective=Reflektif;Innovative=Inovatif;Engaged=Terlibat aktif;Resilient=Tangguh;Resourceful=Cerdik mencari cara;Articulate=Pandai mengungkapkan;Disruptive=Mengganggu;Disengaged=Tidak terlibat;Motivated=Termotivasi;Self-esteem=Harga diri;Struggle=Kesulitan;Thrive=Berkembang pesat;Well-being=Kesejahteraan;Inclusive=Inklusif;Bullying=Perundungan;Mindset=Pola pikir;Peer pressure=Tekanan teman sebaya;Perseverance=Ketekunan;Empathy=Empati",
+"C1 · Konektor akademik":"Furthermore=Lebih lanjut;Moreover=Terlebih lagi;Nevertheless=Meskipun begitu;Nonetheless=Walau demikian;Consequently=Akibatnya;Therefore=Oleh karena itu;Whereas=Sementara;Although=Meskipun;However=Namun;In addition=Selain itu;On the other hand=Di sisi lain;In contrast=Sebaliknya;As a result=Sebagai hasilnya;For instance=Misalnya;In particular=Terutama;Subsequently=Selanjutnya;Alternatively=Alternatifnya;Regardless=Terlepas dari itu;Notwithstanding=Terlepas dari;In conclusion=Sebagai kesimpulan",
+"C1 · Kata kerja akademik":"Acknowledge=Mengakui;Advocate=Menganjurkan;Facilitate=Memfasilitasi;Implement=Menerapkan;Enhance=Meningkatkan mutu;Foster=Menumbuhkan;Cultivate=Membina;Address=Menangani;Overcome=Mengatasi;Accommodate=Mengakomodasi;Reinforce=Memperkuat;Streamline=Menyederhanakan alur;Underpin=Mendasari;Allocate=Mengalokasikan;Prioritise=Memprioritaskan;Mitigate=Mengurangi dampak;Empower=Memberdayakan;Integrate=Mengintegrasikan;Adapt=Menyesuaikan;Collaborate=Berkolaborasi",
+"C1 · Kalimat formal":"I would like to draw your attention to this.=Saya ingin menarik perhatian Anda pada hal ini.;With regard to your question, here is my answer.=Berkaitan dengan pertanyaan Anda, ini jawaban saya.;I appreciate your concern.=Saya menghargai kekhawatiran Anda.;Your child has made significant progress.=Anak Anda telah membuat kemajuan signifikan.;There are areas we can work on together.=Ada hal yang bisa kita tingkatkan bersama.;I suggest we review the learning plan.=Saya sarankan kita tinjau rencana belajarnya.;Let me clarify what I meant.=Izinkan saya memperjelas maksud saya.;I would be happy to arrange a meeting.=Dengan senang hati saya atur pertemuan.;Please do not hesitate to contact me.=Jangan ragu menghubungi saya.;We are committed to supporting every learner.=Kami berkomitmen mendukung setiap murid.;As the person in charge, I will oversee this.=Sebagai penanggung jawab, saya akan mengawasinya.;I will keep you informed of any updates.=Saya akan mengabari Anda soal perkembangan.;Could we reschedule to a more convenient time?=Bisakah kita jadwalkan ulang ke waktu yang lebih cocok?;That is a valid point.=Itu poin yang masuk akal.;I see it differently, if I may.=Saya melihatnya berbeda, jika boleh."
+};
+const ALL=[];
+for(const k in RAW)RAW[k].split(";").forEach(t=>{const[a,b,x]=t.split("=");ALL.push({en:a,id:b,ex:x||"",cat:k})});
+const KEY="english-guru-cikal",MK=KEY+"-meta";
+let known={},meta={xp:0,streak:0,last:""};
+try{known=JSON.parse(localStorage.getItem(KEY)||"{}")||{}}catch(e){}
+try{Object.assign(meta,JSON.parse(localStorage.getItem(MK)||"{}"))}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(known));localStorage.setItem(MK,JSON.stringify(meta))}catch(e){}};
+const day=d=>d.toISOString().slice(0,10);
+function xp(n){const t=day(new Date());if(meta.last!==t){meta.streak=meta.last===day(new Date(Date.now()-864e5))?meta.streak+1:1;meta.last=t}meta.xp+=n;save();hdr()}
+const $=s=>document.querySelector(s),view=$("#view"),sel=$("#cat");
+let tab="card",lvl="Semua",cat="Semua",idx=0,flip=false,quiz=null,qm=0,q="";
+const LV=["Semua","A2","B2","C1"],lvOf=w=>w.cat.slice(0,2);
+const pool=()=>ALL.filter(w=>(lvl==="Semua"||lvOf(w)===lvl)&&(cat==="Semua"||w.cat===cat));
+const shuf=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+function say(t){try{const u=new SpeechSynthesisUtterance(t);u.lang="en-US";u.rate=.85;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
+function toast(t){const e=$("#toast");e.textContent=t;e.classList.remove("show");void e.offsetWidth;e.classList.add("show")}
+function confetti(){if(matchMedia("(prefers-reduced-motion:reduce)").matches)return;const c=["#ff8fb8","#d6336c","#ffd166","#ffb3cf","#b5179e"];for(let i=0;i<46;i++){const e=document.createElement("i");e.className="cf";e.style.cssText=`left:${Math.random()*100}vw;background:${c[i%5]};--d:${1.6+Math.random()*1.4}s;--r:${Math.random()*720-360}deg;animation-delay:${Math.random()*.4}s`;document.body.appendChild(e);setTimeout(()=>e.remove(),3600)}}
+const pct=f=>{const p=ALL.filter(f);return p.length?Math.round(p.filter(w=>known[w.en]).length/p.length*100):0};
+function hdr(){
+ const n=ALL.filter(w=>known[w.en]).length,r=n/ALL.length;
+ $("#sprout").textContent=r<.1?"🌱":r<.35?"🌿":r<.7?"🪴":"🌳";
+ $("#sub").textContent=`${ALL.length} kata tersedia, target 1000. Kurikulum Cambridge, dari A2 menuju C1.`;
+ $("#stats").innerHTML=`<span class="pill">🔥 ${meta.streak} hari</span><span class="pill">⭐ ${meta.xp} XP</span><span class="pill">✅ ${n} kata hafal</span>`;
+ $("#lv").innerHTML=LV.map(l=>`<button class="chip ${l===lvl?"on":""}" data-lv="${l}">${l}<small>${pct(w=>l==="Semua"||lvOf(w)===l)}%</small></button>`).join("");
+}
+function fillCats(){const cs=["Semua",...Object.keys(RAW).filter(c=>lvl==="Semua"||c.startsWith(lvl))];sel.innerHTML=cs.map(c=>`<option>${c}</option>`).join("");if(!cs.includes(cat))cat="Semua";sel.value=cat}
+function progress(){const p=pool(),n=p.filter(w=>known[w.en]).length;return `<div class="bar"><i style="width:${p.length?n/p.length*100:0}%"></i></div><div class="meta"><span>Hafal: ${n} dari ${p.length}</span></div>`}
+function render(){document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab===tab));hdr();tab==="card"?card():tab==="quiz"?qz():list()}
+function card(){
+ const p=pool();if(idx>=p.length)idx=0;const w=p[idx];
+ view.innerHTML=`<div id="prog">${progress()}</div><div class="scene in" data-a="flip" role="button" tabindex="0" aria-label="Balik kartu"><div class="card ${flip?"flipped":""}">
+ <div class="face front"><div class="tag">${w.cat}</div><div class="en${w.en.length>20?" long":""}">${w.en}</div><button class="say" data-a="say">🔊 Dengarkan</button><div class="hint">Ketuk kartu untuk melihat arti</div></div>
+ <div class="face back"><div class="tag">${w.cat}</div><div class="id">${w.id}</div>${w.ex?`<div class="ex">${w.ex}</div><button class="say" data-a="sayex">🔊 Dengar kalimat</button>`:""}</div></div></div>
+ <div class="acts"><button class="btn" data-a="again">Masih lupa</button><button class="btn ok" data-a="know">Sudah hafal</button></div>
+ <div class="meta" style="margin-top:12px"><span>Kartu ${idx+1} dari ${p.length}</span><span>${known[w.en]?"✅ Sudah kamu hafal":"Geser atau tekan ➡️ untuk lanjut"}</span></div>`;
+}
+function startQuiz(){quiz={qs:shuf(pool()).slice(0,10).map(w=>({w,o:shuf([w,...shuf(ALL.filter(x=>x.en!==w.en&&x.id!==w.id)).slice(0,3)])})),i:0,s:0,ans:null,miss:[]}}
+function qz(){
+ if(!quiz)startQuiz();
+ const T=quiz.qs.length,seg=`<div class="seg"><button class="${qm?"":"on"}" data-a="qm" data-m="0">Tebak arti</button><button class="${qm?"on":""}" data-a="qm" data-m="1">Dengar &amp; tebak</button></div>`;
+ if(quiz.i>=T){
+  const f=quiz.s===T;
+  view.innerHTML=seg+`<div class="score">${quiz.s}/${T}</div><p class="center sub">${f?"Sempurna! Tunasmu makin tinggi.":quiz.s>=T*.7?"Bagus! Ulangi untuk nilai penuh.":"Ulangi kartunya dulu, lalu coba lagi."}</p>${quiz.miss.length?`<p class="meta" style="margin-top:16px">Perlu diulang:</p><div class="list">${quiz.miss.map(w=>`<div class="li"><div class="w"><b>${w.en}</b><span>${w.id}</span></div></div>`).join("")}</div>`:""}<div class="center"><button class="btn pri" data-a="restart">Main lagi</button></div>`;
+  if(f)confetti();return;
+ }
+ const k=quiz.qs[quiz.i],lab=o=>qm?o.en:o.id,d=quiz.ans!==null;
+ view.innerHTML=seg+`<div class="bar"><i style="width:${quiz.i/T*100}%"></i></div><div class="meta"><span>Soal ${quiz.i+1} dari ${T}</span><span>Skor ${quiz.s}</span></div>
+ ${qm?`<div class="q">Dengarkan, lalu pilih kata yang benar.</div><div class="center" style="margin-bottom:14px"><button class="say big" data-a="say">🔊 Putar suara</button></div>`:`<div class="q">Apa arti "${k.w.en}"? <button class="say" data-a="say" aria-label="Dengarkan">🔊</button></div>`}
+ <div class="opts">${k.o.map((o,j)=>{const r=d&&o.en===k.w.en;return `<button class="opt ${r?"right":d&&j===quiz.ans?"wrong":""}" data-a="pick" data-k="${j}" ${d?"disabled":""}>${lab(o)}</button>`}).join("")}</div>
+ ${d?`<div class="fb">${k.w.en} = ${k.w.id}</div><div class="acts"><button class="btn" data-a="say">🔊 Dengar lagi</button><button class="btn pri" data-a="next">Lanjut</button></div>`:""}`;
+ if(qm&&!d)say(k.w.en);
+}
+function items(){const t=q.toLowerCase();$("#items").innerHTML=pool().filter(w=>!t||w.en.toLowerCase().includes(t)||w.id.toLowerCase().includes(t)).map(w=>`<div class="li"><input type="checkbox" data-a="chk" data-w="${w.en}" ${known[w.en]?"checked":""} aria-label="Hafal ${w.en}"><div class="w"><b>${w.en}</b><span>${w.id}</span></div><button data-a="sayw" data-w="${w.en}" aria-label="Dengarkan ${w.en}">🔊</button></div>`).join("")||"<p class='sub'>Tidak ada kata yang cocok.</p>"}
+function list(){view.innerHTML=`<div id="prog">${progress()}</div><input class="search" id="q" placeholder="Cari kata atau arti..." aria-label="Cari"><div class="list" id="items"></div>`;$("#q").value=q;items()}
+const go=d=>{const p=pool();idx=(idx+d+p.length)%p.length;flip=false;card()};
+view.addEventListener("click",e=>{
+ const b=e.target.closest("[data-a]");if(!b)return;const a=b.dataset.a,w=pool()[idx];
+ if(a==="flip"){flip=!flip;view.querySelector(".card").classList.toggle("flipped",flip);if(flip)say(w.en)}
+ else if(a==="say"){say(tab==="quiz"?quiz.qs[quiz.i].w.en:w.en)}
+ else if(a==="sayex"){say(w.ex)}
+ else if(a==="again"){go(1)}
+ else if(a==="know"){if(!known[w.en]){known[w.en]=1;xp(10);toast("+10 XP · Sudah hafal!")}go(1);hdr()}
+ else if(a==="qm"){qm=+b.dataset.m;quiz=null;qz()}
+ else if(a==="pick"){const k=quiz.qs[quiz.i],j=+b.dataset.k;quiz.ans=j;if(k.o[j].en===k.w.en){quiz.s++;xp(5);toast("Benar! +5 XP")}else{quiz.miss.push(k.w);toast("Belum tepat")}qz()}
+ else if(a==="next"){quiz.i++;quiz.ans=null;qz()}
+ else if(a==="restart"){startQuiz();qz()}
+ else if(a==="chk"){if(b.checked)known[b.dataset.w]=1;else delete known[b.dataset.w];save();hdr();$("#prog").innerHTML=progress()}
+ else if(a==="sayw"){say(b.dataset.w)}
+});
+view.addEventListener("input",e=>{if(e.target.id==="q"){q=e.target.value;items()}});
+let sx=0;
+view.addEventListener("touchstart",e=>{sx=e.touches[0].clientX},{passive:true});
+view.addEventListener("touchend",e=>{if(tab!=="card")return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>70)go(dx<0?1:-1)});
+document.addEventListener("keydown",e=>{if(tab!=="card"||/INPUT|SELECT|BUTTON/.test(e.target.tagName))return;
+ if(e.key===" "||e.key==="Enter"){e.preventDefault();const s=view.querySelector(".scene");if(s)s.click()}
+ else if(e.key==="ArrowRight")go(1);else if(e.key==="ArrowLeft")go(-1)});
+$("#lv").addEventListener("click",e=>{const b=e.target.closest("[data-lv]");if(b){lvl=b.dataset.lv;cat="Semua";idx=0;flip=false;quiz=null;fillCats();render()}});
+document.querySelector(".tabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(b){tab=b.dataset.tab;render()}});
+sel.addEventListener("change",()=>{cat=sel.value;idx=0;flip=false;quiz=null;render()});
+$("#reset").addEventListener("click",()=>{if(confirm("Hapus semua progres hafalan?")){known={};save();render()}});
+fillCats();render();
+</script>
+</body>
+</html>
