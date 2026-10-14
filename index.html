@@ -169,6 +169,13 @@ main{max-width:1120px}
 .passage{background:var(--card);border-left:4px solid var(--pri);border-radius:12px;padding:12px 14px;margin:8px 0 12px;box-shadow:var(--sh)}
 .opt.sel{outline:2px solid var(--pri);border-color:var(--pri)}
 .btn:disabled,.say:disabled{opacity:.45;cursor:not-allowed}
+.bk{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;box-shadow:var(--sh);margin-top:18px}
+.bk summary{cursor:pointer;font-weight:700}
+.bk textarea{width:100%;margin:10px 0;font:inherit;resize:vertical}
+.bk .acts3{margin:10px 0}
+.bkm{color:var(--mute);font-weight:700;min-height:20px;margin:8px 0 0;font-size:14px}
+.mydel{margin-top:6px;background:var(--badbg);color:var(--bad);padding:4px 10px;font-size:13px;font-weight:700;align-self:flex-start}
+.wb small{color:var(--mute);font-size:12px}
 </style>
 </head>
 <body>
@@ -187,9 +194,17 @@ main{max-width:1120px}
     <button data-tab="list">Daftar</button>
     <button data-tab="dict">Kamus</button>
     <button data-tab="test">Tes Level</button>
+    <button data-tab="my">Kata Saya</button>
     <button data-tab="tpl">Template</button>
   </div>
   <div id="view"></div>
+  <details class="bk"><summary>Cadangan &amp; pemulihan data</summary>
+  <p class="sub">Progres tersimpan di browser perangkat ini. Unduh cadangan secara berkala, atau saat ingin pindah HP atau komputer.</p>
+  <div class="acts3"><button class="btn" data-b="dl">Unduh file</button><button class="btn" data-b="cp">Salin teks</button><button class="btn" data-b="file">Pilih file</button></div>
+  <input type="file" id="bkf" accept=".json,application/json" hidden>
+  <textarea id="bkt" class="search" rows="3" placeholder="Atau tempel teks cadangan di sini"></textarea>
+  <button class="btn" data-b="paste">Pulihkan dari teks</button>
+  <p class="bkm" id="bkm" role="status"></p></details>
   <button class="reset" id="reset">Hapus progres hafalan</button>
   </section></div>
 </main>
@@ -248,7 +263,10 @@ const RAW={
 "B2 · Kolokasi lanjutan":"Make an effort=Berupaya;Take a risk=Mengambil risiko;Draw a comparison=Membuat perbandingan;Reach a conclusion=Mencapai kesimpulan;Make a difference=Membawa perubahan;Raise a question=Mengajukan pertanyaan;Play a role=Berperan;Meet a need=Memenuhi kebutuhan;Take action=Mengambil tindakan;Provide support=Memberi dukungan;Gain experience=Memperoleh pengalaman;Face a challenge=Menghadapi tantangan;Express an opinion=Menyatakan pendapat;Share ideas=Berbagi ide;Pay a visit=Berkunjung;Build a relationship=Membangun hubungan;Set a deadline=Menetapkan tenggat;Break the rules=Melanggar aturan;Keep a promise=Menepati janji;Lose track of time=Lupa waktu",
 "B2 · Kalimat rapat & presentasi":"Let me begin by outlining today's agenda.=Mari saya mulai dengan garis besar agenda hari ini.;I'd like to move on to the next point.=Saya ingin lanjut ke poin berikutnya.;Could you walk us through the data?=Bisakah Anda menjelaskan data tersebut secara runtut?;As you can see on this slide, scores have improved.=Seperti terlihat di slide ini, nilai meningkat.;That brings me to my final point.=Itu membawa saya ke poin terakhir.;Does anyone have any questions or comments?=Adakah yang punya pertanyaan atau komentar?;Let's take a short break and then continue.=Mari istirahat sebentar lalu lanjut.;I'll send everyone a summary after the meeting.=Saya akan kirim ringkasan ke semua orang setelah rapat.;We're running a little behind schedule.=Kita agak terlambat dari jadwal.;Let me share my screen so you can follow along.=Biar saya bagikan layar agar Anda bisa mengikuti.;Thank you all for joining us today.=Terima kasih semuanya sudah bergabung hari ini.;Could we go back to the previous slide?=Bisakah kita kembali ke slide sebelumnya?;I'd like to hear your thoughts on this proposal.=Saya ingin mendengar pendapat Anda tentang proposal ini.;We have reached the end of our agenda.=Kita telah sampai di akhir agenda.;Let's schedule a follow-up meeting next week.=Mari jadwalkan rapat lanjutan minggu depan.",
 "C1 · Kosakata akademik":"Framework=Kerangka kerja;Perspective=Sudut pandang;Concept=Konsep;Context=Konteks;Principle=Prinsip;Approach=Pendekatan;Assumption=Asumsi;Implication=Implikasi;Rationale=Dasar pemikiran;Methodology=Metodologi;Paradigm=Paradigma;Phenomenon=Fenomena;Indicator=Indikator;Variable=Variabel;Correlation=Korelasi;Dimension=Dimensi;Domain=Ranah;Scope=Cakupan;Constraint=Kendala;Insight=Wawasan;Synthesis=Sintesis;Validity=Kesahihan;Nuance=Nuansa;Premise=Premis;Hierarchy=Hierarki",
-"C2 · Nuansa & ungkapan halus":"Ephemeral=Sementara dan singkat;Ubiquitous=Ada di mana-mana;Meticulous=Sangat teliti;Pragmatic=Pragmatis;Eloquent=Fasih berbicara;Tenacious=Tak mudah lepas;Candid=Terus terang;Prudent=Bijaksana berhati-hati;Resilience=Daya lenting;Ambivalent=Bimbang;Empathetic=Berempati;Nuanced=Bernuansa;Scrutinise=Menelisik;Corroborate=Menguatkan dengan bukti;Perpetuate=Melanggengkan;Exacerbate=Memperparah;Alleviate=Meringankan;Undermine=Melemahkan;Underscore=Menegaskan;Elucidate=Menerangkan;Bolster=Menopang;Pivotal=Sangat menentukan;Paramount=Terpenting;Inherent=Melekat;Tangible=Nyata terukur;Profound=Mendalam;Seamless=Mulus;Discerning=Jeli;Judicious=Arif;Lucid=Jernih"
+"C2 · Nuansa & ungkapan halus":"Ephemeral=Sementara dan singkat;Ubiquitous=Ada di mana-mana;Meticulous=Sangat teliti;Pragmatic=Pragmatis;Eloquent=Fasih berbicara;Tenacious=Tak mudah lepas;Candid=Terus terang;Prudent=Bijaksana berhati-hati;Resilience=Daya lenting;Ambivalent=Bimbang;Empathetic=Berempati;Nuanced=Bernuansa;Scrutinise=Menelisik;Corroborate=Menguatkan dengan bukti;Perpetuate=Melanggengkan;Exacerbate=Memperparah;Alleviate=Meringankan;Undermine=Melemahkan;Underscore=Menegaskan;Elucidate=Menerangkan;Bolster=Menopang;Pivotal=Sangat menentukan;Paramount=Terpenting;Inherent=Melekat;Tangible=Nyata terukur;Profound=Mendalam;Seamless=Mulus;Discerning=Jeli;Judicious=Arif;Lucid=Jernih",
+"B2 · SEN & ABK istilah":"Individualised education plan=Rencana pendidikan individual;Special educational needs=Kebutuhan pendidikan khusus;Learning profile=Profil belajar;Strengths and needs=Kekuatan dan kebutuhan;Sensory=Sensori;Sensory overload=Kelebihan stimulasi sensori;Fine motor skills=Keterampilan motorik halus;Gross motor skills=Keterampilan motorik kasar;Speech therapy=Terapi wicara;Occupational therapy=Terapi okupasi;Shadow teacher=Guru pendamping;Visual schedule=Jadwal visual;Social story=Cerita sosial;Communication board=Papan komunikasi;Prompt=Isyarat bantuan;Fading=Pengurangan bantuan bertahap;Meltdown=Ledakan emosi;Coping strategy=Strategi mengatasi;Transition support=Pendampingan transisi;Developmental delay=Keterlambatan perkembangan",
+"B2 · SEN & ABK di kelas":"Visual cue=Petunjuk visual;Verbal prompt=Arahan lisan;Hand-over-hand=Bimbingan tangan;Fidget tool=Alat bantu fidget;Ear defenders=Pelindung telinga;Quiet space=Ruang tenang;Extra time=Waktu tambahan;Scribe=Penulis pendamping;Assistive technology=Teknologi bantu;Large print=Cetakan besar;Peer buddy=Teman pendamping;Small group=Kelompok kecil;One-to-one=Satu per satu;Check for understanding=Memastikan pemahaman;Chunking tasks=Memecah tugas;Repetition=Pengulangan;Predictable=Dapat diprediksi;Structure=Struktur;Differentiate=Membedakan pembelajaran;Modify=Memodifikasi",
+"B2 · SEN & ABK frasa guru":"Let's use the visual schedule to see what comes next.=Mari pakai jadwal visual untuk melihat kegiatan berikutnya.;You are doing a great job staying calm.=Kamu hebat sekali tetap tenang.;Would you like a break or some quiet time?=Apakah kamu ingin istirahat atau waktu tenang?;First we finish this, then you can choose.=Selesaikan ini dulu, lalu kamu boleh memilih.;Let's take a deep breath together.=Mari kita tarik napas dalam bersama.;I will show you how to do it step by step.=Saya akan tunjukkan caranya langkah demi langkah.;It is okay to feel upset, and I am here to help.=Tidak apa-apa merasa kesal, dan saya di sini untuk membantu.;Can you show me what you need?=Bisakah kamu tunjukkan apa yang kamu butuhkan?;We are going to change activities in five minutes.=Lima menit lagi kita ganti kegiatan.;Thank you for waiting patiently.=Terima kasih sudah menunggu dengan sabar.;Let's try it together, one small step at a time.=Mari coba bersama, satu langkah kecil setiap kali.;Your child made wonderful progress with communication today.=Anak Anda membuat kemajuan komunikasi yang bagus hari ini.;We are working on this goal in their support plan.=Kami sedang mengerjakan tujuan ini dalam rencana dukungannya.;Could you share what works well at home?=Bisakah Anda berbagi hal yang berhasil di rumah?;I would like to update you on today's session.=Saya ingin memberi kabar tentang sesi hari ini.;We celebrate every small success.=Kami merayakan setiap keberhasilan kecil."
 };
 const ALL=[];
 for(const k in RAW)RAW[k].split(";").forEach(t=>{const[a,b,x]=t.split("=");ALL.push({en:a,id:b,ex:x||"",cat:k})});
@@ -278,7 +296,7 @@ function hdr(){
 }
 function fillCats(){const cs=["Semua",...Object.keys(RAW).filter(c=>lvl==="Semua"||c.startsWith(lvl)).sort((a,b)=>LV.indexOf(a.slice(0,2))-LV.indexOf(b.slice(0,2)))];sel.innerHTML=cs.map(c=>`<option>${c}</option>`).join("");if(!cs.includes(cat))cat="Semua";sel.value=cat}
 function progress(){const p=pool(),n=p.filter(w=>known[w.en]).length;return `<div class="bar"><i style="width:${p.length?n/p.length*100:0}%"></i></div><div class="meta"><span>Hafal: ${n} dari ${p.length}</span></div>`}
-function render(){document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab===tab));hdr();$(".row").style.display=$("#lv").style.display=tab==="tpl"||tab==="dict"||tab==="test"?"none":"";tab==="card"?card():tab==="srs"?rv():tab==="quiz"?qz():tab==="list"?list():tab==="dict"?dict():tab==="test"?tst():tpl()}
+function render(){document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab===tab));hdr();$(".row").style.display=$("#lv").style.display=tab==="tpl"||tab==="dict"||tab==="test"||tab==="my"?"none":"";tab==="card"?card():tab==="srs"?rv():tab==="quiz"?qz():tab==="list"?list():tab==="dict"?dict():tab==="test"?tst():tab==="my"?my():tpl()}
 function card(){
  const p=pool();if(idx>=p.length)idx=0;const w=p[idx];
  view.innerHTML=`<div id="prog">${progress()}</div><div class="scene in" data-a="flip" role="button" tabindex="0" aria-label="Balik kartu"><div class="card ${flip?"flipped":""}">
@@ -557,6 +575,8 @@ view.addEventListener("click",e=>{
  else if(a==="chk"){if(b.checked){known[b.dataset.w]=1;if(!srs[b.dataset.w])srs[b.dataset.w]={b:2,d:dstr(3)}}else{delete known[b.dataset.w];delete srs[b.dataset.w]}saveS();save();hdr();$("#prog").innerHTML=progress()}
  else if(a==="sayw"){say(b.dataset.w)}
  else if(a==="jump"){idx=+b.dataset.i;flip=false;card();view.scrollIntoView({block:"start"})}
+ else if(a==="mysave"){mysave()}
+ else if(a==="mydel"){const i=+b.dataset.i,m=MY[i];if(!m)return;delete known[m.en];delete srs[m.en];save();saveS();const arr=MY.filter((x,j)=>j!==i);saveMine(arr);loadMine(arr);idx=0;flip=false;rq=null;quiz=null;px=null;fillCats();hdr();$("#mylist").innerHTML="";mylist()}
  else if(a==="tstart"){ts={qs:buildTest(),i:0,sel:null,plays:0,ans:[]};tst();window.scrollTo(0,0)}
  else if(a==="tplay"){const q=ts.qs[ts.i];if(ts.plays<2){ts.plays++;say(q.au);tst()}}
  else if(a==="tpick"){ts.sel=+b.dataset.k;tst()}
@@ -641,14 +661,14 @@ const SEC={v:"Kosakata",g:"Tata bahasa",r:"Membaca",l:"Menyimak"},TL=["A2","B1",
 let ts=null,TH=[];
 try{TH=JSON.parse(localStorage.getItem(KEY+"-tests")||"[]")||[]}catch(e){}
 function buildTest(){const qs=[];
- TL.forEach(l=>{shuf(ALL.filter(w=>lvOf(w)===l&&!isS(w))).slice(0,2).forEach(w=>{const o=shuf([w.id,...shuf(ALL.filter(x=>x.id!==w.id&&!isS(x))).slice(0,3).map(x=>x.id)]);qs.push({l,s:"v",q:`Apa arti "${w.en}"?`,o,a:o.indexOf(w.id)})})});
+ TL.forEach(l=>{shuf(ALL.filter(w=>lvOf(w)===l&&!isS(w)&&!w.my)).slice(0,2).forEach(w=>{const o=shuf([w.id,...shuf(ALL.filter(x=>x.id!==w.id&&!isS(x)&&!x.my)).slice(0,3).map(x=>x.id)]);qs.push({l,s:"v",q:`Apa arti "${w.en}"?`,o,a:o.indexOf(w.id)})})});
  GR.forEach(g=>qs.push({l:g[0],s:"g",q:g[1],o:g[2].split(";"),a:g[3]}));
  RD.forEach(r=>qs.push({l:r[0],s:"r",q:r[2],o:r[3].split(";"),a:r[4],p:PS[r[1]]}));
  LS.forEach(x=>qs.push({l:x[0],s:"l",q:x[2],o:x[3].split(";"),a:x[4],au:x[1]}));
  return qs}
 const pc=a=>a[1]?Math.round(a[0]/a[1]*100):0;
 const tbar=(n,v)=>`<div class="tb"><span>${n}</span><div class="bar"><i style="width:${v}%"></i></div><b>${v}%</b></div>`;
-function hist(){return TH.length?`<div class="tcard"><h4>Riwayat tes</h4><div class="list">${TH.slice(-5).reverse().map(h=>`<div class="li"><div class="w"><b>${h.d}</b><span>Perkiraan ${h.est} · skor ${h.tot}%</span></div></div>`).join("")}</div></div>`:""}
+function hist(){return TH.length?`<div class="tcard"><h4>Riwayat tes</h4><div class="list">${TH.slice(-5).reverse().map(h=>`<div class="li"><div class="w"><b>${esc(String(h.d))}</b><span>Perkiraan ${esc(String(h.est))} · skor ${esc(String(h.tot))}%</span></div></div>`).join("")}</div></div>`:""}
 function finish(){
  const pl={},ps={v:[0,0],g:[0,0],r:[0,0],l:[0,0]};TL.forEach(l=>pl[l]=[0,0]);let ok=0;
  ts.qs.forEach((q,n)=>{const c=ts.ans[n]===q.a?1:0;ok+=c;pl[q.l][0]+=c;pl[q.l][1]++;ps[q.s][0]+=c;ps[q.s][1]++});
@@ -674,6 +694,44 @@ function tst(){
  const q=ts.qs[ts.i];
  view.innerHTML=`<div class="bar"><i style="width:${ts.i/T*100}%"></i></div><div class="meta"><span>Bagian: ${SEC[q.s]}</span><span>Soal ${ts.i+1} dari ${T}</span></div>${q.p?`<div class="passage">${q.p}</div>`:""}${q.au?`<div class="center" style="margin:8px 0"><button class="say big" data-a="tplay" ${ts.plays>=2?"disabled":""}>🔊 Putar rekaman (sisa ${2-ts.plays}x)</button></div>`:""}<div class="q">${q.q}</div><div class="opts">${q.o.map((o,j)=>`<button class="opt ${ts.sel===j?"sel":""}" data-a="tpick" data-k="${j}">${o}</button>`).join("")}</div><div class="center" style="margin-top:14px"><button class="btn pri" data-a="tnext" ${ts.sel===null?"disabled":""}>${ts.i+1===T?"Selesai":"Lanjut"}</button></div>`;
 }
+const BK=[KEY,MK,KEY+"-srs",KEY+"-tpl",KEY+"-tests",KEY+"-mine"];
+function bkOut(){const o={app:"english-guru-cikal",v:1,t:new Date().toISOString(),data:{}};BK.forEach(k=>{try{const v=localStorage.getItem(k);if(v!==null)o.data[k]=v}catch(e){}});return JSON.stringify(o)}
+function bkIn(txt){let o;try{o=JSON.parse(txt)}catch(e){return "Teks cadangan tidak valid."}
+ if(!o||o.app!=="english-guru-cikal"||!o.data)return "File ini bukan cadangan web ini.";
+ BK.forEach(k=>{if(typeof o.data[k]==="string"){try{JSON.parse(o.data[k]);localStorage.setItem(k,o.data[k])}catch(e){}}});
+ try{known=JSON.parse(localStorage.getItem(KEY)||"{}")||{}}catch(e){known={}}
+ try{meta=Object.assign({xp:0,streak:0,last:""},JSON.parse(localStorage.getItem(MK)||"{}"))}catch(e){}
+ try{srs=JSON.parse(localStorage.getItem(KEY+"-srs")||"{}")||{}}catch(e){srs={}}
+ try{Object.assign(F,JSON.parse(localStorage.getItem(KEY+"-tpl")||"{}"))}catch(e){}
+ try{TH=JSON.parse(localStorage.getItem(KEY+"-tests")||"[]")||[]}catch(e){TH=[]}
+ try{loadMine(JSON.parse(localStorage.getItem(KEY+"-mine")||"[]"))}catch(e){loadMine([])}
+ fillCats();rq=null;quiz=null;px=null;ts=null;render();return ""}
+document.querySelector(".bk").addEventListener("click",e=>{const b=e.target.closest("[data-b]");if(!b)return;const k=b.dataset.b,m=$("#bkm");
+ if(k==="dl"){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([bkOut()],{type:"application/json"}));a.download="cadangan-english-michelle-"+dstr(0)+".json";document.body.appendChild(a);a.click();a.remove();m.textContent="Jika file tidak terunduh, pakai tombol Salin teks."}
+ else if(k==="cp"){copy(bkOut());m.textContent="Teks cadangan disalin. Tempel dan simpan di tempat aman."}
+ else if(k==="file"){$("#bkf").click()}
+ else if(k==="paste"){const r=bkIn($("#bkt").value.trim());m.textContent=r||"Berhasil dipulihkan.";if(!r)$("#bkt").value=""}});
+$("#bkf").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const x=bkIn(String(r.result));$("#bkm").textContent=x||"Berhasil dipulihkan."};r.readAsText(f);e.target.value=""});
+let MY=[];
+const cl=(t,n)=>String(t||"").replace(/[<>"`\\]/g,"").trim().slice(0,n);
+function loadMine(arr){
+ MY=(Array.isArray(arr)?arr:[]).filter(m=>m&&typeof m.en==="string"&&typeof m.id==="string"&&TL.includes(m.lv)).map(m=>({en:cl(m.en,60),id:cl(m.id,80),ex:cl(m.ex,200),lv:m.lv})).filter(m=>m.en&&m.id);
+ for(let i=ALL.length-1;i>=0;i--)if(ALL[i].my)ALL.splice(i,1);
+ Object.keys(RAW).forEach(k=>{if(k.endsWith("· Kata saya"))delete RAW[k]});
+ MY.forEach(m=>{const c=m.lv+" · Kata saya";RAW[c]=RAW[c]||"";ALL.push({en:m.en,id:m.id,ex:m.ex,cat:c,my:1})})}
+try{loadMine(JSON.parse(localStorage.getItem(KEY+"-mine")||"[]"))}catch(e){loadMine([])}
+const saveMine=a=>{try{localStorage.setItem(KEY+"-mine",JSON.stringify(a))}catch(e){}};
+function mylist(){$("#mylist").innerHTML=MY.length?`<div class="wg mini">${MY.map((m,i)=>`<div class="wb"><b>${m.en}</b><span>${m.id}</span><small>${m.lv}</small><button class="mydel" data-a="mydel" data-i="${i}" aria-label="Hapus ${m.en}">Hapus</button></div>`).join("")}</div>`:`<p class="sub">Belum ada kata tambahan. Tambahkan kata yang kamu temui di sekolah.</p>`}
+function my(){
+ view.innerHTML=`<div class="tcard"><h3>Tambah kata sendiri</h3><p class="sub">Tambahkan kata yang kamu temui di sekolah. Kata akan masuk ke kartu, tab Ulang, latihan, dan Kamus.</p><div class="fields" style="margin-top:12px"><input class="search" id="myen" data-my="1" placeholder="Kata atau frasa Inggris" autocomplete="off"><input class="search" id="myid" data-my="1" placeholder="Arti (Bahasa Indonesia)" autocomplete="off"><select id="mylv" aria-label="Level">${TL.map(l=>`<option ${l==="B2"?"selected":""}>${l}</option>`).join("")}</select><input class="search" id="myex" data-my="1" placeholder="Contoh kalimat (boleh kosong)" autocomplete="off"></div><div class="center" style="margin-top:12px"><button class="btn pri" data-a="mysave" style="padding:12px 28px">Simpan kata</button></div><p class="bkm" id="mym" role="status"></p></div><div class="tcard"><h4>Kata saya (${MY.length})</h4><div id="mylist"></div></div>`;mylist()}
+function mysave(){
+ const m=$("#mym"),en=cl($("#myen").value,60),id=cl($("#myid").value,80),ex=cl($("#myex").value,200),lv=$("#mylv").value;
+ if(!en||!id){m.textContent="Isi kata Inggris dan artinya dulu.";return}
+ if(ALL.some(w=>w.en.toLowerCase()===en.toLowerCase())){m.textContent="Kata ini sudah ada di kosakata.";return}
+ const arr=MY.concat([{en,id,ex,lv}]);saveMine(arr);loadMine(arr);fillCats();hdr();
+ ["myen","myid","myex"].forEach(i=>$("#"+i).value="");$("#myen").focus();
+ m.textContent=`"${en}" ditambahkan. Kata ini akan muncul sebagai kata baru di tab Ulang.`;mylist();toast("Kata ditambahkan")}
+view.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.dataset&&e.target.dataset.my){e.preventDefault();mysave()}});
 let sx=0;
 view.addEventListener("touchstart",e=>{sx=e.touches[0].clientX},{passive:true});
 view.addEventListener("touchend",e=>{if(tab!=="card")return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>70)go(dx<0?1:-1)});
