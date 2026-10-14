@@ -156,6 +156,13 @@ main{max-width:1120px}
 .pg{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:18px 0 8px;color:var(--mute);font-size:15px}
 .pg .btn{padding:6px 16px}
 .scene{user-select:none;-webkit-user-select:none}
+.chips{grid-template-columns:repeat(6,1fr)}.chip{padding:8px 2px}
+.lvs{background:var(--card);border:1px solid var(--line);border-radius:16px;margin-bottom:12px;box-shadow:var(--sh);padding:0 14px 14px}
+.lvs summary{cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:14px 0;font:600 18px Fredoka,Nunito,sans-serif;list-style:none}
+.lvs summary::-webkit-details-marker{display:none}
+.lvs summary b::before{content:"▸ "}.lvs[open] summary b::before{content:"▾ "}
+.lvs summary span{font:400 14px Nunito,sans-serif;color:var(--mute);text-align:right}
+.lvs h4{margin:14px 0 8px;font-size:15px;color:var(--pri)}
 </style>
 </head>
 <body>
@@ -172,6 +179,7 @@ main{max-width:1120px}
     <button data-tab="srs">Ulang</button>
     <button data-tab="quiz">Latihan</button>
     <button data-tab="list">Daftar</button>
+    <button data-tab="dict">Kamus</button>
     <button data-tab="tpl">Template</button>
   </div>
   <div id="view"></div>
@@ -225,7 +233,15 @@ const RAW={
 "B2 · Pengelolaan kelas":"Seating plan=Denah tempat duduk;Routine=Rutinitas;Transition=Transisi kegiatan;Warning=Peringatan;Consequence=Konsekuensi;Reward=Hadiah;Praise=Pujian;Calm corner=Sudut tenang;Disruption=Gangguan;Noise level=Tingkat kebisingan;Settle down=Menenangkan diri;Quiet signal=Isyarat hening;Classroom agreement=Kesepakatan kelas;Behaviour chart=Bagan perilaku;Positive reinforcement=Penguatan positif;Redirect=Mengarahkan kembali;Circulate=Berkeliling kelas;Pace=Kecepatan belajar;Time-out=Jeda tenang;Participation=Partisipasi",
 "B2 · Pendidikan inklusif":"Special needs=Kebutuhan khusus;Learning difficulty=Kesulitan belajar;Dyslexia=Disleksia;ADHD=ADHD;Autism=Autisme;Support plan=Rencana dukungan;Accessibility=Aksesibilitas;Adjustment=Penyesuaian;Learning support=Pendampingan belajar;Counsellor=Konselor;Referral=Rujukan;Confidential=Rahasia;Sensitive=Sensitif;Diagnosis=Diagnosis;Therapy=Terapi;Early intervention=Intervensi dini;Equal opportunity=Kesempatan setara;Fair=Adil;Barrier=Hambatan;Inclusion=Inklusi",
 "C1 · Pembelajaran & psikologi":"Cognition=Kognisi;Motivation=Motivasi;Autonomy=Otonomi;Agency=Kemandirian bertindak;Growth mindset=Pola pikir bertumbuh;Intrinsic=Dari dalam diri;Extrinsic=Dari luar diri;Self-regulation=Pengaturan diri;Social-emotional learning=Pembelajaran sosial-emosional;Critical reflection=Refleksi kritis;Holistic=Holistik;Inquiry-based=Berbasis penyelidikan;Transferable skills=Keterampilan lintas bidang;Lifelong learning=Belajar sepanjang hayat;Deep understanding=Pemahaman mendalam;Cognitive development=Perkembangan kognitif;Learning style=Gaya belajar;Prior attainment=Capaian sebelumnya;Pedagogy=Pedagogi;Curiosity-driven=Didorong rasa ingin tahu",
-"C1 · Kalimat kepemimpinan PIC":"I will coordinate with the team and report back.=Saya akan berkoordinasi dengan tim dan melapor kembali.;Let's set clear priorities for this term.=Mari tetapkan prioritas yang jelas untuk semester ini.;I would like to delegate this task to you.=Saya ingin mendelegasikan tugas ini kepada Anda.;We need to monitor progress on a regular basis.=Kita perlu memantau kemajuan secara berkala.;Could we agree on a realistic timeline?=Bisakah kita sepakati jadwal yang realistis?;I will follow up with everyone by Friday.=Saya akan menindaklanjuti ke semua orang sebelum Jumat.;Please share your updates before the meeting.=Mohon bagikan perkembangan Anda sebelum rapat.;Let's review what worked and what did not.=Mari kita tinjau apa yang berhasil dan tidak.;I appreciate everyone's effort and commitment.=Saya menghargai usaha dan komitmen semua orang.;We should document our decisions clearly.=Kita sebaiknya mendokumentasikan keputusan dengan jelas.;Who is responsible for the next step?=Siapa yang bertanggung jawab atas langkah berikutnya?;I will escalate this issue if necessary.=Saya akan mengeskalasi masalah ini jika perlu.;Let's make sure everyone is on the same page.=Mari pastikan semua orang sepemahaman.;Our priority is to keep students safe and engaged.=Prioritas kita menjaga murid tetap aman dan terlibat.;Thank you all for your flexibility this week.=Terima kasih atas fleksibilitas semuanya minggu ini."
+"C1 · Kalimat kepemimpinan PIC":"I will coordinate with the team and report back.=Saya akan berkoordinasi dengan tim dan melapor kembali.;Let's set clear priorities for this term.=Mari tetapkan prioritas yang jelas untuk semester ini.;I would like to delegate this task to you.=Saya ingin mendelegasikan tugas ini kepada Anda.;We need to monitor progress on a regular basis.=Kita perlu memantau kemajuan secara berkala.;Could we agree on a realistic timeline?=Bisakah kita sepakati jadwal yang realistis?;I will follow up with everyone by Friday.=Saya akan menindaklanjuti ke semua orang sebelum Jumat.;Please share your updates before the meeting.=Mohon bagikan perkembangan Anda sebelum rapat.;Let's review what worked and what did not.=Mari kita tinjau apa yang berhasil dan tidak.;I appreciate everyone's effort and commitment.=Saya menghargai usaha dan komitmen semua orang.;We should document our decisions clearly.=Kita sebaiknya mendokumentasikan keputusan dengan jelas.;Who is responsible for the next step?=Siapa yang bertanggung jawab atas langkah berikutnya?;I will escalate this issue if necessary.=Saya akan mengeskalasi masalah ini jika perlu.;Let's make sure everyone is on the same page.=Mari pastikan semua orang sepemahaman.;Our priority is to keep students safe and engaged.=Prioritas kita menjaga murid tetap aman dan terlibat.;Thank you all for your flexibility this week.=Terima kasih atas fleksibilitas semuanya minggu ini.",
+"A2 · Angka & ukuran":"Zero=Nol;Twenty=Dua puluh;Hundred=Seratus;Thousand=Seribu;Half=Setengah;Double=Dua kali lipat;Many=Banyak;Few=Sedikit;Some=Beberapa;Every=Setiap;Length=Panjang;Width=Lebar;Height=Ketinggian;Weight=Bobot;Heavy=Berat;Light=Ringan;Full=Penuh;Empty=Kosong;Wide=Luas;Narrow=Sempit",
+"A2 · Makanan & dapur":"Breakfast=Sarapan;Dinner=Makan malam;Snack=Camilan;Vegetable=Sayuran;Fruit=Buah;Rice=Nasi;Noodles=Mi;Soup=Sup;Spoon=Sendok;Fork=Garpu;Knife=Pisau;Plate=Piring;Bowl=Mangkuk;Cup=Cangkir;Bottle=Botol;Sugar=Gula;Salt=Garam;Spicy=Pedas;Sweet=Manis;Delicious=Lezat",
+"B1 · Kata keterangan":"Quite=Cukup;Rather=Agak;Almost=Hampir;Especially=Khususnya;Probably=Kemungkinan besar;Perhaps=Barangkali;Definitely=Pasti;Actually=Sebenarnya;Obviously=Jelas sekali;Fortunately=Untungnya;Unfortunately=Sayangnya;Hardly=Hampir tidak;Nearly=Nyaris;Exactly=Persis;Absolutely=Mutlak;Carefully=Dengan hati-hati;Quickly=Dengan cepat;Properly=Dengan benar;Clearly=Dengan jelas;Slightly=Sedikit saja",
+"B1 · Kata benda abstrak":"Advice=Saran;Information=Informasi;Knowledge=Pengetahuan;Experience=Pengalaman;Opportunity=Kesempatan;Challenge=Tantangan;Success=Keberhasilan;Failure=Kegagalan;Chance=Peluang;Habit=Kebiasaan;Memory=Ingatan;Mind=Pikiran;Attitude=Sikap;Effort=Upaya;Reason=Alasan;Purpose=Tujuan;Value=Nilai luhur;Quality=Mutu;Change=Perubahan;Courage=Keberanian",
+"B2 · Kolokasi lanjutan":"Make an effort=Berupaya;Take a risk=Mengambil risiko;Draw a comparison=Membuat perbandingan;Reach a conclusion=Mencapai kesimpulan;Make a difference=Membawa perubahan;Raise a question=Mengajukan pertanyaan;Play a role=Berperan;Meet a need=Memenuhi kebutuhan;Take action=Mengambil tindakan;Provide support=Memberi dukungan;Gain experience=Memperoleh pengalaman;Face a challenge=Menghadapi tantangan;Express an opinion=Menyatakan pendapat;Share ideas=Berbagi ide;Pay a visit=Berkunjung;Build a relationship=Membangun hubungan;Set a deadline=Menetapkan tenggat;Break the rules=Melanggar aturan;Keep a promise=Menepati janji;Lose track of time=Lupa waktu",
+"B2 · Kalimat rapat & presentasi":"Let me begin by outlining today's agenda.=Mari saya mulai dengan garis besar agenda hari ini.;I'd like to move on to the next point.=Saya ingin lanjut ke poin berikutnya.;Could you walk us through the data?=Bisakah Anda menjelaskan data tersebut secara runtut?;As you can see on this slide, scores have improved.=Seperti terlihat di slide ini, nilai meningkat.;That brings me to my final point.=Itu membawa saya ke poin terakhir.;Does anyone have any questions or comments?=Adakah yang punya pertanyaan atau komentar?;Let's take a short break and then continue.=Mari istirahat sebentar lalu lanjut.;I'll send everyone a summary after the meeting.=Saya akan kirim ringkasan ke semua orang setelah rapat.;We're running a little behind schedule.=Kita agak terlambat dari jadwal.;Let me share my screen so you can follow along.=Biar saya bagikan layar agar Anda bisa mengikuti.;Thank you all for joining us today.=Terima kasih semuanya sudah bergabung hari ini.;Could we go back to the previous slide?=Bisakah kita kembali ke slide sebelumnya?;I'd like to hear your thoughts on this proposal.=Saya ingin mendengar pendapat Anda tentang proposal ini.;We have reached the end of our agenda.=Kita telah sampai di akhir agenda.;Let's schedule a follow-up meeting next week.=Mari jadwalkan rapat lanjutan minggu depan.",
+"C1 · Kosakata akademik":"Framework=Kerangka kerja;Perspective=Sudut pandang;Concept=Konsep;Context=Konteks;Principle=Prinsip;Approach=Pendekatan;Assumption=Asumsi;Implication=Implikasi;Rationale=Dasar pemikiran;Methodology=Metodologi;Paradigm=Paradigma;Phenomenon=Fenomena;Indicator=Indikator;Variable=Variabel;Correlation=Korelasi;Dimension=Dimensi;Domain=Ranah;Scope=Cakupan;Constraint=Kendala;Insight=Wawasan;Synthesis=Sintesis;Validity=Kesahihan;Nuance=Nuansa;Premise=Premis;Hierarchy=Hierarki",
+"C2 · Nuansa & ungkapan halus":"Ephemeral=Sementara dan singkat;Ubiquitous=Ada di mana-mana;Meticulous=Sangat teliti;Pragmatic=Pragmatis;Eloquent=Fasih berbicara;Tenacious=Tak mudah lepas;Candid=Terus terang;Prudent=Bijaksana berhati-hati;Resilience=Daya lenting;Ambivalent=Bimbang;Empathetic=Berempati;Nuanced=Bernuansa;Scrutinise=Menelisik;Corroborate=Menguatkan dengan bukti;Perpetuate=Melanggengkan;Exacerbate=Memperparah;Alleviate=Meringankan;Undermine=Melemahkan;Underscore=Menegaskan;Elucidate=Menerangkan;Bolster=Menopang;Pivotal=Sangat menentukan;Paramount=Terpenting;Inherent=Melekat;Tangible=Nyata terukur;Profound=Mendalam;Seamless=Mulus;Discerning=Jeli;Judicious=Arif;Lucid=Jernih"
 };
 const ALL=[];
 for(const k in RAW)RAW[k].split(";").forEach(t=>{const[a,b,x]=t.split("=");ALL.push({en:a,id:b,ex:x||"",cat:k})});
@@ -238,7 +254,7 @@ const day=d=>d.toISOString().slice(0,10);
 function xp(n){const t=day(new Date());if(meta.last!==t){meta.streak=meta.last===day(new Date(Date.now()-864e5))?meta.streak+1:1;meta.last=t}meta.xp+=n;save();hdr()}
 const $=s=>document.querySelector(s),view=$("#view"),sel=$("#cat");
 let tab="card",lvl="Semua",cat="Semua",idx=0,flip=false,quiz=null,qm=0,q="";
-const LV=["Semua","A2","B1","B2","C1"],lvOf=w=>w.cat.slice(0,2);
+const LV=["Semua","A2","B1","B2","C1","C2"],lvOf=w=>w.cat.slice(0,2);
 const pool=()=>ALL.filter(w=>(lvl==="Semua"||lvOf(w)===lvl)&&(cat==="Semua"||w.cat===cat));
 const shuf=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
 function say(t){try{const u=new SpeechSynthesisUtterance(t);u.lang="en-US";u.rate=.85;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
@@ -248,14 +264,14 @@ const pct=f=>{const p=ALL.filter(f);return p.length?Math.round(p.filter(w=>known
 function hdr(){
  const n=ALL.filter(w=>known[w.en]).length,r=n/ALL.length;
  $("#sprout").textContent=r<.1?"🌱":r<.35?"🌿":r<.7?"🪴":"🌳";
- $("#sub").textContent=`${ALL.length} kata tersedia, target 1000. Kurikulum Cambridge, dari A2 menuju C1.`;
+ $("#sub").textContent=`${ALL.length} kata tersedia, target 1000. Kurikulum Cambridge, dari A2 menuju C2.`;
  {const t=dstr(0),c=Object.values(srs).filter(v=>v.d<=t).length;$('[data-tab="srs"]').textContent="Ulang"+(c?" · "+c:"")}
  {const pc=Math.round(r*100);$("#stats").innerHTML=`<div class="c2 rc"><div class="ring" style="--p:${pc}"><b>${pc}%</b></div><div><small>Progres</small><br><strong>${n}/${ALL.length}</strong><br><span>kata dikuasai</span></div></div><div class="c2"><small>Streak</small><strong>🔥 ${meta.streak}</strong><span>hari berturut</span></div><div class="c2"><small>Poin</small><strong>⭐ ${meta.xp}</strong><span>XP terkumpul</span></div><div class="c2"><small>Target</small><strong>1000</strong><span>kata tersedia: ${ALL.length}</span></div>`}
  $("#lv").innerHTML=LV.map(l=>`<button class="chip ${l===lvl?"on":""}" data-lv="${l}">${l}<small>${pct(w=>l==="Semua"||lvOf(w)===l)}%</small></button>`).join("");
 }
 function fillCats(){const cs=["Semua",...Object.keys(RAW).filter(c=>lvl==="Semua"||c.startsWith(lvl)).sort((a,b)=>LV.indexOf(a.slice(0,2))-LV.indexOf(b.slice(0,2)))];sel.innerHTML=cs.map(c=>`<option>${c}</option>`).join("");if(!cs.includes(cat))cat="Semua";sel.value=cat}
 function progress(){const p=pool(),n=p.filter(w=>known[w.en]).length;return `<div class="bar"><i style="width:${p.length?n/p.length*100:0}%"></i></div><div class="meta"><span>Hafal: ${n} dari ${p.length}</span></div>`}
-function render(){document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab===tab));hdr();$(".row").style.display=$("#lv").style.display=tab==="tpl"?"none":"";tab==="card"?card():tab==="srs"?rv():tab==="quiz"?qz():tab==="list"?list():tpl()}
+function render(){document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab===tab));hdr();$(".row").style.display=$("#lv").style.display=tab==="tpl"||tab==="dict"?"none":"";tab==="card"?card():tab==="srs"?rv():tab==="quiz"?qz():tab==="list"?list():tab==="dict"?dict():tpl()}
 function card(){
  const p=pool();if(idx>=p.length)idx=0;const w=p[idx];
  view.innerHTML=`<div id="prog">${progress()}</div><div class="scene in" data-a="flip" role="button" tabindex="0" aria-label="Balik kartu"><div class="card ${flip?"flipped":""}">
@@ -560,6 +576,16 @@ let mx=null,drag=false;
 view.addEventListener("mousedown",e=>{mx=e.target.closest(".scene")?e.clientX:null});
 view.addEventListener("mouseup",e=>{if(mx===null||tab!=="card"){mx=null;return}const dx=e.clientX-mx;mx=null;if(Math.abs(dx)>80){drag=true;setTimeout(()=>drag=false,80);go(dx<0?1:-1)}});
 view.addEventListener("click",e=>{if(drag){drag=false;e.stopImmediatePropagation();e.preventDefault()}},true);
+let dq="";
+const LN={A2:"Dasar",B1:"Menengah",B2:"Menengah atas",C1:"Mahir",C2:"Penguasaan penuh"};
+function dict(){view.innerHTML=`<input class="search" id="dq" placeholder="Cari di semua ${ALL.length} kata..." aria-label="Cari"><p class="sub" style="margin-bottom:10px">Semua kosakata dari level paling dasar sampai paling tinggi. Ketuk kotak untuk mendengar pelafalannya.</p><div id="dbody"></div>`;$("#dq").value=dq;dbody()}
+function dbody(){const t=dq.toLowerCase();
+ $("#dbody").innerHTML=LV.slice(1).map(l=>{
+  const tot=ALL.filter(w=>lvOf(w)===l),ws=tot.filter(w=>!t||w.en.toLowerCase().includes(t)||w.id.toLowerCase().includes(t));
+  if(!ws.length)return "";
+  const kn=tot.filter(w=>known[w.en]).length,cs=[...new Set(ws.map(w=>w.cat))];
+  return `<details class="lvs" ${t||l==="A2"?"open":""}><summary><b>Level ${l} · ${LN[l]}</b><span>${tot.length} kata · hafal ${kn}</span></summary>${cs.map(c=>`<h4>${c.slice(5)}</h4><div class="wg mini">${ws.filter(w=>w.cat===c).map(w=>`<button class="wb ${known[w.en]?"kn":""}" data-a="sayw" data-w="${w.en}"><b>${w.en}</b><span>${w.id}</span></button>`).join("")}</div>`).join("")}</details>`}).join("")||"<p class='sub'>Tidak ada kata yang cocok.</p>"}
+view.addEventListener("input",e=>{if(e.target.id==="dq"){dq=e.target.value;dbody()}});
 let sx=0;
 view.addEventListener("touchstart",e=>{sx=e.touches[0].clientX},{passive:true});
 view.addEventListener("touchend",e=>{if(tab!=="card")return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>70)go(dx<0?1:-1)});
