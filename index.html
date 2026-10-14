@@ -205,6 +205,9 @@ main{padding-bottom:100px}
 .toast{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
 .hero{padding:14px 16px}.hero .sub{display:none}.hero h1{font-size:22px}.hero .sprout{width:56px;height:56px;font-size:30px}
 }
+.chart{width:100%;height:auto;display:block;color:var(--ink)}
+.sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:14px}
+.tb{grid-template-columns:110px 1fr 44px}
 </style>
 </head>
 <body>
@@ -227,6 +230,7 @@ main{padding-bottom:100px}
     <button data-tab="list">Daftar</button>
     <button data-tab="dict">Kamus</button>
     <button data-tab="test">Tes Level</button>
+    <button data-tab="prog">Kemajuan</button>
     <button data-tab="my">Kata Saya</button>
     <button data-tab="note">Catatan</button>
     <button data-tab="tpl">Template</button>
@@ -337,7 +341,7 @@ function hdr(){
 }
 function fillCats(){const cs=["Semua",...Object.keys(RAW).filter(c=>lvl==="Semua"||c.startsWith(lvl)).sort((a,b)=>LV.indexOf(a.slice(0,2))-LV.indexOf(b.slice(0,2)))];sel.innerHTML=cs.map(c=>`<option>${c}</option>`).join("");if(!cs.includes(cat))cat="Semua";sel.value=cat}
 function progress(){const p=pool(),n=p.filter(w=>known[w.en]).length;return `<div class="bar"><i style="width:${p.length?n/p.length*100:0}%"></i></div><div class="meta"><span>Hafal: ${n} dari ${p.length}</span></div>`}
-function render(){audioStop(true);lfStop();navUI();hdr();$(".row").style.display=$("#lv").style.display=tab==="tpl"||tab==="dict"||tab==="test"||tab==="my"||tab==="note"?"none":"";tab==="card"?card():tab==="srs"?rv():tab==="quiz"?qz():tab==="list"?list():tab==="dict"?dict():tab==="test"?tst():tab==="my"?my():tab==="audio"?audio():tab==="note"?note():tab==="lafal"?lafal():tpl()}
+function render(){audioStop(true);lfStop();navUI();hdr();$(".row").style.display=$("#lv").style.display=tab==="tpl"||tab==="dict"||tab==="test"||tab==="my"||tab==="note"||tab==="prog"?"none":"";tab==="card"?card():tab==="srs"?rv():tab==="quiz"?qz():tab==="list"?list():tab==="dict"?dict():tab==="test"?tst():tab==="my"?my():tab==="audio"?audio():tab==="note"?note():tab==="lafal"?lafal():tab==="prog"?prog():tpl()}
 function card(){
  const p=pool();if(idx>=p.length)idx=0;const w=p[idx];
  view.innerHTML=`<div id="prog">${progress()}</div><div class="scene in" data-a="flip" role="button" tabindex="0" aria-label="Balik kartu"><div class="card ${flip?"flipped":""}">
@@ -741,7 +745,7 @@ function finish(){
  ts.qs.forEach((q,n)=>{const c=ts.ans[n]===q.a?1:0;ok+=c;pl[q.l][0]+=c;pl[q.l][1]++;ps[q.s][0]+=c;ps[q.s][1]++});
  let est="A1";for(const l of TL){if(pl[l][1]&&pl[l][0]/pl[l][1]>=.6)est=l;else break}
  ts.res={est,pl,ps,tot:Math.round(ok/ts.qs.length*100)};
- TH.push({d:dstr(0),est,tot:ts.res.tot});TH=TH.slice(-10);
+ TH.push({d:dstr(0),est,tot:ts.res.tot,ps:{v:pc(ps.v),g:pc(ps.g),r:pc(ps.r),l:pc(ps.l)}});TH=TH.slice(-10);
  try{localStorage.setItem(KEY+"-tests",JSON.stringify(TH))}catch(e){}
  xp(30)}
 function tst(){
@@ -831,7 +835,7 @@ view.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.dataset&&e.targ
 let NOTE="",bedit=false,ncat="";
 try{NOTE=localStorage.getItem(KEY+"-note")||""}catch(e){}
 const MSG0="Semangat terus belajar Bahasa Inggrisnya ya, Michelle! Kamu guru yang hebat, dan sedikit demi sedikit setiap hari akan membawamu ke level berikutnya.";
-function tick(en){const t=dstr(0);if(!meta.td||meta.td.d!==t)meta.td={d:t,w:[],ok:0};if(!meta.td.w.includes(en))meta.td.w.push(en);
+function tick(en){const t=dstr(0);if(!meta.td||meta.td.d!==t)meta.td={d:t,w:[],ok:0};if(!meta.td.w.includes(en))meta.td.w.push(en);meta.h=meta.h||{};meta.h[t]=meta.td.w.length;{const ks=Object.keys(meta.h).sort();while(ks.length>90)delete meta.h[ks.shift()]}
  if(!meta.td.ok&&meta.td.w.length>=(meta.goal||10)){meta.td.ok=1;meta.xp+=15;toast("Target harian tercapai! +15 XP");confetti()}}
 function board(){const el=$("#board");if(!el)return;
  const ev=meta.ev,days=ev&&ev.d?Math.round((new Date(ev.d+"T00:00:00")-new Date(dstr(0)+"T00:00:00"))/864e5):null;
@@ -929,7 +933,7 @@ function lafal(){
   fb=`<div class="tcard center"><div class="sc ${c.score>=80?"good":"weak"}">${c.score}%</div><p>${c.score>=90?"Sangat jelas!":c.score>=80?"Jelas!":c.score>=60?"Hampir tepat. Coba lagi pelan-pelan.":"Belum terbaca. Dengarkan contoh lalu coba lagi."}</p><p class="sub">Browser mendengar: <b>${esc(c.heard)}</b></p>${tw.length>1?`<p>${tw.map(x=>`<span class="${hw.has(nz(x))?"okw":"badw"}">${esc(x)}</span>`).join(" ")}</p>`:""}</div>`}
  view.innerHTML=`<div class="bar"><i style="width:${lf.i/T*100}%"></i></div><div class="meta"><span>Soal ${lf.i+1} dari ${T}</span><span>Percobaan ${lf.tries}</span></div><div class="tcard center"><small>${w.cat}</small><div class="en${w.en.length>20?" long":""}">${w.en}</div><div class="id" style="color:var(--pri)">${w.id}</div><div style="margin-top:12px"><button class="say" data-a="lsay">🔊 Dengarkan contoh</button></div></div><div class="center" style="margin:14px 0">${SR?`<button class="mic ${lf.on?"live":""}" data-a="lmic">${lf.on?"🎤 Mendengarkan... bicara sekarang":c?"🎤 Coba lagi":"🎤 Tekan lalu ucapkan"}</button>`:`<div class="acts"><button class="btn" data-a="lself" data-v="0">Perlu latihan</button><button class="btn ok" data-a="lself" data-v="1">Sudah mirip</button></div>`}</div>${fb}<div class="acts"><button class="btn" data-a="lskip">Lewati</button><button class="btn pri" data-a="lnext" ${c?"":"disabled"}>${lf.i+1===T?"Selesai":"Lanjut"}</button></div>`}
 const G=[["belajar","📖","Belajar"],["latihan","✍️","Latihan"],["tes","🎯","Tes"],["alat","🧰","Alat"]];
-const TG={card:"belajar",srs:"belajar",audio:"belajar",list:"belajar",dict:"belajar",quiz:"latihan",lafal:"latihan",note:"latihan",test:"tes",my:"alat",tpl:"alat"};
+const TG={card:"belajar",srs:"belajar",audio:"belajar",list:"belajar",dict:"belajar",quiz:"latihan",lafal:"latihan",note:"latihan",test:"tes",prog:"tes",my:"alat",tpl:"alat"};
 const gtab={belajar:"card",latihan:"quiz",tes:"test",alat:"my"};
 function navUI(){const g=TG[tab]||"belajar";gtab[g]=tab;
  $("#gnav").innerHTML=G.map(x=>`<button class="${x[0]===g?"on":""}" data-g="${x[0]}" aria-label="${x[2]}"><span aria-hidden="true">${x[1]}</span>${x[2]}</button>`).join("");
@@ -937,6 +941,26 @@ function navUI(){const g=TG[tab]||"belajar";gtab[g]=tab;
  $(".tabs").style.display=n>1?"":"none";
  const a=g==="alat"?"":"none";$(".bk").style.display=a;$("#reset").style.display=a}
 $("#gnav").addEventListener("click",e=>{const b=e.target.closest("[data-g]");if(b){tab=gtab[b.dataset.g];render();window.scrollTo(0,0)}});
+function barsSVG(vals,labs){const W=320,H=130,m=8,mx=Math.max(1,...vals),bw=(W-m)/vals.length;
+ return `<svg viewBox="0 0 ${W} ${H+26}" class="chart" role="img" aria-label="Grafik batang">${vals.map((v,i)=>{const h=Math.round(v/mx*(H-22)),x=m+i*bw+bw*.15,c=x+bw*.35;return `<rect x="${x}" y="${H-h}" width="${bw*.7}" height="${Math.max(h,v?2:0)}" rx="3" style="fill:var(--pri)"/><text x="${c}" y="${H-h-4}" text-anchor="middle" font-size="10" fill="currentColor">${v||""}</text><text x="${c}" y="${H+14}" text-anchor="middle" font-size="9" fill="currentColor" opacity=".7">${labs[i]}</text>`}).join("")}<line x1="${m}" y1="${H}" x2="${W}" y2="${H}" stroke="currentColor" opacity=".25"/></svg>`}
+function lineSVG(h){const W=320,H=120,n=h.length,X=i=>n<2?W/2:24+i*(W-48)/(n-1),Y=v=>H-v/100*(H-16);
+ return `<svg viewBox="0 0 ${W} ${H+36}" class="chart" role="img" aria-label="Tren skor tes level"><line x1="16" y1="${H}" x2="${W-10}" y2="${H}" stroke="currentColor" opacity=".25"/>${n>1?`<path d="${h.map((p,i)=>(i?"L":"M")+X(i)+" "+Y(p.tot)).join(" ")}" fill="none" style="stroke:var(--pri)" stroke-width="2.5"/>`:""}${h.map((p,i)=>`<circle cx="${X(i)}" cy="${Y(p.tot)}" r="4.5" style="fill:var(--pri)"/><text x="${X(i)}" y="${Y(p.tot)-9}" text-anchor="middle" font-size="11" fill="currentColor">${p.tot}%</text><text x="${X(i)}" y="${H+14}" text-anchor="middle" font-size="10" fill="currentColor" opacity=".8">${esc(String(p.est))}</text><text x="${X(i)}" y="${H+27}" text-anchor="middle" font-size="9" fill="currentColor" opacity=".55">${esc(String(p.d).slice(5))}</text>`).join("")}</svg>`}
+function radarSVG(vals,labs){const cx=150,cy=108,R=68,n=vals.length,P=(i,r)=>[cx+r*Math.sin(2*Math.PI*i/n),cy-r*Math.cos(2*Math.PI*i/n)],ring=f=>vals.map((_,i)=>P(i,R*f).join(",")).join(" ");
+ return `<svg viewBox="0 0 300 220" class="chart" role="img" aria-label="Peta kemampuan">${[.33,.66,1].map(f=>`<polygon points="${ring(f)}" fill="none" stroke="currentColor" opacity=".2"/>`).join("")}${vals.map((_,i)=>{const q=P(i,R);return `<line x1="${cx}" y1="${cy}" x2="${q[0]}" y2="${q[1]}" stroke="currentColor" opacity=".2"/>`}).join("")}<polygon points="${vals.map((v,i)=>P(i,R*v/100).join(",")).join(" ")}" style="fill:var(--pri);fill-opacity:.25;stroke:var(--pri)" stroke-width="2"/>${labs.map((l,i)=>{const q=P(i,R+18);return `<text x="${q[0]}" y="${q[1]+4}" text-anchor="middle" font-size="12" fill="currentColor">${l} ${vals[i]}%</text>`}).join("")}</svg>`}
+function prog(){
+ const t=dstr(0),h=Object.assign({},meta.h||{});if(meta.td&&meta.td.d===t)h[t]=meta.td.w.length;
+ const days=[...Array(14)].map((_,i)=>dstr(i-13)),vals=days.map(d=>h[d]||0),active=Object.keys(h).filter(k=>h[k]>0).length,tot14=vals.reduce((a,b)=>a+b,0);
+ const kn=ALL.filter(w=>known[w.en]).length,sv=Object.values(srs);
+ const fc=[...Array(7)].map((_,i)=>sv.filter(v=>i===0?v.d<=t:v.d===dstr(i)).length),fl=[...Array(7)].map((_,i)=>i===0?"hari ini":dstr(i).slice(8));
+ const last=[...TH].reverse().find(x=>x.ps),lv=Object.values(LH).filter(x=>typeof x==="number"),la=lv.length?Math.round(lv.reduce((a,b)=>a+b,0)/lv.length):0;
+ const SK=["Kosakata","Tata bahasa","Membaca","Menyimak","Lafal"],sk=last?[last.ps.v,last.ps.g,last.ps.r,last.ps.l,la]:[0,0,0,0,la];
+ const wk=last?sk.indexOf(Math.min(...sk)):-1,st=last?sk.indexOf(Math.max(...sk)):-1;
+ view.innerHTML=`<div class="sum"><div class="c2"><small>Kata dikuasai</small><strong>${kn}</strong><span>dari ${ALL.length}</span></div><div class="c2"><small>Hari aktif</small><strong>${active}</strong><span>${tot14} kata dalam 14 hari</span></div><div class="c2"><small>Streak</small><strong>🔥 ${meta.streak}</strong><span>hari berturut</span></div><div class="c2"><small>Total poin</small><strong>⭐ ${meta.xp}</strong><span>XP</span></div></div>
+ <div class="tcard"><h4>Aktivitas 14 hari terakhir</h4>${barsSVG(vals,days.map(d=>d.slice(8)))}<p class="sub">Angka di atas batang adalah jumlah kata berbeda yang dipelajari per hari. Riwayat harian mulai tercatat sejak fitur ini ada.</p></div>
+ <div class="tcard"><h4>Peta kemampuan</h4>${radarSVG(sk,SK)}<p class="sub">${last?`Dari tes level ${esc(String(last.d))}${la?" dan rata-rata skor lafal":""}. ${wk>=0?`Terkuat: <b>${SK[st]}</b>. Perlu ditingkatkan: <b>${SK[wk]}</b>.`:""}`:"Kerjakan Tes Level (menu Tes) untuk mengisi peta ini. Skor lafal terisi dari tab Lafal."}</p></div>
+ <div class="tcard"><h4>Tren Tes Level</h4>${TH.length?lineSVG(TH.slice(-8)):`<p class="sub">Belum ada tes. Kerjakan Tes Level, lalu ulangi tiap dua minggu untuk melihat kemajuannya.</p>`}</div>
+ <div class="tcard"><h4>Penguasaan per level</h4>${LV.slice(1).map(l=>{const a=ALL.filter(w=>lvOf(w)===l),k=a.filter(w=>known[w.en]).length;return tbar(`${l} · ${k}/${a.length}`,a.length?Math.round(k/a.length*100):0)}).join("")}</div>
+ <div class="tcard"><h4>Ulangan 7 hari ke depan</h4>${barsSVG(fc,fl)}<p class="sub">Jumlah kata yang dijadwalkan muncul di tab Ulang. Hari ini sudah termasuk yang tertunda.</p></div>`}
 let sx=0;
 view.addEventListener("touchstart",e=>{sx=e.touches[0].clientX},{passive:true});
 view.addEventListener("touchend",e=>{if(tab!=="card")return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>70)go(dx<0?1:-1)});
