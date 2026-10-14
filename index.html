@@ -150,6 +150,12 @@ main{max-width:1120px}
 .wb b{font-size:15px}.wb span{font-size:13px;color:var(--mute)}
 .wb.kn{background:var(--okbg);border-color:var(--ok)}.wb.cur{outline:2px solid var(--pri)}
 #tpls{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;align-items:start}.tp{margin-bottom:0}
+.nav{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin-top:12px}
+.navc{font-weight:700;color:var(--mute);text-align:center}
+.range{width:100%;accent-color:var(--pri);margin:14px 0 4px}
+.pg{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:18px 0 8px;color:var(--mute);font-size:15px}
+.pg .btn{padding:6px 16px}
+.scene{user-select:none;-webkit-user-select:none}
 </style>
 </head>
 <body>
@@ -256,7 +262,7 @@ function card(){
  <div class="face front"><div class="tag">${w.cat}</div><div class="en${w.en.length>20?" long":""}">${w.en}</div><button class="say" data-a="say">🔊 Dengarkan</button><div class="hint">Ketuk kartu untuk melihat arti</div></div>
  <div class="face back"><div class="tag">${w.cat}</div><div class="id">${w.id}</div>${w.ex?`<div class="ex">${w.ex}</div><button class="say" data-a="sayex">🔊 Dengar kalimat</button>`:""}</div></div></div>
  <div class="acts"><button class="btn" data-a="again">Masih lupa</button><button class="btn ok" data-a="know">Sudah hafal</button></div>
- <div class="meta" style="margin-top:12px"><span>Kartu ${idx+1} dari ${p.length}</span><span>${known[w.en]?"✅ Sudah kamu hafal":"Geser atau tekan ➡️ untuk lanjut"}</span></div><div class="meta" style="margin-top:18px"><span>Kata di tema ini (ketuk untuk membuka kartu)</span></div><div class="wg mini">${p.slice(Math.floor(idx/40)*40,Math.floor(idx/40)*40+40).map((x,j)=>{const g=Math.floor(idx/40)*40+j;return `<button class="wb ${g===idx?"cur":""} ${known[x.en]?"kn":""}" data-a="jump" data-i="${g}"><b>${x.en}</b><span>${x.id}</span></button>`}).join("")}</div>`;
+ <div class="nav"><button class="btn" data-a="cprev">◀ Sebelumnya</button><span class="navc">Kartu ${idx+1} / ${p.length}</span><button class="btn" data-a="cnext">Berikutnya ▶</button></div><input class="range" type="range" min="1" max="${p.length}" value="${idx+1}" data-r="1" aria-label="Geser untuk memilih kartu"><div class="meta"><span>${known[w.en]?"✅ Sudah kamu hafal":"Geser slider, seret kartu, atau pakai tombol panah"}</span></div><div class="pg"><button class="btn" data-a="gprev" aria-label="40 kata sebelumnya">◀</button><span>Kata ${Math.floor(idx/40)*40+1} sampai ${Math.min(Math.floor(idx/40)*40+40,p.length)} dari ${p.length} (ketuk untuk membuka)</span><button class="btn" data-a="gnext" aria-label="40 kata berikutnya">▶</button></div><div class="wg mini">${p.slice(Math.floor(idx/40)*40,Math.floor(idx/40)*40+40).map((x,j)=>{const g=Math.floor(idx/40)*40+j;return `<button class="wb ${g===idx?"cur":""} ${known[x.en]?"kn":""}" data-a="jump" data-i="${g}"><b>${x.en}</b><span>${x.id}</span></button>`}).join("")}</div>`;
 }
 function startQuiz(){quiz={qs:shuf(pool()).slice(0,10).map(w=>({w,o:shuf([w,...shuf(ALL.filter(x=>x.en!==w.en&&x.id!==w.id)).slice(0,3)])})),i:0,s:0,ans:null,miss:[]}}
 function qz(){
@@ -528,6 +534,10 @@ view.addEventListener("click",e=>{
  else if(a==="chk"){if(b.checked){known[b.dataset.w]=1;if(!srs[b.dataset.w])srs[b.dataset.w]={b:2,d:dstr(3)}}else{delete known[b.dataset.w];delete srs[b.dataset.w]}saveS();save();hdr();$("#prog").innerHTML=progress()}
  else if(a==="sayw"){say(b.dataset.w)}
  else if(a==="jump"){idx=+b.dataset.i;flip=false;card();view.scrollIntoView({block:"start"})}
+ else if(a==="cprev"){go(-1)}
+ else if(a==="cnext"){go(1)}
+ else if(a==="gprev"){const n=pool().length;idx=Math.max(0,(Math.floor(idx/40)-1)*40);flip=false;card()}
+ else if(a==="gnext"){const n=pool().length;idx=Math.min(n-1,(Math.floor(idx/40)+1)*40);flip=false;card()}
  else if(a==="ppick"){const q=px.qs[px.i],j=+b.dataset.k;px.ans=j;if(q.o[j]===q.c){px.s++;xp(5);toast("Benar! +5 XP")}else{px.miss.push(q.w);toast("Belum tepat")}pz()}
  else if(a==="padd"){px.ord.push(+b.dataset.i);pz()}
  else if(a==="prm"){px.ord.splice(+b.dataset.n,1);pz()}
@@ -544,11 +554,17 @@ view.addEventListener("click",e=>{
  else if(a==="ttr"){tr[b.dataset.n]=!tr[b.dataset.n];tpls()}
 });
 view.addEventListener("input",e=>{if(e.target.id==="q"){q=e.target.value;items()}else if(e.target.dataset.f){F[e.target.dataset.f]=e.target.value;try{localStorage.setItem(KEY+"-tpl",JSON.stringify(F))}catch(x){}tpls()}});
+view.addEventListener("input",e=>{if(e.target.dataset.r){const c=view.querySelector(".navc");if(c)c.textContent=`Kartu ${e.target.value} / ${e.target.max}`}});
+view.addEventListener("change",e=>{if(e.target.dataset.r){idx=+e.target.value-1;flip=false;card()}});
+let mx=null,drag=false;
+view.addEventListener("mousedown",e=>{mx=e.target.closest(".scene")?e.clientX:null});
+view.addEventListener("mouseup",e=>{if(mx===null||tab!=="card"){mx=null;return}const dx=e.clientX-mx;mx=null;if(Math.abs(dx)>80){drag=true;setTimeout(()=>drag=false,80);go(dx<0?1:-1)}});
+view.addEventListener("click",e=>{if(drag){drag=false;e.stopImmediatePropagation();e.preventDefault()}},true);
 let sx=0;
 view.addEventListener("touchstart",e=>{sx=e.touches[0].clientX},{passive:true});
 view.addEventListener("touchend",e=>{if(tab!=="card")return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>70)go(dx<0?1:-1)});
-document.addEventListener("keydown",e=>{if(tab!=="card"||/INPUT|SELECT|BUTTON/.test(e.target.tagName))return;
- if(e.key===" "||e.key==="Enter"){e.preventDefault();const s=view.querySelector(".scene");if(s)s.click()}
+document.addEventListener("keydown",e=>{if(tab!=="card"||/INPUT|SELECT|TEXTAREA/.test(e.target.tagName))return;
+ if(e.key===" "||e.key==="Enter"){if(e.target.tagName==="BUTTON")return;e.preventDefault();const s=view.querySelector(".scene");if(s)s.click()}
  else if(e.key==="ArrowRight")go(1);else if(e.key==="ArrowLeft")go(-1)});
 $("#lv").addEventListener("click",e=>{const b=e.target.closest("[data-lv]");if(b){lvl=b.dataset.lv;cat="Semua";idx=0;flip=false;quiz=null;px=null;rq=null;fillCats();render()}});
 document.querySelector(".tabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(b){tab=b.dataset.tab;render()}});
