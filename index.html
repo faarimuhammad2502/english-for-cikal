@@ -176,6 +176,9 @@ main{max-width:1120px}
 .bkm{color:var(--mute);font-weight:700;min-height:20px;margin:8px 0 0;font-size:14px}
 .mydel{margin-top:6px;background:var(--badbg);color:var(--bad);padding:4px 10px;font-size:13px;font-weight:700;align-self:flex-start}
 .wb small{color:var(--mute);font-size:12px}
+.chk{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:15px}
+.tag3{color:var(--mute);font-weight:700}
+#aucard{min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
 </style>
 </head>
 <body>
@@ -191,6 +194,7 @@ main{max-width:1120px}
     <button data-tab="card" class="on">Kartu</button>
     <button data-tab="srs">Ulang</button>
     <button data-tab="quiz">Latihan</button>
+    <button data-tab="audio">Audio</button>
     <button data-tab="list">Daftar</button>
     <button data-tab="dict">Kamus</button>
     <button data-tab="test">Tes Level</button>
@@ -296,7 +300,7 @@ function hdr(){
 }
 function fillCats(){const cs=["Semua",...Object.keys(RAW).filter(c=>lvl==="Semua"||c.startsWith(lvl)).sort((a,b)=>LV.indexOf(a.slice(0,2))-LV.indexOf(b.slice(0,2)))];sel.innerHTML=cs.map(c=>`<option>${c}</option>`).join("");if(!cs.includes(cat))cat="Semua";sel.value=cat}
 function progress(){const p=pool(),n=p.filter(w=>known[w.en]).length;return `<div class="bar"><i style="width:${p.length?n/p.length*100:0}%"></i></div><div class="meta"><span>Hafal: ${n} dari ${p.length}</span></div>`}
-function render(){document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab===tab));hdr();$(".row").style.display=$("#lv").style.display=tab==="tpl"||tab==="dict"||tab==="test"||tab==="my"?"none":"";tab==="card"?card():tab==="srs"?rv():tab==="quiz"?qz():tab==="list"?list():tab==="dict"?dict():tab==="test"?tst():tab==="my"?my():tpl()}
+function render(){audioStop(true);document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab===tab));hdr();$(".row").style.display=$("#lv").style.display=tab==="tpl"||tab==="dict"||tab==="test"||tab==="my"?"none":"";tab==="card"?card():tab==="srs"?rv():tab==="quiz"?qz():tab==="list"?list():tab==="dict"?dict():tab==="test"?tst():tab==="my"?my():tab==="audio"?audio():tpl()}
 function card(){
  const p=pool();if(idx>=p.length)idx=0;const w=p[idx];
  view.innerHTML=`<div id="prog">${progress()}</div><div class="scene in" data-a="flip" role="button" tabindex="0" aria-label="Balik kartu"><div class="card ${flip?"flipped":""}">
@@ -537,10 +541,11 @@ function rv(){
  <div id="rate">${rq.flip?rbtn():`<p class="center sub" style="margin-top:14px">Seberapa ingat kamu? Pilihan muncul setelah kartu dibalik.</p>`}</div>`;
 }
 let px=null;
-const segH=()=>`<div class="seg">${["Tebak arti","Dengar &amp; tebak","Isi kalimat","Susun kalimat"].map((t,i)=>`<button class="${qm===i?"on":""}" data-a="qm" data-m="${i}">${t}</button>`).join("")}</div>`;
+const segH=()=>`<div class="seg">${["Tebak arti","Dengar &amp; tebak","Isi kalimat","Susun kalimat","Ejaan"].map((t,i)=>`<button class="${qm===i?"on":""}" data-a="qm" data-m="${i}">${t}</button>`).join("")}</div>`;
 const isS=w=>/^[A-Z]/.test(w.en)&&/[.?!]$/.test(w.en)&&w.en.split(" ").length>=3;
 const bare=t=>t.replace(/[^A-Za-z']/g,"");
 function startP(){
+ if(qm===4){px={note:0,i:0,s:0,ans:null,miss:[],ord:[],val:"",said:0,qs:shuf(pool().filter(w=>!isS(w)&&!w.en.includes(" – "))).slice(0,10).map(w=>({w}))};return}
  let p=pool().filter(isS),note=0;if(!p.length){p=ALL.filter(isS);note=1}
  const all=ALL.filter(isS),big=w=>{const t=w.en.split(" ");let k=0;t.forEach((x,i)=>{if(bare(x).length>bare(t[k]).length)k=i});return k};
  px={note,i:0,s:0,ans:null,miss:[],ord:[],qs:shuf(p).slice(0,10).map(w=>{const t=w.en.split(" ");
@@ -554,7 +559,11 @@ function pz(){
   view.innerHTML=sg+`<div class="score">${px.s}/${T}</div><p class="center sub">${f?"Sempurna!":"Ulangi untuk memperkuat."}</p>${px.miss.length?`<p class="meta" style="margin-top:16px">Perlu diulang:</p><div class="list">${px.miss.map(w=>`<div class="li"><div class="w"><b>${w.en}</b><span>${w.id}</span></div></div>`).join("")}</div>`:""}<div class="center"><button class="btn pri" data-a="prestart">Main lagi</button></div>`;
   if(f)confetti();return}
  const q=px.qs[px.i],d=px.ans!==null,hd=`<div class="bar"><i style="width:${px.i/T*100}%"></i></div><div class="meta"><span>Soal ${px.i+1} dari ${T}</span><span>Skor ${px.s}</span></div>${px.note?`<p class="sub">Belum ada kalimat di pilihan ini, jadi diambil dari semua tema.</p>`:""}<p class="sub" style="margin-bottom:8px">Arti: ${q.w.id}</p>`;
- if(qm===2){
+ if(qm===4){
+  view.innerHTML=sg+hd+`<div class="center" style="margin:8px 0"><button class="say big" data-a="say">🔊 Putar suara</button></div><p class="meta" style="justify-content:center">Dengarkan, lalu ketik kata dalam bahasa Inggris:</p><input class="search" id="spv" data-sp="1" placeholder="Ketik di sini" autocomplete="off" autocapitalize="off" spellcheck="false" ${d?"disabled":""}>${d?`<div class="fb">${px.ans?"Benar!":"Ejaan yang benar:"} ${q.w.en}</div><div class="acts"><button class="btn" data-a="say">🔊 Dengar lagi</button><button class="btn pri" data-a="pnext">Lanjut</button></div>`:`<div class="center" style="margin-top:12px"><button class="btn ok" data-a="spchk" style="padding:12px 30px">Periksa</button></div>`}`;
+  const iv=$("#spv");if(iv){iv.value=px.val||"";if(!d)iv.focus()}
+  if(!d&&!px.said){px.said=1;say(q.w.en)}
+ }else if(qm===2){
   const full=q.t.map((x,i)=>i===q.k?`<mark>${x}</mark>`:x).join(" "),blank=q.t.map((x,i)=>i===q.k?x.replace(bare(x),"_____"):x).join(" "),cap=t=>q.k===0?t[0].toUpperCase()+t.slice(1):t;
   view.innerHTML=sg+hd+`<div class="q">${d?full:blank}</div><div class="opts">${q.o.map((o,j)=>`<button class="opt ${d&&o===q.c?"right":d&&j===px.ans?"wrong":""}" data-a="ppick" data-k="${j}" ${d?"disabled":""}>${cap(o)}</button>`).join("")}</div>${d?`<div class="acts"><button class="btn" data-a="say">🔊 Dengar</button><button class="btn pri" data-a="pnext">Lanjut</button></div>`:""}`;
  }else{
@@ -575,6 +584,11 @@ view.addEventListener("click",e=>{
  else if(a==="chk"){if(b.checked){known[b.dataset.w]=1;if(!srs[b.dataset.w])srs[b.dataset.w]={b:2,d:dstr(3)}}else{delete known[b.dataset.w];delete srs[b.dataset.w]}saveS();save();hdr();$("#prog").innerHTML=progress()}
  else if(a==="sayw"){say(b.dataset.w)}
  else if(a==="jump"){idx=+b.dataset.i;flip=false;card();view.scrollIntoView({block:"start"})}
+ else if(a==="austart"){if(au.on){audioStop(false);audioUI()}else audioRun()}
+ else if(a==="austop"){audioStop(true);audioUI()}
+ else if(a==="aurate"){au.rate=+b.dataset.v;audio()}
+ else if(a==="aucnt"){au.cnt=+b.dataset.v;audio()}
+ else if(a==="spchk"){spchk()}
  else if(a==="mysave"){mysave()}
  else if(a==="mydel"){const i=+b.dataset.i,m=MY[i];if(!m)return;delete known[m.en];delete srs[m.en];save();saveS();const arr=MY.filter((x,j)=>j!==i);saveMine(arr);loadMine(arr);idx=0;flip=false;rq=null;quiz=null;px=null;fillCats();hdr();$("#mylist").innerHTML="";mylist()}
  else if(a==="tstart"){ts={qs:buildTest(),i:0,sel:null,plays:0,ans:[]};tst();window.scrollTo(0,0)}
@@ -592,7 +606,7 @@ view.addEventListener("click",e=>{
  else if(a==="prm"){px.ord.splice(+b.dataset.n,1);pz()}
  else if(a==="pclr"){px.ord=[];pz()}
  else if(a==="pchk"){const q=px.qs[px.i];if(px.ord.length<q.t.length){toast("Susun semua kata dulu");return}const ok=px.ord.map(i=>q.t[i]).join(" ")===q.w.en;px.ans=ok;if(ok){px.s++;xp(5);toast("Benar! +5 XP")}else px.miss.push(q.w);pz()}
- else if(a==="pnext"){px.i++;px.ans=null;px.ord=[];pz()}
+ else if(a==="pnext"){px.i++;px.ans=null;px.ord=[];px.said=0;px.val="";pz()}
  else if(a==="prestart"){startP();pz()}
  else if(a==="rstart"){const t=dstr(0),due=dueList(),nw=newList();if(nw.length)meta.nd={d:t,n:(meta.nd&&meta.nd.d===t?meta.nd.n:0)+nw.length};save();rq={q:shuf(due).concat(nw),i:0,flip:false,lap:new Set(),lapse:0,n:due.length+nw.length};rv()}
  else if(a==="rflip"){const c=view.querySelector(".card"),f=!c.classList.contains("flipped");c.classList.toggle("flipped");if(f){rq.flip=true;$("#rate").innerHTML=rbtn();say(rq.q[rq.i].en)}}
@@ -732,6 +746,32 @@ function mysave(){
  ["myen","myid","myex"].forEach(i=>$("#"+i).value="");$("#myen").focus();
  m.textContent=`"${en}" ditambahkan. Kata ini akan muncul sebagai kata baru di tab Ulang.`;mylist();toast("Kata ditambahkan")}
 view.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.dataset&&e.target.dataset.my){e.preventDefault();mysave()}});
+const au={on:false,run:0,i:0,list:[],rate:1,cnt:20,shuf:true,unk:false,cur:null,ph:0};
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const nz=t=>String(t).toLowerCase().replace(/[^a-z0-9 ']/g,"").replace(/\s+/g," ").trim();
+function spk(t,lang,rate){return new Promise(res=>{try{const u=new SpeechSynthesisUtterance(t);u.lang=lang;u.rate=rate;let d=false;const f=()=>{if(!d){d=true;clearTimeout(tm);res()}};const tm=setTimeout(f,Math.max(3000,t.length*200/rate)+1500);u.onend=f;u.onerror=f;speechSynthesis.speak(u)}catch(e){res()}})}
+function audioStop(full){au.run++;au.on=false;try{speechSynthesis.cancel()}catch(e){}if(full){au.list=[];au.i=0;au.cur=null;au.ph=0}}
+async function audioRun(){
+ const id=++au.run;au.on=true;
+ if(!au.list.length||au.i>=au.list.length){let l=pool().slice();if(au.unk)l=l.filter(w=>!known[w.en]);if(au.shuf)l=shuf(l);au.list=l.slice(0,au.cnt);au.i=0}
+ if(!au.list.length){au.on=false;toast("Tidak ada kata untuk diputar");audioUI();return}
+ const ok=()=>au.run===id;
+ while(ok()&&au.i<au.list.length){
+  const w=au.list[au.i];au.cur=w;au.ph=0;audioUI();
+  await spk(w.en,"en-US",au.rate);if(!ok())break;await sleep(600);if(!ok())break;
+  au.ph=1;audioUI();await spk(w.id,"id-ID",au.rate);if(!ok())break;await sleep(600);if(!ok())break;
+  if(w.ex){au.ph=2;audioUI();await spk(w.ex,"en-US",au.rate);if(!ok())break;await sleep(800);if(!ok())break}
+  au.i++}
+ if(ok()){au.on=false;if(au.i>=au.list.length){au.cur=null;xp(10);toast("Sesi audio selesai! +10 XP")}audioUI()}}
+function audioUI(){const c=$("#aucard");if(!c)return;const w=au.cur;
+ c.innerHTML=w?`<small class="tag3">${au.i+1} / ${au.list.length}</small><div class="en${w.en.length>20?" long":""}">${w.en}</div>${au.ph>=1?`<div class="id" style="color:var(--pri)">${w.id}</div>`:""}${au.ph>=2&&w.ex?`<div class="ex">${w.ex}</div>`:""}`:`<p class="sub">Tekan Mulai. ${pool().length} kata tersedia di pilihan ini.</p>`;
+ const b=$("#aubtn");if(b)b.textContent=au.on?"⏸ Jeda":(au.cur&&au.i<au.list.length?"▶ Lanjutkan":"▶ Mulai")}
+function audio(){
+ view.innerHTML=`<div class="tcard"><h3>Audio hands-free 🎧</h3><p class="sub" style="margin-bottom:12px">Dengarkan kata, arti, dan contoh kalimat otomatis tanpa menekan tombol. Pilih level dan tema di panel filter. Suaranya memakai suara bawaan browser.</p><div class="meta"><span>Kecepatan</span></div><div class="seg">${[[.75,"Pelan"],[1,"Normal"],[1.25,"Cepat"]].map(x=>`<button class="${au.rate===x[0]?"on":""}" data-a="aurate" data-v="${x[0]}">${x[1]}</button>`).join("")}</div><div class="meta"><span>Kata per sesi</span></div><div class="seg">${[10,20,50].map(n=>`<button class="${au.cnt===n?"on":""}" data-a="aucnt" data-v="${n}">${n}</button>`).join("")}</div><label class="chk"><input type="checkbox" id="aushuf" ${au.shuf?"checked":""}> Acak urutan</label><label class="chk"><input type="checkbox" id="auunk" ${au.unk?"checked":""}> Hanya yang belum hafal</label></div><div class="tcard center" id="aucard"></div><div class="acts"><button class="btn ok" data-a="austart" id="aubtn">Mulai</button><button class="btn" data-a="austop">Berhenti dan ulang</button></div>`;audioUI()}
+function spchk(){const q=px.qs[px.i];if(!q||px.ans!==null)return;px.val=$("#spv").value;const ok=nz(px.val)===nz(q.w.en);px.ans=ok;if(ok){px.s++;xp(5);toast("Benar! +5 XP")}else{px.miss.push(q.w);toast("Belum tepat")}pz()}
+view.addEventListener("change",e=>{if(e.target.id==="aushuf")au.shuf=e.target.checked;else if(e.target.id==="auunk")au.unk=e.target.checked});
+view.addEventListener("input",e=>{if(e.target.dataset&&e.target.dataset.sp)px.val=e.target.value});
+view.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.dataset&&e.target.dataset.sp){e.preventDefault();spchk()}});
 let sx=0;
 view.addEventListener("touchstart",e=>{sx=e.touches[0].clientX},{passive:true});
 view.addEventListener("touchend",e=>{if(tab!=="card")return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>70)go(dx<0?1:-1)});
