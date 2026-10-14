@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="theme-color" content="#d6336c">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>English untuk Guru Cikal</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23d6336c'/%3E%3Ctext x='32' y='47' font-size='42' font-family='Arial,sans-serif' font-weight='700' text-anchor='middle' fill='white'%3EM%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;700&display=swap">
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 <main>
@@ -54,18 +54,18 @@
 <div id="login" class="login"><div class="lc" id="lcard"><div class="logo">M</div><h2>English untuk Guru Cikal</h2><p class="sub">Masuk untuk melanjutkan belajarmu.</p>
 <form id="lf" autocomplete="on"><label for="nm">Nama</label><input class="search" id="nm" name="username" value="MICHELLE" autocomplete="username"><label for="pw">Password</label><input class="search" id="pw" name="password" type="password" autocomplete="current-password" placeholder="Masukkan password"><label class="show"><input type="checkbox" id="sp"> Tampilkan password</label><div class="lerr" id="lerr" role="alert"></div><button class="btn" type="submit">Masuk</button></form></div></div>
 <div id="toast" class="toast" role="status"></div>
-<script src="js/01-data.js"></script>
-<script src="js/02-core.js"></script>
-<script src="js/03-templates.js"></script>
-<script src="js/04-review-practice.js"></script>
-<script src="js/05-events.js"></script>
-<script src="js/06-tests.js"></script>
-<script src="js/07-backup-mywords.js"></script>
-<script src="js/08-audio-spelling.js"></script>
-<script src="js/09-notes-board.js"></script>
-<script src="js/10-pronunciation.js"></script>
-<script src="js/11-navigation-progress.js"></script>
-<script src="js/12-app.js"></script>
+<script src="01-data.js"></script>
+<script src="02-core.js"></script>
+<script src="03-templates.js"></script>
+<script src="04-review-practice.js"></script>
+<script src="05-events.js"></script>
+<script src="06-tests.js"></script>
+<script src="07-backup-mywords.js"></script>
+<script src="08-audio-spelling.js"></script>
+<script src="09-notes-board.js"></script>
+<script src="10-pronunciation.js"></script>
+<script src="11-navigation-progress.js"></script>
+<script src="12-app.js"></script>
 <script>
 if("serviceWorker" in navigator&&(location.protocol==="https:"||location.hostname==="localhost")){window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{})})}
 </script>
