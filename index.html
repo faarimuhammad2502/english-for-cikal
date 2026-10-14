@@ -179,6 +179,14 @@ main{max-width:1120px}
 .chk{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:15px}
 .tag3{color:var(--mute);font-weight:700}
 #aucard{min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+.board{margin:0}.board h4{margin:0 0 8px}
+.bmsg{margin:0;font-weight:700;line-height:1.5}
+.bev{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:10px;background:var(--bg);border-radius:12px;padding:8px 12px;font-size:14px}
+.bev span{color:var(--pri);font-weight:700}
+.bl{display:block;font-weight:700;font-size:14px;margin:10px 0 6px}
+.chipsrow{display:flex;flex-wrap:wrap;gap:8px}
+.tcard ul{padding-left:20px;margin:0 0 8px}.tcard li{margin-bottom:4px}
+#ntx{width:100%;font:inherit;resize:vertical;line-height:1.6}
 </style>
 </head>
 <body>
@@ -187,6 +195,7 @@ main{max-width:1120px}
   <div class="layout"><aside class="side">
   <header class="hero"><div class="sprout" id="sprout" aria-hidden="true">🌱</div><div><h1>English untuk Guru Cikal</h1><p class="sub" id="sub"></p></div></header>
   <div class="dash" id="stats"></div>
+    <div class="tcard board" id="board"></div>
   <div class="chips" id="lv" role="group" aria-label="Level"></div>
   <div class="row"><select id="cat" aria-label="Pilih tema"></select></div>
   </aside><section class="content">
@@ -199,6 +208,7 @@ main{max-width:1120px}
     <button data-tab="dict">Kamus</button>
     <button data-tab="test">Tes Level</button>
     <button data-tab="my">Kata Saya</button>
+    <button data-tab="note">Catatan</button>
     <button data-tab="tpl">Template</button>
   </div>
   <div id="view"></div>
@@ -295,12 +305,12 @@ function hdr(){
  $("#sprout").textContent=r<.1?"🌱":r<.35?"🌿":r<.7?"🪴":"🌳";
  $("#sub").textContent=`${ALL.length} kata tersedia, target 1000. Kurikulum Cambridge, dari A2 menuju C2.`;
  {const t=dstr(0),c=Object.values(srs).filter(v=>v.d<=t).length;$('[data-tab="srs"]').textContent="Ulang"+(c?" · "+c:"")}
- {const pc=Math.round(r*100);$("#stats").innerHTML=`<div class="c2 rc"><div class="ring" style="--p:${pc}"><b>${pc}%</b></div><div><small>Progres</small><br><strong>${n}/${ALL.length}</strong><br><span>kata dikuasai</span></div></div><div class="c2"><small>Streak</small><strong>🔥 ${meta.streak}</strong><span>hari berturut</span></div><div class="c2"><small>Poin</small><strong>⭐ ${meta.xp}</strong><span>XP terkumpul</span></div><div class="c2"><small>Target</small><strong>1000</strong><span>kata tersedia: ${ALL.length}</span></div>`}
+ {const pc=Math.round(r*100),td=meta.td&&meta.td.d===dstr(0)?meta.td.w.length:0,g=meta.goal||10;$("#stats").innerHTML=`<div class="c2 rc"><div class="ring" style="--p:${pc}"><b>${pc}%</b></div><div><small>Progres</small><br><strong>${n}/${ALL.length}</strong><br><span>kata dikuasai</span></div></div><div class="c2"><small>Streak</small><strong>🔥 ${meta.streak}</strong><span>hari berturut</span></div><div class="c2"><small>Poin</small><strong>⭐ ${meta.xp}</strong><span>XP terkumpul</span></div><div class="c2"><small>Target hari ini</small><strong>${td}/${g}</strong><div class="bar" style="margin-top:6px"><i style="width:${Math.min(100,td/g*100)}%"></i></div><span>kata dipelajari</span></div>`}
  $("#lv").innerHTML=LV.map(l=>`<button class="chip ${l===lvl?"on":""}" data-lv="${l}">${l}<small>${pct(w=>l==="Semua"||lvOf(w)===l)}%</small></button>`).join("");
 }
 function fillCats(){const cs=["Semua",...Object.keys(RAW).filter(c=>lvl==="Semua"||c.startsWith(lvl)).sort((a,b)=>LV.indexOf(a.slice(0,2))-LV.indexOf(b.slice(0,2)))];sel.innerHTML=cs.map(c=>`<option>${c}</option>`).join("");if(!cs.includes(cat))cat="Semua";sel.value=cat}
 function progress(){const p=pool(),n=p.filter(w=>known[w.en]).length;return `<div class="bar"><i style="width:${p.length?n/p.length*100:0}%"></i></div><div class="meta"><span>Hafal: ${n} dari ${p.length}</span></div>`}
-function render(){audioStop(true);document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab===tab));hdr();$(".row").style.display=$("#lv").style.display=tab==="tpl"||tab==="dict"||tab==="test"||tab==="my"?"none":"";tab==="card"?card():tab==="srs"?rv():tab==="quiz"?qz():tab==="list"?list():tab==="dict"?dict():tab==="test"?tst():tab==="my"?my():tab==="audio"?audio():tpl()}
+function render(){audioStop(true);document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab===tab));hdr();$(".row").style.display=$("#lv").style.display=tab==="tpl"||tab==="dict"||tab==="test"||tab==="my"||tab==="note"?"none":"";tab==="card"?card():tab==="srs"?rv():tab==="quiz"?qz():tab==="list"?list():tab==="dict"?dict():tab==="test"?tst():tab==="my"?my():tab==="audio"?audio():tab==="note"?note():tpl()}
 function card(){
  const p=pool();if(idx>=p.length)idx=0;const w=p[idx];
  view.innerHTML=`<div id="prog">${progress()}</div><div class="scene in" data-a="flip" role="button" tabindex="0" aria-label="Balik kartu"><div class="card ${flip?"flipped":""}">
@@ -520,7 +530,7 @@ function rate(r){const w=rq.q[rq.i],b0=srs[w.en]?srs[w.en].b:0;
  if(r===0){rq.lap.add(w.en);rq.lapse++;rq.q.push(w)}else if(rq.lap.has(w.en))nb=1;
  srs[w.en]={b:nb,d:dstr(INT[nb])};
  if(nb>=2)known[w.en]=1;else delete known[w.en];
- saveS();xp(r===2?3:1);rq.i++;rq.flip=false;rv()}
+ saveS();tick(w.en);xp(r===2?3:1);rq.i++;rq.flip=false;rv()}
 function rv(){
  if(!rq){
   const due=dueList(),nw=newList(),all=Object.values(srs),tm=all.filter(v=>v.d===dstr(1)).length,tot=due.length+nw.length;
@@ -576,7 +586,7 @@ view.addEventListener("click",e=>{
  else if(a==="say"){say(tab==="quiz"?(qm>=2?px.qs[px.i]:quiz.qs[quiz.i]).w.en:tab==="srs"?rq.q[rq.i].en:w.en)}
  else if(a==="sayex"){say((tab==="srs"?rq.q[rq.i]:w).ex)}
  else if(a==="again"){go(1)}
- else if(a==="know"){if(!known[w.en]){known[w.en]=1;srs[w.en]={b:2,d:dstr(3)};saveS();xp(10);toast("+10 XP · Sudah hafal!")}go(1);hdr()}
+ else if(a==="know"){if(!known[w.en]){known[w.en]=1;srs[w.en]={b:2,d:dstr(3)};saveS();tick(w.en);xp(10);toast("+10 XP · Sudah hafal!")}go(1);hdr()}
  else if(a==="qm"){qm=+b.dataset.m;quiz=null;px=null;qz()}
  else if(a==="pick"){const k=quiz.qs[quiz.i],j=+b.dataset.k;quiz.ans=j;if(k.o[j].en===k.w.en){quiz.s++;xp(5);toast("Benar! +5 XP")}else{quiz.miss.push(k.w);toast("Belum tepat")}qz()}
  else if(a==="next"){quiz.i++;quiz.ans=null;qz()}
@@ -584,6 +594,13 @@ view.addEventListener("click",e=>{
  else if(a==="chk"){if(b.checked){known[b.dataset.w]=1;if(!srs[b.dataset.w])srs[b.dataset.w]={b:2,d:dstr(3)}}else{delete known[b.dataset.w];delete srs[b.dataset.w]}saveS();save();hdr();$("#prog").innerHTML=progress()}
  else if(a==="sayw"){say(b.dataset.w)}
  else if(a==="jump"){idx=+b.dataset.i;flip=false;card();view.scrollIntoView({block:"start"})}
+ else if(a==="ntpl"){const t=NT[+b.dataset.i][1];NOTE=NOTE.trim()?NOTE.replace(/\s+$/,"")+"\n\n"+t:t;$("#ntx").value=NOTE;nsave();nupd();$("#ntx").focus()}
+ else if(a==="nss"){ins(SS[+b.dataset.i]+" ")}
+ else if(a==="nw"){ins(b.dataset.w+" ")}
+ else if(a==="ncopy"){copy(NOTE)}
+ else if(a==="nask"){copy("Please review my English teaching note below. Correct the grammar, suggest more professional wording, and briefly explain each correction in Indonesian.\n\n"+NOTE);toast("Tersalin. Tempel ke Claude.")}
+ else if(a==="ndl"){const l=document.createElement("a");l.href=URL.createObjectURL(new Blob([NOTE],{type:"text/plain"}));l.download="catatan-michelle-"+dstr(0)+".txt";document.body.appendChild(l);l.click();l.remove()}
+ else if(a==="nclr"){if(confirm("Kosongkan catatan?")){NOTE="";$("#ntx").value="";nsave();nupd()}}
  else if(a==="austart"){if(au.on){audioStop(false);audioUI()}else audioRun()}
  else if(a==="austop"){audioStop(true);audioUI()}
  else if(a==="aurate"){au.rate=+b.dataset.v;audio()}
@@ -708,17 +725,19 @@ function tst(){
  const q=ts.qs[ts.i];
  view.innerHTML=`<div class="bar"><i style="width:${ts.i/T*100}%"></i></div><div class="meta"><span>Bagian: ${SEC[q.s]}</span><span>Soal ${ts.i+1} dari ${T}</span></div>${q.p?`<div class="passage">${q.p}</div>`:""}${q.au?`<div class="center" style="margin:8px 0"><button class="say big" data-a="tplay" ${ts.plays>=2?"disabled":""}>🔊 Putar rekaman (sisa ${2-ts.plays}x)</button></div>`:""}<div class="q">${q.q}</div><div class="opts">${q.o.map((o,j)=>`<button class="opt ${ts.sel===j?"sel":""}" data-a="tpick" data-k="${j}">${o}</button>`).join("")}</div><div class="center" style="margin-top:14px"><button class="btn pri" data-a="tnext" ${ts.sel===null?"disabled":""}>${ts.i+1===T?"Selesai":"Lanjut"}</button></div>`;
 }
-const BK=[KEY,MK,KEY+"-srs",KEY+"-tpl",KEY+"-tests",KEY+"-mine"];
+const BK=[KEY,MK,KEY+"-srs",KEY+"-tpl",KEY+"-tests",KEY+"-mine",KEY+"-note"];
 function bkOut(){const o={app:"english-guru-cikal",v:1,t:new Date().toISOString(),data:{}};BK.forEach(k=>{try{const v=localStorage.getItem(k);if(v!==null)o.data[k]=v}catch(e){}});return JSON.stringify(o)}
 function bkIn(txt){let o;try{o=JSON.parse(txt)}catch(e){return "Teks cadangan tidak valid."}
  if(!o||o.app!=="english-guru-cikal"||!o.data)return "File ini bukan cadangan web ini.";
- BK.forEach(k=>{if(typeof o.data[k]==="string"){try{JSON.parse(o.data[k]);localStorage.setItem(k,o.data[k])}catch(e){}}});
+ BK.forEach(k=>{if(typeof o.data[k]==="string"){try{if(k!==KEY+"-note")JSON.parse(o.data[k]);localStorage.setItem(k,k===KEY+"-note"?o.data[k].slice(0,20000):o.data[k])}catch(e){}}});
  try{known=JSON.parse(localStorage.getItem(KEY)||"{}")||{}}catch(e){known={}}
  try{meta=Object.assign({xp:0,streak:0,last:""},JSON.parse(localStorage.getItem(MK)||"{}"))}catch(e){}
  try{srs=JSON.parse(localStorage.getItem(KEY+"-srs")||"{}")||{}}catch(e){srs={}}
  try{Object.assign(F,JSON.parse(localStorage.getItem(KEY+"-tpl")||"{}"))}catch(e){}
  try{TH=JSON.parse(localStorage.getItem(KEY+"-tests")||"[]")||[]}catch(e){TH=[]}
  try{loadMine(JSON.parse(localStorage.getItem(KEY+"-mine")||"[]"))}catch(e){loadMine([])}
+ try{NOTE=localStorage.getItem(KEY+"-note")||""}catch(e){}
+ try{bedit=false;board()}catch(e){}
  fillCats();rq=null;quiz=null;px=null;ts=null;render();return ""}
 document.querySelector(".bk").addEventListener("click",e=>{const b=e.target.closest("[data-b]");if(!b)return;const k=b.dataset.b,m=$("#bkm");
  if(k==="dl"){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([bkOut()],{type:"application/json"}));a.download="cadangan-english-michelle-"+dstr(0)+".json";document.body.appendChild(a);a.click();a.remove();m.textContent="Jika file tidak terunduh, pakai tombol Salin teks."}
@@ -772,6 +791,70 @@ function spchk(){const q=px.qs[px.i];if(!q||px.ans!==null)return;px.val=$("#spv"
 view.addEventListener("change",e=>{if(e.target.id==="aushuf")au.shuf=e.target.checked;else if(e.target.id==="auunk")au.unk=e.target.checked});
 view.addEventListener("input",e=>{if(e.target.dataset&&e.target.dataset.sp)px.val=e.target.value});
 view.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.dataset&&e.target.dataset.sp){e.preventDefault();spchk()}});
+let NOTE="",bedit=false,ncat="";
+try{NOTE=localStorage.getItem(KEY+"-note")||""}catch(e){}
+const MSG0="Semangat terus belajar Bahasa Inggrisnya ya, Michelle! Kamu guru yang hebat, dan sedikit demi sedikit setiap hari akan membawamu ke level berikutnya.";
+function tick(en){const t=dstr(0);if(!meta.td||meta.td.d!==t)meta.td={d:t,w:[],ok:0};if(!meta.td.w.includes(en))meta.td.w.push(en);
+ if(!meta.td.ok&&meta.td.w.length>=(meta.goal||10)){meta.td.ok=1;meta.xp+=15;toast("Target harian tercapai! +15 XP");confetti()}}
+function board(){const el=$("#board");if(!el)return;
+ const ev=meta.ev,days=ev&&ev.d?Math.round((new Date(ev.d+"T00:00:00")-new Date(dstr(0)+"T00:00:00"))/864e5):null;
+ let today="";try{today=new Date().toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}catch(e){today=dstr(0)}
+ el.innerHTML=bedit?`<h4>Ubah papan semangat</h4><label class="bl">Pesan untuk Michelle</label><textarea class="search" id="bmsg" rows="3" maxlength="240"></textarea><label class="bl">Hari penting (contoh: Mid-term review)</label><input class="search" id="bev" maxlength="40" placeholder="Nama acara"><input class="search" id="bevd" type="date" style="margin-top:8px" aria-label="Tanggal acara"><div class="acts"><button class="btn" data-a="bcancel">Batal</button><button class="btn ok" data-a="bsave">Simpan</button></div>`:`<div class="meta" style="margin:0 0 6px"><span>📅 ${today}</span></div><p class="bmsg">${esc(meta.msg||MSG0)}</p>${ev&&ev.n?`<div class="bev"><b>${esc(ev.n)}</b><span>${days===null?"":days>0?days+" hari lagi":days===0?"Hari ini!":"Sudah lewat"}</span></div>`:""}<div class="meta" style="margin:12px 0 6px"><span>Target harian</span></div><div class="seg">${[5,10,15,20].map(n=>`<button class="${(meta.goal||10)===n?"on":""}" data-a="goal" data-v="${n}">${n}</button>`).join("")}</div><button class="reset" data-a="bedit" style="margin-top:8px">Ubah pesan dan hari penting</button>`;
+ if(bedit){$("#bmsg").value=meta.msg||MSG0;$("#bev").value=(meta.ev&&meta.ev.n)||"";$("#bevd").value=(meta.ev&&meta.ev.d)||""}}
+$("#board").addEventListener("click",e=>{const b=e.target.closest("[data-a]");if(!b)return;const a=b.dataset.a;
+ if(a==="goal"){meta.goal=+b.dataset.v;save();board();hdr()}
+ else if(a==="bedit"){bedit=true;board()}
+ else if(a==="bcancel"){bedit=false;board()}
+ else if(a==="bsave"){meta.msg=cl($("#bmsg").value,240);const d=$("#bevd").value;meta.ev={n:cl($("#bev").value,40),d:/^\d{4}-\d{2}-\d{2}$/.test(d)?d:""};save();bedit=false;board()}});
+board();
+const NT=[["Catatan IEP",`Student (initials): 
+Date: 
+Goal: 
+Current level: 
+Progress this week: Today, the student was able to 
+Support provided: I used 
+Next steps: We will continue to `],
+["Rencana pelajaran",`Learning goal: By the end of the lesson, students will be able to 
+Success criteria: 
+Starter activity: 
+Main activity: 
+Differentiation: 
+Assessment for learning: 
+Plenary: `],
+["Pesan ke orang tua",`Dear Mr./Mrs. ,
+
+I would like to update you on the progress of your child. 
+
+A suggested next step is to 
+
+Please let me know if you have any questions.
+
+Kind regards,
+`],
+["Catatan observasi",`Observation date: 
+Context: 
+What I observed: 
+Possible reasons: 
+Strategies to try: 
+Follow-up: `]];
+const SS=["By the end of the lesson, students will be able to","I have noticed that","With support, the student was able to","A suggested next step is to","I would recommend that","Progress has been steady in","Despite some challenges,","We will continue to monitor","The strategy that worked best was","Please let me know if you have any questions."];
+const CHK=[[/\b(\w+)\s+\1\b/i,"kata terulang berurutan"],[/\b(informations|advices|childs|peoples|equipments|furnitures|feedbacks|homeworks)\b/i,"kata ini tidak dipakai dalam bentuk jamak seperti itu"],[/\bmore (better|easier|faster|bigger|cheaper)\b/i,"jangan pakai more bersama bentuk -er"],[/\b(he|she|it)\s+(don't|do not)\b/i,"setelah he, she, it pakai doesn't"],[/\b(he|she)\s+(go|have|do|work|teach|need|want|like)\b/i,"setelah he atau she, kata kerja butuh -s atau -es (goes, has, does)"],[/\b(did|didn't|did not)\s+(went|saw|ate|came|made|took|gave|had|wrote)\b/i,"setelah did, pakai bentuk dasar kata kerja"],[/\b(students|children|teachers|they|we)\s+(was|has)\b/i,"subjek jamak memakai were atau have"],[/(^|[\s(])i(?=[\s,.'!?]|$)/,"huruf I (saya) harus kapital"],[/(^|[.!?]\s+)([a-z][a-z\']*)/,"awal kalimat harus huruf kapital"],[/ {2,}/,"ada spasi ganda"],[/,[A-Za-z]/,"beri spasi setelah koma"],[/[a-z]\.[A-Z]/,"beri spasi setelah titik"]];
+function nsave(){try{localStorage.setItem(KEY+"-note",NOTE)}catch(e){}const l=$("#nsv");if(l)l.textContent="Tersimpan otomatis"}
+function nupd(){const t=NOTE,w=t.match(/[A-Za-z']+/g)||[],sn=(t.match(/[^.!?]+[.!?]+/g)||[]).length||(t.trim()?1:0);
+ const nm=" "+t.toLowerCase().replace(/[^a-z0-9']+/g," ")+" ",used=new Set();
+ ALL.forEach(x=>{if(isS(x))return;const k=x.en.toLowerCase().replace(/[^a-z0-9']+/g," ").trim();if(k&&nm.includes(" "+k+" "))used.add(x.en)});
+ $("#nst").textContent=`${w.length} kata · ${sn} kalimat · ${used.size} kosakata web ini terpakai`;
+ const f=t.trim()?CHK.map(c=>{const m=t.match(c[0]);return m?`<li><b>${esc(((m[2]||m[0]).trim()||"spasi"))}</b> : ${c[1]}</li>`:""}).filter(Boolean):[];
+ $("#nchk").innerHTML=!t.trim()?`<p class="sub">Mulai menulis, nanti hasil pemeriksaan muncul di sini.</p>`:f.length?`<ul>${f.join("")}</ul><p class="sub">Pemeriksaan ini sederhana dan hanya menangkap kesalahan umum.</p>`:`<p class="sub">Tidak ada kesalahan umum yang terdeteksi. Untuk koreksi lebih lengkap, pakai tombol Salin + minta koreksi.</p>`;
+ $("#nchips").innerHTML=ALL.filter(x=>x.cat===ncat&&!isS(x)).map(x=>`<button class="chipw ${used.has(x.en)?"on":""}" data-a="nw" data-w="${x.en}" title="${x.id}">${x.en}</button>`).join("")}
+function note(){
+ const cs=[...new Set(ALL.filter(w=>/SEN|Pedagogi|Penilaian|Umpan balik|Pengelolaan|Mengajar|Pembelajaran|Kolokasi/.test(w.cat)&&!isS(w)).map(w=>w.cat))];
+ if(!cs.includes(ncat))ncat=cs[0]||"";
+ view.innerHTML=`<div class="tcard"><h3>Asisten catatan guru</h3><p class="sub">Latihan menulis catatan IEP, rencana pelajaran, dan pesan ke orang tua dalam bahasa Inggris profesional. Gunakan inisial atau nama samaran, jangan menulis data pribadi murid yang asli.</p><div class="meta" style="margin-top:12px"><span>Mulai dari kerangka</span></div><div class="chipsrow">${NT.map((t,i)=>`<button class="chipw" data-a="ntpl" data-i="${i}">${t[0]}</button>`).join("")}</div><textarea id="ntx" class="search" rows="12" placeholder="Tulis catatanmu dalam bahasa Inggris..." style="margin-top:12px"></textarea><div class="meta"><span id="nst"></span><span id="nsv">Tersimpan otomatis</span></div><div class="acts3"><button class="btn" data-a="ncopy">Salin</button><button class="btn" data-a="nask">Salin + minta koreksi</button><button class="btn" data-a="ndl">Unduh .txt</button></div><div class="center"><button class="reset" data-a="nclr">Kosongkan</button></div></div><div class="tcard"><h4>Pemeriksaan cepat</h4><div id="nchk"></div></div><div class="tcard"><h4>Pembuka kalimat (ketuk untuk menyisipkan)</h4><div class="chipsrow">${SS.map((t,i)=>`<button class="chipw" data-a="nss" data-i="${i}">${t}</button>`).join("")}</div></div><div class="tcard"><h4>Kosakata untuk ditulis (hijau = sudah terpakai)</h4><select id="ncat" aria-label="Tema kosakata">${cs.map(c=>`<option ${c===ncat?"selected":""}>${c}</option>`).join("")}</select><div id="nchips" class="chipsrow" style="margin-top:10px"></div></div>`;
+ $("#ntx").value=NOTE;nupd()}
+function ins(txt){const a=$("#ntx"),s0=a.selectionStart==null?a.value.length:a.selectionStart,e0=a.selectionEnd==null?a.value.length:a.selectionEnd;a.value=a.value.slice(0,s0)+txt+a.value.slice(e0);const p=s0+txt.length;a.focus();try{a.setSelectionRange(p,p)}catch(e){}NOTE=a.value;nsave();nupd()}
+view.addEventListener("input",e=>{if(e.target.id==="ntx"){NOTE=e.target.value;nsave();nupd()}});
+view.addEventListener("change",e=>{if(e.target.id==="ncat"){ncat=e.target.value;nupd()}});
 let sx=0;
 view.addEventListener("touchstart",e=>{sx=e.touches[0].clientX},{passive:true});
 view.addEventListener("touchend",e=>{if(tab!=="card")return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>70)go(dx<0?1:-1)});
