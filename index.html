@@ -97,17 +97,57 @@ mark.ph{background:none;color:var(--pri);border:1px dashed var(--pri)}
 .btn.bad{background:var(--badbg);border-color:var(--bad)}
 .btn small{display:block;font-weight:400;font-size:12px}
 @media (max-width:420px){.fields{grid-template-columns:1fr}}
+.seg{flex-wrap:wrap}.seg button{flex:1 1 40%}
+.slots{min-height:56px;display:flex;flex-wrap:wrap;gap:8px;padding:10px;border:2px dashed var(--line);border-radius:14px;margin-bottom:12px;background:var(--card)}
+.bank{display:flex;flex-wrap:wrap;gap:8px}
+.chipw{padding:8px 14px;background:var(--card);border:2px solid var(--line);font-weight:700}
+.chipw.on{background:var(--pri);border-color:var(--pri);color:var(--prib)}
+:root{--sh:0 1px 2px rgba(80,20,50,.06),0 8px 22px rgba(80,20,50,.07)}
+body.lock{overflow:hidden}
+main{max-width:760px}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:2px 0 14px}
+.brand{display:flex;align-items:center;gap:10px;font:600 18px Fredoka,Nunito,sans-serif}
+.logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#a81b4d,#ff7eb0);color:#fff;display:grid;place-items:center;font:600 20px Fredoka,sans-serif}
+.user{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px}
+.user button{background:var(--card);border:1px solid var(--line);padding:6px 12px;font-size:14px;box-shadow:var(--sh)}
+.hero{background:linear-gradient(120deg,#a81b4d,#e8457f);color:#fff;border-radius:22px;padding:20px;box-shadow:0 10px 30px rgba(184,31,85,.25);margin-bottom:14px}
+.hero h1{color:#fff}.hero .sub{color:rgba(255,255,255,.92)}.hero .sprout{background:rgba(255,255,255,.22)}
+.dash{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:10px;margin-bottom:14px}
+.c2{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px 14px;box-shadow:var(--sh);display:flex;flex-direction:column;gap:2px}
+.c2 small{color:var(--mute);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+.c2 strong{font:600 24px/1.2 Fredoka,sans-serif}
+.c2 span{color:var(--mute);font-size:13px}
+.c2.rc{flex-direction:row;align-items:center;gap:12px}
+.ring{width:58px;height:58px;border-radius:50%;background:conic-gradient(var(--pri) calc(var(--p)*1%),var(--line) 0);display:grid;place-items:center;flex:none;position:relative}
+.ring::before{content:"";position:absolute;inset:7px;border-radius:50%;background:var(--card)}
+.ring b{position:relative;font-size:14px}
+@media (max-width:600px){.dash{grid-template-columns:1fr 1fr}.c2.rc{grid-column:span 2}}
+.chips{grid-template-columns:repeat(5,1fr)}
+.tabs{overflow-x:auto;box-shadow:var(--sh)}.tabs button{flex:1 0 auto;padding:10px 12px}
+.tp,.li,.opt,.chip,.bx,.face,.search,select,.btn{box-shadow:var(--sh)}
+.login{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:20px;overflow:auto;background-color:var(--bg);background-image:radial-gradient(circle at 15% 0,var(--blob) 0,transparent 45%),radial-gradient(circle at 100% 100%,var(--blob) 0,transparent 40%),radial-gradient(var(--dot) 2px,transparent 2.5px);background-size:auto,auto,32px 32px}
+.login[hidden]{display:none}
+.lc{width:100%;max-width:380px;background:var(--card);border:1px solid var(--line);border-radius:26px;padding:28px 24px;box-shadow:0 20px 50px rgba(184,31,85,.18);text-align:center}
+.lc .logo{width:64px;height:64px;border-radius:18px;font-size:36px;margin:0 auto 12px}
+.lc h2{font:600 24px Fredoka,sans-serif;margin:0 0 4px}
+.lc label{display:block;text-align:left;font-weight:700;font-size:14px;margin:14px 0 6px}
+.lc .search{margin:0}
+.lc .btn{width:100%;margin-top:6px;background:var(--pri);border-color:var(--pri);color:var(--prib);padding:14px;font-size:17px}
+.lc .show{display:flex;align-items:center;gap:8px;font-weight:400;margin-top:10px}
+.lerr{color:var(--bad);font-weight:700;min-height:22px;margin-top:8px;font-size:14px}
+.shake{animation:shake .3s}
 </style>
 </head>
 <body>
 <main>
+  <div class="topbar"><div class="brand"><span class="logo">M</span>English Academy</div><div class="user"><span id="who"></span><button id="logout">Keluar</button></div></div>
   <header class="hero"><div class="sprout" id="sprout" aria-hidden="true">🌱</div><div><h1>English untuk Guru Cikal</h1><p class="sub" id="sub"></p></div></header>
-  <div class="stats" id="stats"></div>
+  <div class="dash" id="stats"></div>
   <div class="chips" id="lv" role="group" aria-label="Level"></div>
   <div class="tabs">
     <button data-tab="card" class="on">Kartu</button>
     <button data-tab="srs">Ulang</button>
-    <button data-tab="quiz">Kuis</button>
+    <button data-tab="quiz">Latihan</button>
     <button data-tab="list">Daftar</button>
     <button data-tab="tpl">Template</button>
   </div>
@@ -115,6 +155,8 @@ mark.ph{background:none;color:var(--pri);border:1px dashed var(--pri)}
   <div id="view"></div>
   <button class="reset" id="reset">Hapus progres hafalan</button>
 </main>
+<div id="login" class="login"><div class="lc" id="lcard"><div class="logo">M</div><h2>English untuk Guru Cikal</h2><p class="sub">Masuk untuk melanjutkan belajarmu.</p>
+<form id="lf" autocomplete="on"><label for="nm">Nama</label><input class="search" id="nm" name="username" value="MICHELLE" autocomplete="username"><label for="pw">Password</label><input class="search" id="pw" name="password" type="password" autocomplete="current-password" placeholder="Masukkan password"><label class="show"><input type="checkbox" id="sp"> Tampilkan password</label><div class="lerr" id="lerr" role="alert"></div><button class="btn" type="submit">Masuk</button></form></div></div>
 <div id="toast" class="toast" role="status"></div>
 <script>
 const RAW={
@@ -136,7 +178,15 @@ const RAW={
 "B2 · Karakter & kesejahteraan murid":"Responsible=Bertanggung jawab;Reflective=Reflektif;Innovative=Inovatif;Engaged=Terlibat aktif;Resilient=Tangguh;Resourceful=Cerdik mencari cara;Articulate=Pandai mengungkapkan;Disruptive=Mengganggu;Disengaged=Tidak terlibat;Motivated=Termotivasi;Self-esteem=Harga diri;Struggle=Kesulitan;Thrive=Berkembang pesat;Well-being=Kesejahteraan;Inclusive=Inklusif;Bullying=Perundungan;Mindset=Pola pikir;Peer pressure=Tekanan teman sebaya;Perseverance=Ketekunan;Empathy=Empati",
 "C1 · Konektor akademik":"Furthermore=Lebih lanjut;Moreover=Terlebih lagi;Nevertheless=Meskipun begitu;Nonetheless=Walau demikian;Consequently=Akibatnya;Therefore=Oleh karena itu;Whereas=Sementara;Although=Meskipun;However=Namun;In addition=Selain itu;On the other hand=Di sisi lain;In contrast=Sebaliknya;As a result=Sebagai hasilnya;For instance=Misalnya;In particular=Terutama;Subsequently=Selanjutnya;Alternatively=Alternatifnya;Regardless=Terlepas dari itu;Notwithstanding=Terlepas dari;In conclusion=Sebagai kesimpulan",
 "C1 · Kata kerja akademik":"Acknowledge=Mengakui;Advocate=Menganjurkan;Facilitate=Memfasilitasi;Implement=Menerapkan;Enhance=Meningkatkan mutu;Foster=Menumbuhkan;Cultivate=Membina;Address=Menangani;Overcome=Mengatasi;Accommodate=Mengakomodasi;Reinforce=Memperkuat;Streamline=Menyederhanakan alur;Underpin=Mendasari;Allocate=Mengalokasikan;Prioritise=Memprioritaskan;Mitigate=Mengurangi dampak;Empower=Memberdayakan;Integrate=Mengintegrasikan;Adapt=Menyesuaikan;Collaborate=Berkolaborasi",
-"C1 · Kalimat formal":"I would like to draw your attention to this.=Saya ingin menarik perhatian Anda pada hal ini.;With regard to your question, here is my answer.=Berkaitan dengan pertanyaan Anda, ini jawaban saya.;I appreciate your concern.=Saya menghargai kekhawatiran Anda.;Your child has made significant progress.=Anak Anda telah membuat kemajuan signifikan.;There are areas we can work on together.=Ada hal yang bisa kita tingkatkan bersama.;I suggest we review the learning plan.=Saya sarankan kita tinjau rencana belajarnya.;Let me clarify what I meant.=Izinkan saya memperjelas maksud saya.;I would be happy to arrange a meeting.=Dengan senang hati saya atur pertemuan.;Please do not hesitate to contact me.=Jangan ragu menghubungi saya.;We are committed to supporting every learner.=Kami berkomitmen mendukung setiap murid.;As the person in charge, I will oversee this.=Sebagai penanggung jawab, saya akan mengawasinya.;I will keep you informed of any updates.=Saya akan mengabari Anda soal perkembangan.;Could we reschedule to a more convenient time?=Bisakah kita jadwalkan ulang ke waktu yang lebih cocok?;That is a valid point.=Itu poin yang masuk akal.;I see it differently, if I may.=Saya melihatnya berbeda, jika boleh."
+"C1 · Kalimat formal":"I would like to draw your attention to this.=Saya ingin menarik perhatian Anda pada hal ini.;With regard to your question, here is my answer.=Berkaitan dengan pertanyaan Anda, ini jawaban saya.;I appreciate your concern.=Saya menghargai kekhawatiran Anda.;Your child has made significant progress.=Anak Anda telah membuat kemajuan signifikan.;There are areas we can work on together.=Ada hal yang bisa kita tingkatkan bersama.;I suggest we review the learning plan.=Saya sarankan kita tinjau rencana belajarnya.;Let me clarify what I meant.=Izinkan saya memperjelas maksud saya.;I would be happy to arrange a meeting.=Dengan senang hati saya atur pertemuan.;Please do not hesitate to contact me.=Jangan ragu menghubungi saya.;We are committed to supporting every learner.=Kami berkomitmen mendukung setiap murid.;As the person in charge, I will oversee this.=Sebagai penanggung jawab, saya akan mengawasinya.;I will keep you informed of any updates.=Saya akan mengabari Anda soal perkembangan.;Could we reschedule to a more convenient time?=Bisakah kita jadwalkan ulang ke waktu yang lebih cocok?;That is a valid point.=Itu poin yang masuk akal.;I see it differently, if I may.=Saya melihatnya berbeda, jika boleh.",
+"B1 · Kata kerja frasal":"Look up=Mencari di kamus;Look after=Menjaga;Find out=Mencari tahu;Fill in=Mengisi;Hand in=Mengumpulkan;Hand out=Membagikan;Set up=Menyiapkan;Carry on=Melanjutkan;Go over=Mengulas;Figure out=Memahami;Work out=Menemukan jawaban;Point out=Menunjukkan;Break down=Menguraikan;Catch up=Mengejar ketertinggalan;Keep up=Mengikuti;Give up=Menyerah;Sum up=Menyimpulkan;Come up with=Menemukan ide;Run out of=Kehabisan;Put off=Menunda",
+"B1 · Perasaan & sifat":"Worried=Khawatir;Excited=Antusias;Disappointed=Kecewa;Surprised=Terkejut;Confused=Bingung;Frustrated=Frustrasi;Grateful=Bersyukur;Curious=Penasaran;Anxious=Cemas;Satisfied=Puas;Embarrassed=Malu;Patient=Sabar;Stressed=Tertekan;Relieved=Lega;Cheerful=Ceria;Jealous=Iri;Annoyed=Kesal;Honest=Jujur;Generous=Dermawan;Optimistic=Optimis",
+"B1 · Kesehatan & keselamatan":"First aid=Pertolongan pertama;Fever=Demam;Headache=Sakit kepala;Cough=Batuk;Injury=Cedera;Medicine=Obat;Emergency=Darurat;Safety=Keselamatan;Fire drill=Latihan kebakaran;Wound=Luka;Bandage=Perban;Ambulance=Ambulans;Prescription=Resep;Symptom=Gejala;Recover=Pulih;Vaccine=Vaksin;Hygiene=Kebersihan;Wash hands=Cuci tangan;Healthy=Sehat;Dizzy=Pusing",
+"B2 · Teknologi di kelas":"Laptop=Laptop;Tablet=Tablet;Software=Perangkat lunak;Download=Mengunduh;Upload=Mengunggah;Password=Kata sandi;Link=Tautan;Screen=Layar;Online platform=Platform daring;Video call=Panggilan video;Attachment=Lampiran;Spreadsheet=Lembar hitung;Slide=Slide;Digital=Digital;Device=Perangkat;Keyboard=Papan ketik;Printer=Pencetak;Network=Jaringan;Backup=Cadangan;Screen share=Berbagi layar",
+"B2 · Kolokasi mengajar":"Raise concerns=Menyampaikan kekhawatiran;Meet deadlines=Memenuhi tenggat;Set goals=Menetapkan tujuan;Give feedback=Memberi umpan balik;Make progress=Membuat kemajuan;Take responsibility=Mengambil tanggung jawab;Pay attention=Memperhatikan;Keep records=Menyimpan catatan;Hold a meeting=Mengadakan rapat;Reach an agreement=Mencapai kesepakatan;Run an activity=Menjalankan kegiatan;Draw conclusions=Menarik kesimpulan;Make a decision=Mengambil keputusan;Take notes=Mencatat;Do research=Melakukan riset;Solve problems=Memecahkan masalah;Set an example=Memberi teladan;Build confidence=Membangun percaya diri;Show initiative=Menunjukkan inisiatif;Manage time=Mengatur waktu",
+"B2 · Kalimat mengajar":"Let's review what we learned yesterday.=Mari kita ulas yang kita pelajari kemarin.;Please work with a partner and compare your answers.=Silakan bekerja dengan pasangan dan bandingkan jawabanmu.;Who can explain this in their own words?=Siapa yang bisa menjelaskan ini dengan kata-katanya sendiri?;I would like you to reflect on your learning.=Saya ingin kalian merefleksikan pembelajaran kalian.;Make sure you check your work carefully.=Pastikan kalian memeriksa pekerjaan dengan teliti.;You have ten minutes to complete the task.=Kalian punya sepuluh menit untuk menyelesaikan tugas.;Can you give me an example from your own life?=Bisakah kamu memberi contoh dari hidupmu sendiri?;Let's discuss what went well and what to improve.=Mari kita bahas apa yang berjalan baik dan apa yang perlu diperbaiki.;Please support your answer with evidence.=Mohon dukung jawabanmu dengan bukti.;I am proud of how hard you worked today.=Saya bangga dengan kerja keras kalian hari ini.;Each group will present their findings to the class.=Tiap kelompok akan mempresentasikan temuannya ke kelas.;Take a moment to think before you answer.=Luangkan waktu berpikir sebelum menjawab.;If you need help, please ask a classmate first.=Jika butuh bantuan, tanyalah teman sekelas dulu.;We will assess your progress at the end of the unit.=Kami akan menilai kemajuanmu di akhir unit.;Try to use the new vocabulary in your writing.=Cobalah memakai kosakata baru dalam tulisanmu.",
+"C1 · Idiom & ungkapan profesional":"On the same page=Sepemahaman;Touch base=Berkomunikasi singkat;Step up=Meningkatkan upaya;Bear in mind=Ingatlah;Look into=Menyelidiki;Back up=Mendukung;Follow through=Menuntaskan;Reach out=Menghubungi;Get on board=Ikut bergabung;Take on=Mengambil tugas;Move forward=Melangkah maju;Draw attention to=Menarik perhatian pada;Take into account=Mempertimbangkan;In the long run=Dalam jangka panjang;Keep an eye on=Mengawasi;Go the extra mile=Berusaha lebih;Think outside the box=Berpikir kreatif;Raise awareness=Meningkatkan kesadaran;Cut corners=Mengambil jalan pintas;Learning curve=Kurva belajar",
+"C1 · Kata sifat & nuansa":"Thorough=Menyeluruh;Concise=Ringkas;Coherent=Runtut;Relevant=Relevan;Significant=Signifikan;Comprehensive=Komprehensif;Effective=Efektif;Flexible=Fleksibel;Consistent=Konsisten;Accurate=Akurat;Appropriate=Sesuai;Adequate=Memadai;Substantial=Besar;Subtle=Halus;Ambiguous=Ambigu;Genuine=Tulus;Persistent=Gigih;Diverse=Beragam;Rigorous=Ketat;Constructive=Membangun"
 };
 const ALL=[];
 for(const k in RAW)RAW[k].split(";").forEach(t=>{const[a,b,x]=t.split("=");ALL.push({en:a,id:b,ex:x||"",cat:k})});
@@ -149,7 +199,7 @@ const day=d=>d.toISOString().slice(0,10);
 function xp(n){const t=day(new Date());if(meta.last!==t){meta.streak=meta.last===day(new Date(Date.now()-864e5))?meta.streak+1:1;meta.last=t}meta.xp+=n;save();hdr()}
 const $=s=>document.querySelector(s),view=$("#view"),sel=$("#cat");
 let tab="card",lvl="Semua",cat="Semua",idx=0,flip=false,quiz=null,qm=0,q="";
-const LV=["Semua","A2","B2","C1"],lvOf=w=>w.cat.slice(0,2);
+const LV=["Semua","A2","B1","B2","C1"],lvOf=w=>w.cat.slice(0,2);
 const pool=()=>ALL.filter(w=>(lvl==="Semua"||lvOf(w)===lvl)&&(cat==="Semua"||w.cat===cat));
 const shuf=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
 function say(t){try{const u=new SpeechSynthesisUtterance(t);u.lang="en-US";u.rate=.85;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
@@ -161,10 +211,10 @@ function hdr(){
  $("#sprout").textContent=r<.1?"🌱":r<.35?"🌿":r<.7?"🪴":"🌳";
  $("#sub").textContent=`${ALL.length} kata tersedia, target 1000. Kurikulum Cambridge, dari A2 menuju C1.`;
  {const t=dstr(0),c=Object.values(srs).filter(v=>v.d<=t).length;$('[data-tab="srs"]').textContent="Ulang"+(c?" · "+c:"")}
- $("#stats").innerHTML=`<span class="pill">🔥 ${meta.streak} hari</span><span class="pill">⭐ ${meta.xp} XP</span><span class="pill">✅ ${n} kata hafal</span>`;
+ {const pc=Math.round(r*100);$("#stats").innerHTML=`<div class="c2 rc"><div class="ring" style="--p:${pc}"><b>${pc}%</b></div><div><small>Progres</small><br><strong>${n}/${ALL.length}</strong><br><span>kata dikuasai</span></div></div><div class="c2"><small>Streak</small><strong>🔥 ${meta.streak}</strong><span>hari berturut</span></div><div class="c2"><small>Poin</small><strong>⭐ ${meta.xp}</strong><span>XP terkumpul</span></div><div class="c2"><small>Target</small><strong>1000</strong><span>kata tersedia: ${ALL.length}</span></div>`}
  $("#lv").innerHTML=LV.map(l=>`<button class="chip ${l===lvl?"on":""}" data-lv="${l}">${l}<small>${pct(w=>l==="Semua"||lvOf(w)===l)}%</small></button>`).join("");
 }
-function fillCats(){const cs=["Semua",...Object.keys(RAW).filter(c=>lvl==="Semua"||c.startsWith(lvl))];sel.innerHTML=cs.map(c=>`<option>${c}</option>`).join("");if(!cs.includes(cat))cat="Semua";sel.value=cat}
+function fillCats(){const cs=["Semua",...Object.keys(RAW).filter(c=>lvl==="Semua"||c.startsWith(lvl)).sort((a,b)=>LV.indexOf(a.slice(0,2))-LV.indexOf(b.slice(0,2)))];sel.innerHTML=cs.map(c=>`<option>${c}</option>`).join("");if(!cs.includes(cat))cat="Semua";sel.value=cat}
 function progress(){const p=pool(),n=p.filter(w=>known[w.en]).length;return `<div class="bar"><i style="width:${p.length?n/p.length*100:0}%"></i></div><div class="meta"><span>Hafal: ${n} dari ${p.length}</span></div>`}
 function render(){document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab===tab));hdr();$(".row").style.display=$("#lv").style.display=tab==="tpl"?"none":"";tab==="card"?card():tab==="srs"?rv():tab==="quiz"?qz():tab==="list"?list():tpl()}
 function card(){
@@ -177,8 +227,9 @@ function card(){
 }
 function startQuiz(){quiz={qs:shuf(pool()).slice(0,10).map(w=>({w,o:shuf([w,...shuf(ALL.filter(x=>x.en!==w.en&&x.id!==w.id)).slice(0,3)])})),i:0,s:0,ans:null,miss:[]}}
 function qz(){
+ if(qm>=2)return pz();
  if(!quiz)startQuiz();
- const T=quiz.qs.length,seg=`<div class="seg"><button class="${qm?"":"on"}" data-a="qm" data-m="0">Tebak arti</button><button class="${qm?"on":""}" data-a="qm" data-m="1">Dengar &amp; tebak</button></div>`;
+ const T=quiz.qs.length,seg=segH();
  if(quiz.i>=T){
   const f=quiz.s===T;
   view.innerHTML=seg+`<div class="score">${quiz.s}/${T}</div><p class="center sub">${f?"Sempurna! Tunasmu makin tinggi.":quiz.s>=T*.7?"Bagus! Ulangi untuk nilai penuh.":"Ulangi kartunya dulu, lalu coba lagi."}</p>${quiz.miss.length?`<p class="meta" style="margin-top:16px">Perlu diulang:</p><div class="list">${quiz.miss.map(w=>`<div class="li"><div class="w"><b>${w.en}</b><span>${w.id}</span></div></div>`).join("")}</div>`:""}<div class="center"><button class="btn pri" data-a="restart">Main lagi</button></div>`;
@@ -405,19 +456,51 @@ function rv(){
  <div class="face back"><div class="tag">${w.cat}</div><div class="id">${w.id}</div>${w.ex?`<div class="ex">${w.ex}</div><button class="say" data-a="sayex">🔊 Dengar kalimat</button>`:""}</div></div></div>
  <div id="rate">${rq.flip?rbtn():`<p class="center sub" style="margin-top:14px">Seberapa ingat kamu? Pilihan muncul setelah kartu dibalik.</p>`}</div>`;
 }
+let px=null;
+const segH=()=>`<div class="seg">${["Tebak arti","Dengar &amp; tebak","Isi kalimat","Susun kalimat"].map((t,i)=>`<button class="${qm===i?"on":""}" data-a="qm" data-m="${i}">${t}</button>`).join("")}</div>`;
+const isS=w=>/^[A-Z]/.test(w.en)&&/[.?!]$/.test(w.en)&&w.en.split(" ").length>=3;
+const bare=t=>t.replace(/[^A-Za-z']/g,"");
+function startP(){
+ let p=pool().filter(isS),note=0;if(!p.length){p=ALL.filter(isS);note=1}
+ const all=ALL.filter(isS),big=w=>{const t=w.en.split(" ");let k=0;t.forEach((x,i)=>{if(bare(x).length>bare(t[k]).length)k=i});return k};
+ px={note,i:0,s:0,ans:null,miss:[],ord:[],qs:shuf(p).slice(0,10).map(w=>{const t=w.en.split(" ");
+  if(qm===2){const k=big(w),c=bare(t[k]).toLowerCase(),d=[...new Set(shuf(all).map(x=>bare(x.en.split(" ")[big(x)]).toLowerCase()).filter(x=>x!==c&&x.length>3))].slice(0,3);return {w,t,k,c,o:shuf([c,...d])}}
+  let b=t.map((x,i)=>i);for(let n=0;n<6;n++){b=shuf(b);if(b.some((x,i)=>x!==i))break}return {w,t,b}})};
+}
+function pz(){
+ if(!px)startP();
+ const T=px.qs.length,sg=segH();
+ if(px.i>=T){const f=px.s===T;
+  view.innerHTML=sg+`<div class="score">${px.s}/${T}</div><p class="center sub">${f?"Sempurna!":"Ulangi untuk memperkuat."}</p>${px.miss.length?`<p class="meta" style="margin-top:16px">Perlu diulang:</p><div class="list">${px.miss.map(w=>`<div class="li"><div class="w"><b>${w.en}</b><span>${w.id}</span></div></div>`).join("")}</div>`:""}<div class="center"><button class="btn pri" data-a="prestart">Main lagi</button></div>`;
+  if(f)confetti();return}
+ const q=px.qs[px.i],d=px.ans!==null,hd=`<div class="bar"><i style="width:${px.i/T*100}%"></i></div><div class="meta"><span>Soal ${px.i+1} dari ${T}</span><span>Skor ${px.s}</span></div>${px.note?`<p class="sub">Belum ada kalimat di pilihan ini, jadi diambil dari semua tema.</p>`:""}<p class="sub" style="margin-bottom:8px">Arti: ${q.w.id}</p>`;
+ if(qm===2){
+  const full=q.t.map((x,i)=>i===q.k?`<mark>${x}</mark>`:x).join(" "),blank=q.t.map((x,i)=>i===q.k?x.replace(bare(x),"_____"):x).join(" "),cap=t=>q.k===0?t[0].toUpperCase()+t.slice(1):t;
+  view.innerHTML=sg+hd+`<div class="q">${d?full:blank}</div><div class="opts">${q.o.map((o,j)=>`<button class="opt ${d&&o===q.c?"right":d&&j===px.ans?"wrong":""}" data-a="ppick" data-k="${j}" ${d?"disabled":""}>${cap(o)}</button>`).join("")}</div>${d?`<div class="acts"><button class="btn" data-a="say">🔊 Dengar</button><button class="btn pri" data-a="pnext">Lanjut</button></div>`:""}`;
+ }else{
+  view.innerHTML=sg+hd+`<p class="meta">Ketuk kata untuk menyusun kalimat:</p><div class="slots">${px.ord.map((i,n)=>`<button class="chipw on" data-a="prm" data-n="${n}" ${d?"disabled":""}>${q.t[i]}</button>`).join("")||'<span class="sub">...</span>'}</div><div class="bank">${q.b.filter(i=>!px.ord.includes(i)).map(i=>`<button class="chipw" data-a="padd" data-i="${i}" ${d?"disabled":""}>${q.t[i]}</button>`).join("")}</div>${d?`<div class="fb">${px.ans?"Benar!":"Yang benar:"} ${q.w.en}</div><div class="acts"><button class="btn" data-a="say">🔊 Dengar</button><button class="btn pri" data-a="pnext">Lanjut</button></div>`:`<div class="acts"><button class="btn" data-a="pclr">Ulangi</button><button class="btn ok" data-a="pchk">Periksa</button></div>`}`;
+ }
+}
 view.addEventListener("click",e=>{
  const b=e.target.closest("[data-a]");if(!b)return;const a=b.dataset.a,w=pool()[idx];
  if(a==="flip"){flip=!flip;view.querySelector(".card").classList.toggle("flipped",flip);if(flip)say(w.en)}
- else if(a==="say"){say(tab==="quiz"?quiz.qs[quiz.i].w.en:tab==="srs"?rq.q[rq.i].en:w.en)}
+ else if(a==="say"){say(tab==="quiz"?(qm>=2?px.qs[px.i]:quiz.qs[quiz.i]).w.en:tab==="srs"?rq.q[rq.i].en:w.en)}
  else if(a==="sayex"){say((tab==="srs"?rq.q[rq.i]:w).ex)}
  else if(a==="again"){go(1)}
  else if(a==="know"){if(!known[w.en]){known[w.en]=1;srs[w.en]={b:2,d:dstr(3)};saveS();xp(10);toast("+10 XP · Sudah hafal!")}go(1);hdr()}
- else if(a==="qm"){qm=+b.dataset.m;quiz=null;qz()}
+ else if(a==="qm"){qm=+b.dataset.m;quiz=null;px=null;qz()}
  else if(a==="pick"){const k=quiz.qs[quiz.i],j=+b.dataset.k;quiz.ans=j;if(k.o[j].en===k.w.en){quiz.s++;xp(5);toast("Benar! +5 XP")}else{quiz.miss.push(k.w);toast("Belum tepat")}qz()}
  else if(a==="next"){quiz.i++;quiz.ans=null;qz()}
  else if(a==="restart"){startQuiz();qz()}
  else if(a==="chk"){if(b.checked){known[b.dataset.w]=1;if(!srs[b.dataset.w])srs[b.dataset.w]={b:2,d:dstr(3)}}else{delete known[b.dataset.w];delete srs[b.dataset.w]}saveS();save();hdr();$("#prog").innerHTML=progress()}
  else if(a==="sayw"){say(b.dataset.w)}
+ else if(a==="ppick"){const q=px.qs[px.i],j=+b.dataset.k;px.ans=j;if(q.o[j]===q.c){px.s++;xp(5);toast("Benar! +5 XP")}else{px.miss.push(q.w);toast("Belum tepat")}pz()}
+ else if(a==="padd"){px.ord.push(+b.dataset.i);pz()}
+ else if(a==="prm"){px.ord.splice(+b.dataset.n,1);pz()}
+ else if(a==="pclr"){px.ord=[];pz()}
+ else if(a==="pchk"){const q=px.qs[px.i];if(px.ord.length<q.t.length){toast("Susun semua kata dulu");return}const ok=px.ord.map(i=>q.t[i]).join(" ")===q.w.en;px.ans=ok;if(ok){px.s++;xp(5);toast("Benar! +5 XP")}else px.miss.push(q.w);pz()}
+ else if(a==="pnext"){px.i++;px.ans=null;px.ord=[];pz()}
+ else if(a==="prestart"){startP();pz()}
  else if(a==="rstart"){const t=dstr(0),due=dueList(),nw=newList();if(nw.length)meta.nd={d:t,n:(meta.nd&&meta.nd.d===t?meta.nd.n:0)+nw.length};save();rq={q:shuf(due).concat(nw),i:0,flip:false,lap:new Set(),lapse:0,n:due.length+nw.length};rv()}
  else if(a==="rflip"){const c=view.querySelector(".card"),f=!c.classList.contains("flipped");c.classList.toggle("flipped");if(f){rq.flip=true;$("#rate").innerHTML=rbtn();say(rq.q[rq.i].en)}}
  else if(a==="rate"){rate(+b.dataset.r)}
@@ -433,10 +516,22 @@ view.addEventListener("touchend",e=>{if(tab!=="card")return;const dx=e.changedTo
 document.addEventListener("keydown",e=>{if(tab!=="card"||/INPUT|SELECT|BUTTON/.test(e.target.tagName))return;
  if(e.key===" "||e.key==="Enter"){e.preventDefault();const s=view.querySelector(".scene");if(s)s.click()}
  else if(e.key==="ArrowRight")go(1);else if(e.key==="ArrowLeft")go(-1)});
-$("#lv").addEventListener("click",e=>{const b=e.target.closest("[data-lv]");if(b){lvl=b.dataset.lv;cat="Semua";idx=0;flip=false;quiz=null;rq=null;fillCats();render()}});
+$("#lv").addEventListener("click",e=>{const b=e.target.closest("[data-lv]");if(b){lvl=b.dataset.lv;cat="Semua";idx=0;flip=false;quiz=null;px=null;rq=null;fillCats();render()}});
 document.querySelector(".tabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(b){tab=b.dataset.tab;render()}});
-sel.addEventListener("change",()=>{cat=sel.value;idx=0;flip=false;quiz=null;rq=null;render()});
+sel.addEventListener("change",()=>{cat=sel.value;idx=0;flip=false;quiz=null;px=null;rq=null;render()});
 $("#reset").addEventListener("click",()=>{if(confirm("Hapus semua progres hafalan?")){known={};srs={};rq=null;save();saveS();render()}});
+const HASH="1a0c625d6115054f3ece36b71c32c2ad071cdb3d0a217aa600e7323e3574c34b";
+async function sha(t){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(t));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
+function enter(){$("#login").hidden=true;document.body.classList.remove("lock");$("#who").textContent="Halo, Michelle"}
+function lock(){$("#login").hidden=false;document.body.classList.add("lock");$("#pw").value="";$("#lerr").textContent=""}
+$("#sp").addEventListener("change",e=>{$("#pw").type=e.target.checked?"text":"password"});
+$("#lf").addEventListener("submit",async e=>{e.preventDefault();let ok=false;
+ try{ok=(await sha($("#nm").value.trim().toLowerCase()+"|"+$("#pw").value.trim().toLowerCase()))===HASH}catch(x){$("#lerr").textContent="Browser ini belum mendukung login.";return}
+ if(ok){try{localStorage.setItem(KEY+"-auth","1")}catch(x){}enter()}
+ else{$("#lerr").textContent="Nama atau password salah. Coba lagi.";const c=$("#lcard");c.classList.remove("shake");void c.offsetWidth;c.classList.add("shake")}});
+$("#logout").addEventListener("click",()=>{try{localStorage.removeItem(KEY+"-auth")}catch(x){}lock()});
+let authed=false;try{authed=localStorage.getItem(KEY+"-auth")==="1"}catch(e){}
+authed?enter():lock();
 fillCats();render();
 </script>
 </body>
