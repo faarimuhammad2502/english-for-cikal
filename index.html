@@ -187,6 +187,11 @@ main{max-width:1120px}
 .chipsrow{display:flex;flex-wrap:wrap;gap:8px}
 .tcard ul{padding-left:20px;margin:0 0 8px}.tcard li{margin-bottom:4px}
 #ntx{width:100%;font:inherit;resize:vertical;line-height:1.6}
+.mic{background:var(--pri);color:var(--prib);padding:16px 30px;border-radius:99px;font-size:18px;font-weight:700;box-shadow:var(--sh)}
+.mic.live{animation:pulse 1s infinite}
+@keyframes pulse{50%{transform:scale(1.05)}}
+.sc{font:600 44px/1 Fredoka,sans-serif}.good{color:var(--ok)}.weak{color:var(--bad)}
+.okw{color:var(--ok);font-weight:700}.badw{color:var(--bad);font-weight:700;text-decoration:underline wavy}
 </style>
 </head>
 <body>
@@ -204,6 +209,7 @@ main{max-width:1120px}
     <button data-tab="srs">Ulang</button>
     <button data-tab="quiz">Latihan</button>
     <button data-tab="audio">Audio</button>
+    <button data-tab="lafal">Lafal</button>
     <button data-tab="list">Daftar</button>
     <button data-tab="dict">Kamus</button>
     <button data-tab="test">Tes Level</button>
@@ -310,7 +316,7 @@ function hdr(){
 }
 function fillCats(){const cs=["Semua",...Object.keys(RAW).filter(c=>lvl==="Semua"||c.startsWith(lvl)).sort((a,b)=>LV.indexOf(a.slice(0,2))-LV.indexOf(b.slice(0,2)))];sel.innerHTML=cs.map(c=>`<option>${c}</option>`).join("");if(!cs.includes(cat))cat="Semua";sel.value=cat}
 function progress(){const p=pool(),n=p.filter(w=>known[w.en]).length;return `<div class="bar"><i style="width:${p.length?n/p.length*100:0}%"></i></div><div class="meta"><span>Hafal: ${n} dari ${p.length}</span></div>`}
-function render(){audioStop(true);document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab===tab));hdr();$(".row").style.display=$("#lv").style.display=tab==="tpl"||tab==="dict"||tab==="test"||tab==="my"||tab==="note"?"none":"";tab==="card"?card():tab==="srs"?rv():tab==="quiz"?qz():tab==="list"?list():tab==="dict"?dict():tab==="test"?tst():tab==="my"?my():tab==="audio"?audio():tab==="note"?note():tpl()}
+function render(){audioStop(true);lfStop();document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab===tab));hdr();$(".row").style.display=$("#lv").style.display=tab==="tpl"||tab==="dict"||tab==="test"||tab==="my"||tab==="note"?"none":"";tab==="card"?card():tab==="srs"?rv():tab==="quiz"?qz():tab==="list"?list():tab==="dict"?dict():tab==="test"?tst():tab==="my"?my():tab==="audio"?audio():tab==="note"?note():tab==="lafal"?lafal():tpl()}
 function card(){
  const p=pool();if(idx>=p.length)idx=0;const w=p[idx];
  view.innerHTML=`<div id="prog">${progress()}</div><div class="scene in" data-a="flip" role="button" tabindex="0" aria-label="Balik kartu"><div class="card ${flip?"flipped":""}">
@@ -594,6 +600,15 @@ view.addEventListener("click",e=>{
  else if(a==="chk"){if(b.checked){known[b.dataset.w]=1;if(!srs[b.dataset.w])srs[b.dataset.w]={b:2,d:dstr(3)}}else{delete known[b.dataset.w];delete srs[b.dataset.w]}saveS();save();hdr();$("#prog").innerHTML=progress()}
  else if(a==="sayw"){say(b.dataset.w)}
  else if(a==="jump"){idx=+b.dataset.i;flip=false;card();view.scrollIntoView({block:"start"})}
+ else if(a==="lmode"){lf.mode=+b.dataset.v;lf.msg="";lafal()}
+ else if(a==="lstart"||a==="lhard"){if(a==="lhard")lf.mode=2;buildLf();if(!lf.qs.length){lf.run=0;lf.msg=lf.mode===1?"Belum ada kalimat di pilihan ini. Pilih level Semua atau tema lain.":lf.mode===2?"Belum ada kata sulit. Kerjakan sesi Kata dulu.":"Tidak ada kata di pilihan ini.";lafal();return}lf.msg="";lf.run=1;lafal()}
+ else if(a==="lmic"){if(lf.on){lfStop();lafal()}else listen()}
+ else if(a==="lsay"){say(lf.qs[lf.i].en)}
+ else if(a==="lsayw"){say(b.dataset.w)}
+ else if(a==="lself"){const v=+b.dataset.v?100:40;lf.tries++;lf.best=Math.max(lf.best,v);lf.cur={score:v,self:1};if(v>=80){LH[lf.qs[lf.i].en]=100;saveLH();if(!lf.paid){lf.paid=1;xp(5)}}lafal()}
+ else if(a==="lskip"){lfStop();lfNext(true)}
+ else if(a==="lnext"){lfStop();lfNext(false)}
+ else if(a==="lback"){lf.run=0;lf.msg="";lafal()}
  else if(a==="ntpl"){const t=NT[+b.dataset.i][1];NOTE=NOTE.trim()?NOTE.replace(/\s+$/,"")+"\n\n"+t:t;$("#ntx").value=NOTE;nsave();nupd();$("#ntx").focus()}
  else if(a==="nss"){ins(SS[+b.dataset.i]+" ")}
  else if(a==="nw"){ins(b.dataset.w+" ")}
@@ -725,7 +740,7 @@ function tst(){
  const q=ts.qs[ts.i];
  view.innerHTML=`<div class="bar"><i style="width:${ts.i/T*100}%"></i></div><div class="meta"><span>Bagian: ${SEC[q.s]}</span><span>Soal ${ts.i+1} dari ${T}</span></div>${q.p?`<div class="passage">${q.p}</div>`:""}${q.au?`<div class="center" style="margin:8px 0"><button class="say big" data-a="tplay" ${ts.plays>=2?"disabled":""}>🔊 Putar rekaman (sisa ${2-ts.plays}x)</button></div>`:""}<div class="q">${q.q}</div><div class="opts">${q.o.map((o,j)=>`<button class="opt ${ts.sel===j?"sel":""}" data-a="tpick" data-k="${j}">${o}</button>`).join("")}</div><div class="center" style="margin-top:14px"><button class="btn pri" data-a="tnext" ${ts.sel===null?"disabled":""}>${ts.i+1===T?"Selesai":"Lanjut"}</button></div>`;
 }
-const BK=[KEY,MK,KEY+"-srs",KEY+"-tpl",KEY+"-tests",KEY+"-mine",KEY+"-note"];
+const BK=[KEY,MK,KEY+"-srs",KEY+"-tpl",KEY+"-tests",KEY+"-mine",KEY+"-note",KEY+"-lafal"];
 function bkOut(){const o={app:"english-guru-cikal",v:1,t:new Date().toISOString(),data:{}};BK.forEach(k=>{try{const v=localStorage.getItem(k);if(v!==null)o.data[k]=v}catch(e){}});return JSON.stringify(o)}
 function bkIn(txt){let o;try{o=JSON.parse(txt)}catch(e){return "Teks cadangan tidak valid."}
  if(!o||o.app!=="english-guru-cikal"||!o.data)return "File ini bukan cadangan web ini.";
@@ -737,6 +752,7 @@ function bkIn(txt){let o;try{o=JSON.parse(txt)}catch(e){return "Teks cadangan ti
  try{TH=JSON.parse(localStorage.getItem(KEY+"-tests")||"[]")||[]}catch(e){TH=[]}
  try{loadMine(JSON.parse(localStorage.getItem(KEY+"-mine")||"[]"))}catch(e){loadMine([])}
  try{NOTE=localStorage.getItem(KEY+"-note")||""}catch(e){}
+ try{LH=JSON.parse(localStorage.getItem(KEY+"-lafal")||"{}")||{}}catch(e){LH={}}
  try{bedit=false;board()}catch(e){}
  fillCats();rq=null;quiz=null;px=null;ts=null;render();return ""}
 document.querySelector(".bk").addEventListener("click",e=>{const b=e.target.closest("[data-b]");if(!b)return;const k=b.dataset.b,m=$("#bkm");
@@ -855,15 +871,51 @@ function note(){
 function ins(txt){const a=$("#ntx"),s0=a.selectionStart==null?a.value.length:a.selectionStart,e0=a.selectionEnd==null?a.value.length:a.selectionEnd;a.value=a.value.slice(0,s0)+txt+a.value.slice(e0);const p=s0+txt.length;a.focus();try{a.setSelectionRange(p,p)}catch(e){}NOTE=a.value;nsave();nupd()}
 view.addEventListener("input",e=>{if(e.target.id==="ntx"){NOTE=e.target.value;nsave();nupd()}});
 view.addEventListener("change",e=>{if(e.target.id==="ncat"){ncat=e.target.value;nupd()}});
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+let LH={};try{LH=JSON.parse(localStorage.getItem(KEY+"-lafal")||"{}")||{}}catch(e){}
+const saveLH=()=>{try{localStorage.setItem(KEY+"-lafal",JSON.stringify(LH))}catch(e){}};
+const lf={run:0,mode:0,qs:[],i:0,res:[],cur:null,tries:0,best:0,paid:0,on:false,err:"",msg:"",rec:null};
+function lev(a,b){const m=a.length,n=b.length,d=Array.from({length:m+1},(_,i)=>[i]);for(let j=1;j<=n;j++)d[0][j]=j;for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[m][n]}
+const sim=(a,b)=>{a=nz(a);b=nz(b);const L=Math.max(a.length,b.length);return L?Math.round((1-lev(a,b)/L)*100):0};
+function lfStop(){lf.on=false;try{if(lf.rec)lf.rec.abort()}catch(e){}}
+function buildLf(){let p=pool();
+ if(lf.mode===1)p=p.filter(isS);else if(lf.mode===0)p=p.filter(w=>!isS(w)&&!w.en.includes(" – "));else p=ALL.filter(w=>LH[w.en]!==undefined&&LH[w.en]<80&&!w.en.includes(" – "));
+ lf.qs=shuf(p).slice(0,10);lf.i=0;lf.res=[];lf.cur=null;lf.tries=0;lf.best=0;lf.paid=0;lf.err=""}
+function lfScore(alts){const w=lf.qs[lf.i];lf.on=false;
+ const sc=Math.max(...alts.map(a=>sim(a,w.en)));lf.tries++;lf.best=Math.max(lf.best,sc);lf.cur={score:sc,heard:alts[0],alts};lf.err="";
+ LH[w.en]=Math.max(LH[w.en]||0,sc);saveLH();
+ if(sc>=80&&!lf.paid){lf.paid=1;xp(5);toast("Pelafalan jelas! +5 XP")}lafal()}
+function listen(){if(!SR)return;const r=new SR();r.lang="en-US";r.interimResults=false;r.maxAlternatives=5;r.continuous=false;lf.rec=r;lf.on=true;lf.err="";
+ r.onresult=e=>{lfScore(Array.from(e.results[0],a=>a.transcript))};
+ r.onerror=e=>{lf.on=false;lf.err={"not-allowed":"Izin mikrofon ditolak. Izinkan mikrofon di pengaturan browser, lalu coba lagi.","service-not-allowed":"Browser tidak mengizinkan pengenalan suara di halaman ini.","no-speech":"Tidak ada suara terdengar. Coba lagi dengan suara yang lebih jelas.","audio-capture":"Mikrofon tidak ditemukan.","network":"Pengenalan suara butuh koneksi internet."}[e.error]||"Terjadi kendala ("+e.error+"). Coba lagi.";lafal()};
+ r.onend=()=>{if(lf.on){lf.on=false;lf.err=lf.err||"Tidak ada suara terdengar. Coba lagi.";lafal()}};
+ try{r.start();lafal()}catch(x){lf.on=false;lf.err="Mikrofon belum bisa dipakai. Coba lagi.";lafal()}}
+function lfNext(skip){const w=lf.qs[lf.i];lf.res.push({w,score:skip?null:lf.best});lf.i++;lf.cur=null;lf.tries=0;lf.best=0;lf.paid=0;lf.err="";
+ if(lf.i>=lf.qs.length&&lf.res.filter(r=>r.score!=null).length>=5){xp(10);toast("Sesi lafal selesai! +10 XP")}lafal()}
+function lafal(){
+ if(!lf.run){
+  const M=["Kata","Kalimat","Kata sulit"];
+  view.innerHTML=`<div class="tcard"><h3>Tes Pelafalan 🎤</h3><p class="sub" style="margin-bottom:12px">Dengarkan contoh, lalu ucapkan kata atau kalimatnya. Browser akan menebak apa yang kamu ucapkan, dan kemiripannya dengan kata target jadi skor. Satu sesi berisi 10 soal, dan tiap soal boleh dicoba berkali-kali. Level dan tema mengikuti panel filter.</p><div class="seg">${M.map((t,i)=>`<button class="${lf.mode===i?"on":""}" data-a="lmode" data-v="${i}">${t}</button>`).join("")}</div>${lf.msg?`<p class="lerr">${lf.msg}</p>`:""}<div class="center" style="margin-top:14px"><button class="btn pri" data-a="lstart" style="padding:14px 30px">Mulai sesi</button></div><p class="sub" style="margin-top:14px">${SR?"Di Chrome dan Edge, suara diproses oleh layanan pengenalan suara browser dan butuh internet, dan browser akan meminta izin mikrofon.":"Browser ini belum mendukung pengenalan suara, jadi tes memakai mode tiru mandiri: kamu menilai sendiri. Untuk penilaian otomatis, buka web ini di Chrome atau Edge."}</p><p class="sub">Skor menunjukkan seberapa jelas ucapanmu dipahami browser. Ini bukan penilaian aksen, dan hasilnya bisa berbeda antar perangkat.</p></div>`;return}
+ const T=lf.qs.length;
+ if(lf.i>=T){
+  const sc=lf.res.filter(r=>r.score!=null),avg=sc.length?Math.round(sc.reduce((a,r)=>a+r.score,0)/sc.length):0,ok=sc.filter(r=>r.score>=80).length;
+  view.innerHTML=`<div class="tcard center"><small>Rata-rata skor</small><div class="score">${avg}%</div><p>${avg>=85?"Pelafalanmu sangat jelas.":avg>=70?"Cukup jelas. Latih kata yang masih lemah.":"Perlu banyak latihan. Dengarkan contoh lalu tirukan pelan-pelan."}</p><p class="sub">${ok} dari ${sc.length} kata sudah jelas (skor 80 ke atas)</p></div><div class="tcard"><h4>Hasil per soal</h4><div class="list">${lf.res.map(r=>`<div class="li"><div class="w"><b>${r.w.en}</b><span>${r.w.id}</span></div><b class="${r.score!=null&&r.score>=80?"good":"weak"}">${r.score==null?"dilewati":r.score+"%"}</b><button data-a="lsayw" data-w="${r.w.en}" aria-label="Dengarkan">🔊</button></div>`).join("")}</div></div><div class="acts"><button class="btn" data-a="lhard">Latih kata sulit</button><button class="btn pri" data-a="lback">Sesi baru</button></div>`;return}
+ const w=lf.qs[lf.i],c=lf.cur;
+ let fb="";
+ if(lf.err)fb=`<p class="lerr">${lf.err}</p>`;
+ else if(c&&c.self)fb=`<p class="center sub">${c.score>=80?"Bagus! Lanjut ke soal berikutnya.":"Tidak apa-apa. Dengarkan lagi dan ulangi."}</p>`;
+ else if(c){const hw=new Set(nz(c.alts.join(" ")).split(" ")),tw=w.en.split(" ");
+  fb=`<div class="tcard center"><div class="sc ${c.score>=80?"good":"weak"}">${c.score}%</div><p>${c.score>=90?"Sangat jelas!":c.score>=80?"Jelas!":c.score>=60?"Hampir tepat. Coba lagi pelan-pelan.":"Belum terbaca. Dengarkan contoh lalu coba lagi."}</p><p class="sub">Browser mendengar: <b>${esc(c.heard)}</b></p>${tw.length>1?`<p>${tw.map(x=>`<span class="${hw.has(nz(x))?"okw":"badw"}">${esc(x)}</span>`).join(" ")}</p>`:""}</div>`}
+ view.innerHTML=`<div class="bar"><i style="width:${lf.i/T*100}%"></i></div><div class="meta"><span>Soal ${lf.i+1} dari ${T}</span><span>Percobaan ${lf.tries}</span></div><div class="tcard center"><small>${w.cat}</small><div class="en${w.en.length>20?" long":""}">${w.en}</div><div class="id" style="color:var(--pri)">${w.id}</div><div style="margin-top:12px"><button class="say" data-a="lsay">🔊 Dengarkan contoh</button></div></div><div class="center" style="margin:14px 0">${SR?`<button class="mic ${lf.on?"live":""}" data-a="lmic">${lf.on?"🎤 Mendengarkan... bicara sekarang":c?"🎤 Coba lagi":"🎤 Tekan lalu ucapkan"}</button>`:`<div class="acts"><button class="btn" data-a="lself" data-v="0">Perlu latihan</button><button class="btn ok" data-a="lself" data-v="1">Sudah mirip</button></div>`}</div>${fb}<div class="acts"><button class="btn" data-a="lskip">Lewati</button><button class="btn pri" data-a="lnext" ${c?"":"disabled"}>${lf.i+1===T?"Selesai":"Lanjut"}</button></div>`}
 let sx=0;
 view.addEventListener("touchstart",e=>{sx=e.touches[0].clientX},{passive:true});
 view.addEventListener("touchend",e=>{if(tab!=="card")return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>70)go(dx<0?1:-1)});
 document.addEventListener("keydown",e=>{if(tab!=="card"||/INPUT|SELECT|TEXTAREA/.test(e.target.tagName))return;
  if(e.key===" "||e.key==="Enter"){if(e.target.tagName==="BUTTON")return;e.preventDefault();const s=view.querySelector(".scene");if(s)s.click()}
  else if(e.key==="ArrowRight")go(1);else if(e.key==="ArrowLeft")go(-1)});
-$("#lv").addEventListener("click",e=>{const b=e.target.closest("[data-lv]");if(b){lvl=b.dataset.lv;cat="Semua";idx=0;flip=false;quiz=null;px=null;rq=null;fillCats();render()}});
+$("#lv").addEventListener("click",e=>{const b=e.target.closest("[data-lv]");if(b){lvl=b.dataset.lv;cat="Semua";idx=0;flip=false;quiz=null;px=null;rq=null;lf.run=0;fillCats();render()}});
 document.querySelector(".tabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(b){tab=b.dataset.tab;render()}});
-sel.addEventListener("change",()=>{cat=sel.value;idx=0;flip=false;quiz=null;px=null;rq=null;render()});
+sel.addEventListener("change",()=>{cat=sel.value;idx=0;flip=false;quiz=null;px=null;rq=null;lf.run=0;render()});
 $("#reset").addEventListener("click",()=>{if(confirm("Hapus semua progres hafalan?")){known={};srs={};rq=null;save();saveS();render()}});
 const HASH="1a0c625d6115054f3ece36b71c32c2ad071cdb3d0a217aa600e7323e3574c34b";
 async function sha(t){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(t));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
