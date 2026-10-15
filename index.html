@@ -15,7 +15,7 @@
 <main>
  <div class="app">
   <aside class="sidebar">
-   <div class="topbar"><div class="brand"><span class="logo">M</span>English Academy <span class="rolebadge" id="rolebadge" hidden>ADMIN</span></div><div class="clock" id="clock" aria-label="Tanggal dan jam"></div><div class="user"><span id="who"></span><button id="logout">Keluar</button></div></div>
+   <div class="topbar"><div class="brand"><span class="logo">M</span>English Academy <span class="rolebadge" id="rolebadge" hidden>ADMIN</span></div><div class="clock" id="clock" aria-label="Tanggal dan jam"></div><div class="syncst" id="syncst" role="status"></div><div class="user"><span id="who"></span><button id="logout">Keluar</button></div></div>
    <nav class="sidenav" id="sidenav" aria-label="Menu"></nav>
   </aside>
   <section class="content">
@@ -64,6 +64,8 @@
 <div id="login" class="login"><div class="lc" id="lcard"><div class="logo">M</div><h2>English untuk Guru Cikal</h2><p class="sub">Masuk untuk melanjutkan belajarmu.</p>
 <form id="lf" autocomplete="on"><label for="nm">Nama (MICHELLE atau ADMIN)</label><input class="search" id="nm" name="username" value="MICHELLE" autocomplete="username"><label for="pw">Password</label><input class="search" id="pw" name="password" type="password" autocomplete="current-password" placeholder="Masukkan password"><label class="show"><input type="checkbox" id="sp"> Tampilkan password</label><div class="lerr" id="lerr" role="alert"></div><button class="btn" type="submit">Masuk</button></form></div></div>
 <div id="toast" class="toast" role="status"></div>
+<script src="config.js"></script>
+<script src="supabase.js"></script>
 <script src="01-data.js"></script>
 <script src="02-core.js"></script>
 <script src="03-templates.js"></script>
@@ -75,7 +77,8 @@
 <script src="09-notes-board.js"></script>
 <script src="10-pronunciation.js"></script>
 <script src="11-navigation-progress.js"></script>
-<script src="12-app.js"></script>
+<script src="12-cloud.js"></script>
+<script src="13-app.js"></script>
 <script>
 if("serviceWorker" in navigator&&(location.protocol==="https:"||location.hostname==="localhost")){window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{})})}
 </script>

@@ -44,6 +44,16 @@ Di komputer, menu berada di panel kiri. Di HP, menu berada di bilah bawah dengan
 - **Tes**: Tes Level (42 soal gaya Cambridge), Kemajuan (grafik)
 - **Alat**: Kata Saya, Template, Admin (khusus admin), Cadangan, Pasang aplikasi
 
+## Supabase (login, sinkron, dasbor admin)
+- Login memakai **Supabase Auth** (email dan password). Akun dibuat manual di dashboard Supabase (Authentication > Users); pendaftaran bebas sebaiknya dimatikan.
+- Skema database dan aturan akses (RLS) ada di `supabase-setup.sql`. Tabel: `profiles`, `progress`, `notes`, `app_settings`.
+- Progres tersinkron otomatis tiap beberapa detik setelah ada perubahan, dan digabung saat masuk dari perangkat lain. Tanpa internet, data tetap tersimpan di perangkat dan dikirim saat online.
+- **Admin** dapat melihat ringkasan progres semua pengguna, membuat pengumuman, dan mematikan fitur untuk semua pengguna. **Catatan guru tidak bisa dibaca admin** (dijaga oleh RLS).
+- `config.js` berisi alamat proyek dan kunci **publishable** (aman ditaruh di web). **Jangan pernah** menaruh kunci `secret` atau `service_role` di sini.
+- Jika `config.js` kosong atau pustaka tidak termuat, web memakai mode lokal tanpa server.
+- Pustaka `supabase.js` adalah supabase-js 2.117.2, disimpan di web sendiri agar bisa dipakai offline.
+- Mengganti password: lewat Supabase (Authentication > Users > klik pengguna > Send password recovery / Update).
+
 ## Dua akun
 - **MICHELLE** (tema pink) dan **ADMIN** (tema biru-ungu, lencana ADMIN, panel Admin) memakai **data yang terpisah** di browser yang sama.
 - Pengaturan fitur yang dimatikan admin berlaku untuk menu pengguna di browser yang sama.
