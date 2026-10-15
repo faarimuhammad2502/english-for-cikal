@@ -21,14 +21,15 @@ async function doLogin(){const n=$("#nm").value.trim().toLowerCase(),p=$("#pw").
 function enter(r){ROLE=r==="admin"?"admin":"user";$("#login").hidden=true;document.body.classList.remove("lock");$("#who").textContent=ROLE==="admin"?"Admin":"Halo, Michelle";navUI()}
 function lock(){ROLE="user";if(tab==="admin")tab="home";$("#login").hidden=false;document.body.classList.add("lock");$("#pw").value="";$("#lerr").textContent=""}
 $("#sp").addEventListener("change",e=>{$("#pw").type=e.target.checked?"text":"password"});
-$("#lf").addEventListener("submit",async e=>{e.preventDefault();let r=null;
+$("#lf").addEventListener("submit",async e=>{e.preventDefault();let r=null;$("#lerr").style.color="";
  if(window.SB_CFG&&!CLOUD){$("#lerr").textContent="Layanan login belum termuat. Muat ulang halaman dengan internet aktif.";return}
- try{r=CLOUD?await cloudLogin():await doLogin()}catch(x){$("#lerr").textContent=CLOUD?({bad:"Email atau password salah.",unconfirmed:"Email belum dikonfirmasi di Supabase (Authentication > Users).",key:"Kunci proyek Supabase ditolak. Periksa config.js.",net:"Tidak bisa terhubung ke server. Periksa internet dan coba lagi.",noprofile:"Akun belum terdaftar di aplikasi. Hubungi admin.",perm:"Database menolak akses tabel. Jalankan SQL izin (grant) di Supabase.",notable:"Tabel database belum ada atau belum terbaca. Jalankan supabase-setup.sql.",dbfail:"Server database bermasalah saat membaca profil."}[x.message]||"Login gagal karena kendala server.")+(x.detail?" ["+x.detail+"]":""):"Browser ini belum mendukung login.";if(CLOUD&&x.message==="bad"){const c=$("#lcard");c.classList.remove("shake");void c.offsetWidth;c.classList.add("shake")}return}
+ try{r=CLOUD?await cloudLogin():await doLogin()}catch(x){if(x.message==="mfa"){showMfa();return}$("#lerr").textContent=CLOUD?({bad:"Email atau password salah.",unconfirmed:"Email belum dikonfirmasi di Supabase (Authentication > Users).",key:"Kunci proyek Supabase ditolak. Periksa config.js.",net:"Tidak bisa terhubung ke server. Periksa internet dan coba lagi.",noprofile:"Akun belum terdaftar di aplikasi. Hubungi admin.",perm:"Database menolak akses tabel. Jalankan SQL izin (grant) di Supabase.",notable:"Tabel database belum ada atau belum terbaca. Jalankan supabase-setup.sql.",dbfail:"Server database bermasalah saat membaca profil."}[x.message]||"Login gagal karena kendala server.")+(x.detail?" ["+x.detail+"]":""):"Browser ini belum mendukung login.";if(CLOUD&&x.message==="bad"){const c=$("#lcard");c.classList.remove("shake");void c.offsetWidth;c.classList.add("shake")}return}
  if(r){let ok2=true;try{localStorage.setItem(AUTHK,r==="admin"?"admin":"1")}catch(x){ok2=false}if(ok2)location.reload();else{enter(r);render()}}
  else{$("#lerr").textContent="Nama atau password salah. Coba lagi.";const c=$("#lcard");c.classList.remove("shake");void c.offsetWidth;c.classList.add("shake")}});
 $("#logout").addEventListener("click",doLogout);
 let av="";try{av=localStorage.getItem(AUTHK)||""}catch(e){}
 (av==="1"||av==="admin")?enter(av):lock();
+if(window.__pwMsg){const el=$("#lerr");el.style.color="var(--ok)";el.textContent="Password berhasil diganti. Silakan masuk."}
 if(CLOUD)cloudBoot(av);
 fillCats();render();
 

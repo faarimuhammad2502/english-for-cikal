@@ -80,6 +80,20 @@ view.addEventListener("click",async e=>{
  else if(a==="sayw"){say(b.dataset.w)}
  else if(a==="jump"){idx=+b.dataset.i;flip=false;card();view.scrollIntoView({block:"start"})}
  else if(a==="admref"){loadUsers()}
+ else if(a==="admpw"){const uid=b.dataset.uid,inp=document.querySelector(`.pwx[data-uid="${uid}"]`),pw=inp?inp.value:"",e=pwCheck(pw,"");if(e){toast(e);return}
+  if(!confirm("Atur ulang password pengguna ini? Ia harus masuk dengan password baru."))return;
+  const r=await sb.rpc("admin_set_password",{target_id:uid,new_password:pw});
+  if(r.error){toast(/does not exist|PGRST202/i.test(r.error.message+(r.error.code||""))?"Jalankan supabase-akun.sql dulu":"Gagal: "+r.error.message);return}
+  inp.value="";toast("Password diatur ulang")}
+ else if(a==="acpw"){const p1=$("#pw1").value,p2=$("#pw2").value,m=$("#pwm");if(p1!==p2){m.textContent="Kedua password harus sama.";return}const e=pwCheck(p1);if(e){m.textContent=e;return}
+  m.textContent="Menyimpan...";const r=await sb.auth.updateUser({password:p1});m.textContent=r.error?"Gagal: "+r.error.message:"Password berhasil diganti.";if(!r.error){$("#pw1").value="";$("#pw2").value=""}}
+ else if(a==="acout"){try{await sb.auth.signOut({scope:"global"})}catch(x){}try{localStorage.removeItem(AUTHK)}catch(x){}location.reload()}
+ else if(a==="aclo"){doLogout()}
+ else if(a==="mfaon"){mfaEnroll()}
+ else if(a==="mfaver"){const code=$("#mfaenc").value.replace(/\D/g,"");if(code.length!==6){$("#mfam").textContent="Masukkan 6 angka.";return}
+  const v=await sb.auth.mfa.challengeAndVerify({factorId:SYNC.enrollId,code});if(v.error){$("#mfam").textContent="Kode salah. Coba lagi dengan kode terbaru.";return}
+  await mfaStatus();$("#mfam").textContent="2FA aktif.";toast("2FA diaktifkan")}
+ else if(a==="mfaoff"){if(confirm("Nonaktifkan 2FA?")){const r=await sb.auth.mfa.unenroll({factorId:b.dataset.id});await mfaStatus();$("#mfam").textContent=r.error?"Gagal: "+r.error.message:"2FA dinonaktifkan."}}
  else if(a==="annsave"){CFG.ann=cl($("#annx").value,300);try{localStorage.setItem(CFGK,JSON.stringify(CFG))}catch(x){}const ok=CLOUD?await cloudCfgPush():true;$("#annm").textContent=ok?"Pengumuman disimpan.":"Gagal menyimpan ke server."}
  else if(a==="admbk"){copy(bkOut());$("#admm").textContent="Cadangan disalin ke papan klip."}
  else if(a==="admlo"){doLogout()}

@@ -2,7 +2,7 @@ const CLOUD_MARK=1;
 let sb=null;
 try{if(window.SB_CFG&&SB_CFG.url&&SB_CFG.key&&window.supabase&&supabase.createClient)sb=supabase.createClient(SB_CFG.url,SB_CFG.key,{auth:{persistSession:true,autoRefreshToken:true,storageKey:"english-guru-cikal-sb"}})}catch(e){}
 const CLOUD=!!sb;
-const SYNC={uid:"",busy:false,snap:"",last:null,notePushed:null,started:false,err:""};
+const SYNC={uid:"",busy:false,snap:"",last:null,notePushed:null,started:false,err:"",email:"",pendingRole:"",enrollId:""};
 const SKEYS=()=>({known:KEY,meta:MK,srs:KEY+"-srs",tpl:KEY+"-tpl",tests:KEY+"-tests",mine:KEY+"-mine",lafal:KEY+"-lafal"});
 function collect(){const o={},K=SKEYS();for(const n in K){try{const v=localStorage.getItem(K[n]);if(v!==null)o[n]=JSON.parse(v)}catch(e){}}return o}
 function summaryOf(){const t=dstr(0),last=TH[TH.length-1],lv=Object.values(LH).filter(x=>typeof x==="number");
@@ -68,7 +68,7 @@ async function pullCfg(){
 async function cloudCfgPush(){
  try{const r=await sb.from("app_settings").upsert({key:"config",value:{off:CFG.off,ann:CFG.ann||""},updated_at:new Date().toISOString()},{onConflict:"key"});return!r.error}catch(e){return false}}
 async function cloudStart(session){
- if(SYNC.started)return;SYNC.started=true;SYNC.uid=session.user.id;syncUI("sync");
+ if(SYNC.started)return;SYNC.started=true;SYNC.uid=session.user.id;SYNC.email=session.user.email||"";syncUI("sync");
  try{
   const pr=await sb.from("profiles").select("role").eq("id",SYNC.uid).maybeSingle();
   if(pr.data){const want=pr.data.role==="admin"?"admin":"1";let cur="";try{cur=localStorage.getItem(AUTHK)||""}catch(e){}if(cur!==want){try{localStorage.setItem(AUTHK,want)}catch(e){}location.reload();return}}
@@ -93,7 +93,10 @@ async function cloudLogin(){
   if(pr.error){const e=pr.error,c=e.code||"",m=e.message||"";const er=new Error((/permission denied/i.test(m)||c==="42501")?"perm":(/relation|schema cache|PGRST205|PGRST106/i.test(m+c)?"notable":"dbfail"));er.detail=(c||"-")+" ("+(pr.status||"?")+"): "+m;throw er}
   throw new Error("noprofile")}
  try{localStorage.setItem("english-guru-cikal-last-email",email)}catch(e){}
- return pr.data.role==="admin"?"admin":"user"}
+ const role=pr.data.role==="admin"?"admin":"user";
+ const a=await sb.auth.mfa.getAuthenticatorAssuranceLevel();
+ if(a.data&&a.data.nextLevel==="aal2"&&a.data.currentLevel!=="aal2"){SYNC.pendingRole=role;throw new Error("mfa")}
+ return role}
 async function doLogout(){try{if(sb&&SYNC.uid)await push(true)}catch(e){}try{if(sb)await sb.auth.signOut()}catch(e){}try{localStorage.removeItem(AUTHK)}catch(e){}location.reload()}
 if(CLOUD){const nm=$("#nm");nm.type="email";nm.placeholder="email@contoh.com";nm.autocomplete="username";try{nm.value=localStorage.getItem("english-guru-cikal-last-email")||""}catch(e){nm.value=""}const lb=document.querySelector('label[for="nm"]');if(lb)lb.textContent="Email"}
 const ago=iso=>{const m=Math.round((Date.now()-new Date(iso).getTime())/60000);if(isNaN(m))return"-";const d=new Date(iso).toLocaleString("id-ID",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});return(m<1?"baru saja":m<60?m+" menit lalu":m<1440?Math.round(m/60)+" jam lalu":Math.round(m/1440)+" hari lalu")+" ("+d+")"};
@@ -102,7 +105,52 @@ async function loadUsers(){
  const [p,g]=await Promise.all([sb.from("profiles").select("id,display_name,role"),sb.from("progress").select("user_id,summary,updated_at")]);
  if(p.error||g.error){el.innerHTML=`<p class="lerr">Gagal memuat: ${esc((p.error||g.error).message)}</p>`;return}
  const gm={};(g.data||[]).forEach(r=>gm[r.user_id]=r);const N=x=>esc(String(x==null?"-":x));
- el.innerHTML=`<div class="ulist">${(p.data||[]).map(u=>{const r=gm[u.id],s=(r&&r.summary)||{};return `<div class="urow"><div class="uh"><b>${esc(u.display_name||"(tanpa nama)")}</b><span class="rolebadge${u.role==="admin"?"":" rb-user"}">${esc(u.role)}</span></div>${r?`<div class="ugrid"><span>Kata dikuasai <b>${N(s.known)}/${N(s.total)}</b></span><span>XP <b>${N(s.xp)}</b></span><span>Streak <b>${N(s.streak)}</b></span><span>Target hari ini <b>${N(s.today)}/${N(s.goal)}</b></span><span>Ulangan tertunda <b>${N(s.due)}</b></span><span>Tes terakhir <b>${s.test?N(s.test.est)+" · "+N(s.test.tot)+"%":"belum"}</b></span><span>Lafal <b>${s.lafal==null?"-":N(s.lafal)+"%"}</b></span></div><div class="sub">Aktif terakhir: ${ago(r.updated_at)}</div>`:`<div class="sub">Belum ada data. Pengguna ini belum pernah masuk.</div>`}</div>`}).join("")}</div>`}
+ el.innerHTML=`<div class="ulist">${(p.data||[]).map(u=>{const r=gm[u.id],s=(r&&r.summary)||{};return `<div class="urow"><div class="uh"><b>${esc(u.display_name||"(tanpa nama)")}</b><span class="rolebadge${u.role==="admin"?"":" rb-user"}">${esc(u.role)}</span></div>${r?`<div class="ugrid"><span>Kata dikuasai <b>${N(s.known)}/${N(s.total)}</b></span><span>XP <b>${N(s.xp)}</b></span><span>Streak <b>${N(s.streak)}</b></span><span>Target hari ini <b>${N(s.today)}/${N(s.goal)}</b></span><span>Ulangan tertunda <b>${N(s.due)}</b></span><span>Tes terakhir <b>${s.test?N(s.test.est)+" · "+N(s.test.tot)+"%":"belum"}</b></span><span>Lafal <b>${s.lafal==null?"-":N(s.lafal)+"%"}</b></span></div><div class="sub">Aktif terakhir: ${ago(r.updated_at)}</div>`:`<div class="sub">Belum ada data. Pengguna ini belum pernah masuk.</div>`}${u.id!==SYNC.uid?`<div class="uact"><input class="search pwx" type="password" data-uid="${esc(u.id)}" placeholder="Password baru (min. 10)" autocomplete="new-password"><button class="btn" data-a="admpw" data-uid="${esc(u.id)}">Atur ulang password</button></div>`:""}</div>`}).join("")}</div>`}
 function adminP(){adminP0();if(ROLE!=="admin")return;
  view.firstElementChild.insertAdjacentHTML("afterend",`<div class="tcard"><h3>☁️ Pengguna dan progres</h3>${CLOUD?`<p class="sub">Ringkasan dari server. Catatan guru tidak ikut terlihat.</p><div id="admusers"><p class="sub">Memuat...</p></div><button class="btn" data-a="admref" style="margin-top:10px">Muat ulang</button>`:`<p class="sub">Mode lokal: web belum terhubung ke server, jadi daftar pengguna tidak tersedia.</p>`}</div><div class="tcard"><h4>📢 Pengumuman untuk semua pengguna</h4><textarea class="search" id="annx" rows="3" maxlength="300" placeholder="Tulis pengumuman (kosongkan untuk menghapus)"></textarea><button class="btn pri" data-a="annsave" style="margin-top:8px">Simpan pengumuman</button><p class="bkm" id="annm"></p></div>`);
  const a=$("#annx");if(a)a.value=CFG.ann||"";if(CLOUD)loadUsers()}
+const WEAK=["bambuapus","semangatbelajar","password","12345678","qwerty","englishacademy","cikal"];
+function pwCheck(p,email){if(p.length<10)return"Minimal 10 karakter.";const l=p.toLowerCase();
+ if(!(p.length>=14||(/[A-Za-z]/.test(p)&&/\d/.test(p))))return"Gunakan kombinasi huruf dan angka, atau passphrase minimal 14 karakter.";
+ if(WEAK.some(w=>l.includes(w)))return"Password terlalu mudah ditebak. Hindari kata yang umum.";
+ const loc=(email==null?SYNC.email:email||"").split("@")[0].toLowerCase(),lt=loc.replace(/[^a-z]/g,"");if((loc.length>=4&&l.includes(loc))||(lt.length>=5&&l.includes(lt)))return"Jangan memakai bagian dari emailmu.";
+ if(new Set(p).size<5)return"Password terlalu monoton.";return""}
+function showMfa(){$("#lerr").textContent="";$("#lf").hidden=true;$("#fgt").hidden=true;$("#mfa").hidden=false;$("#mfacode").value="";$("#mfacode").focus()}
+async function verifyMfa(){const code=$("#mfacode").value.replace(/\D/g,""),er=$("#mfaerr");er.textContent="";if(code.length!==6){er.textContent="Masukkan 6 angka.";return}
+ const f=await sb.auth.mfa.listFactors(),t=f.data&&(f.data.totp||[]).find(x=>x.status==="verified");
+ if(!t){er.textContent="Faktor 2FA tidak ditemukan.";return}
+ const v=await sb.auth.mfa.challengeAndVerify({factorId:t.id,code});
+ if(v.error){er.textContent="Kode salah atau kedaluwarsa. Coba lagi.";return}
+ try{localStorage.setItem(AUTHK,SYNC.pendingRole==="admin"?"admin":"1")}catch(e){}location.reload()}
+function showRecovery(){$("#login").hidden=false;document.body.classList.add("lock");$("#lcard").hidden=true;$("#rcard").hidden=false;$("#np1").focus()}
+if(CLOUD){
+ $("#fgt").hidden=false;
+ $("#mfabtn").addEventListener("click",verifyMfa);
+ $("#mfacode").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();verifyMfa()}});
+ $("#fgt").addEventListener("click",async()=>{const email=$("#nm").value.trim().toLowerCase(),el=$("#lerr");if(!email){el.textContent="Isi email dulu di kolom Email.";return}
+  el.style.color="";el.textContent="Mengirim...";let r={};try{r=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname})}catch(e){}
+  el.textContent=(r.error&&r.error.status===429)?"Terlalu sering meminta. Tunggu beberapa menit lalu coba lagi.":"Jika email terdaftar, tautan pengaturan ulang password akan dikirim. Cek juga folder spam."});
+ sb.auth.onAuthStateChange(ev=>{if(ev==="PASSWORD_RECOVERY")showRecovery()});
+ $("#rf").addEventListener("submit",async e=>{e.preventDefault();const a=$("#np1").value,b=$("#np2").value,er=$("#rerr");
+  if(a!==b){er.textContent="Kedua password harus sama.";return}
+  const m=pwCheck(a,"");if(m){er.textContent=m;return}
+  const r=await sb.auth.updateUser({password:a});if(r.error){er.textContent="Gagal menyimpan: "+r.error.message;return}
+  try{await sb.auth.signOut()}catch(x){}try{localStorage.removeItem(AUTHK);sessionStorage.setItem("english-pw-changed","1")}catch(x){}
+  history.replaceState(null,"",location.pathname);location.reload()});
+ try{if(sessionStorage.getItem("english-pw-changed")){sessionStorage.removeItem("english-pw-changed");window.__pwMsg=1}}catch(e){}
+}
+function acct(){
+ if(!CLOUD){view.innerHTML=`<div class="tcard"><h3>👤 Akun</h3><p class="sub">Fitur akun (ganti password, 2FA) tersedia setelah web terhubung ke Supabase.</p></div>`;return}
+ view.innerHTML=`<div class="tcard"><h3>👤 Akun</h3><p class="sub">Masuk sebagai <b>${esc(SYNC.email||"-")}</b> (${ROLE==="admin"?"admin":"pengguna"}).</p><div class="acts"><button class="btn" data-a="aclo">Keluar</button><button class="btn" data-a="acout">Keluar dari semua perangkat</button></div></div>
+ <div class="tcard"><h4>🔑 Ganti password</h4><p class="sub">Minimal 10 karakter dengan kombinasi huruf dan angka, atau passphrase 14 karakter ke atas.</p><input class="search" id="pw1" type="password" autocomplete="new-password" placeholder="Password baru"><input class="search" id="pw2" type="password" autocomplete="new-password" placeholder="Ulangi password baru" style="margin-top:8px"><button class="btn pri" data-a="acpw" style="margin-top:10px">Ganti password</button><p class="bkm" id="pwm" role="status"></p></div>
+ <div class="tcard"><h4>🛡️ Verifikasi dua langkah (2FA)</h4><div id="mfaarea"><p class="sub">Memuat...</p></div></div>`;
+ mfaStatus()}
+async function mfaStatus(){const el=$("#mfaarea");if(!el)return;
+ const f=await sb.auth.mfa.listFactors(),t=f.data&&(f.data.totp||[]).find(x=>x.status==="verified");
+ el.innerHTML=t?`<p>✅ 2FA <b>aktif</b>. Saat masuk, kamu diminta kode dari aplikasi autentikator.</p><button class="btn bad" data-a="mfaoff" data-id="${esc(t.id)}">Nonaktifkan 2FA</button><p class="bkm" id="mfam"></p>`:`<p class="sub">${ROLE==="admin"?"Sangat disarankan untuk akun admin, karena admin bisa melihat progres semua pengguna. ":"Opsional, menambah keamanan akun. "}Gunakan aplikasi seperti Google Authenticator atau Authy.</p><button class="btn pri" data-a="mfaon">Aktifkan 2FA</button><div id="mfaenr"></div><p class="bkm" id="mfam"></p>`}
+async function mfaEnroll(){const m=$("#mfam");m.textContent="";
+ const r=await sb.auth.mfa.enroll({factorType:"totp",friendlyName:"Authenticator-"+Date.now().toString(36)});
+ if(r.error){m.textContent="Gagal: "+r.error.message+" (pastikan MFA TOTP aktif di pengaturan Supabase)";return}
+ SYNC.enrollId=r.data.id;
+ $("#mfaenr").innerHTML=`<p class="sub" style="margin-top:12px">1. Pindai kode QR ini dengan aplikasi autentikator.</p><img id="mfaqr" class="qr" alt="Kode QR 2FA"><p class="sub">Atau ketik kunci ini secara manual: <code>${esc(r.data.totp.secret)}</code></p><p class="sub">2. Masukkan kode 6 angka yang tampil di aplikasi.</p><input class="search" id="mfaenc" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code"><button class="btn pri" data-a="mfaver" style="margin-top:8px">Aktifkan</button>`;
+ $("#mfaqr").src=r.data.totp.qr_code}

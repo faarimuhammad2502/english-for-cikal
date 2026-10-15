@@ -33,6 +33,7 @@
     <button data-tab="my">Kata Saya</button>
     <button data-tab="note">Catatan</button>
     <button data-tab="tpl">Template</button>
+    <button data-tab="acct">Akun</button>
     <button data-tab="admin" hidden>Admin</button>
   </div>
    <div class="filters">
@@ -62,7 +63,11 @@
  </div>
 </main>
 <div id="login" class="login"><div class="lc" id="lcard"><div class="logo">M</div><h2>English untuk Guru Cikal</h2><p class="sub">Masuk untuk melanjutkan belajarmu.</p>
-<form id="lf" autocomplete="on"><label for="nm">Nama (MICHELLE atau ADMIN)</label><input class="search" id="nm" name="username" value="MICHELLE" autocomplete="username"><label for="pw">Password</label><input class="search" id="pw" name="password" type="password" autocomplete="current-password" placeholder="Masukkan password"><label class="show"><input type="checkbox" id="sp"> Tampilkan password</label><div class="lerr" id="lerr" role="alert"></div><button class="btn" type="submit">Masuk</button></form></div></div>
+<form id="lf" autocomplete="on"><label for="nm">Nama (MICHELLE atau ADMIN)</label><input class="search" id="nm" name="username" value="MICHELLE" autocomplete="username"><label for="pw">Password</label><input class="search" id="pw" name="password" type="password" autocomplete="current-password" placeholder="Masukkan password"><label class="show"><input type="checkbox" id="sp"> Tampilkan password</label><div class="lerr" id="lerr" role="alert"></div><button class="btn" type="submit">Masuk</button></form>
+<button class="linkbtn" id="fgt" type="button" hidden>Lupa password?</button>
+<div id="mfa" hidden><p class="sub" style="margin-top:14px">Masukkan kode 6 angka dari aplikasi autentikator.</p><input class="search" id="mfacode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000"><div class="lerr" id="mfaerr" role="alert"></div><button class="btn" id="mfabtn" type="button">Verifikasi</button></div></div>
+<div class="lc" id="rcard" hidden><div class="logo">M</div><h2>Buat password baru</h2><p class="sub">Masukkan password baru untuk akunmu.</p>
+<form id="rf"><label for="np1">Password baru</label><input class="search" id="np1" type="password" autocomplete="new-password"><label for="np2">Ulangi password baru</label><input class="search" id="np2" type="password" autocomplete="new-password"><div class="lerr" id="rerr" role="alert"></div><button class="btn" type="submit">Simpan password</button></form></div></div>
 <div id="toast" class="toast" role="status"></div>
 <script src="config.js"></script>
 <script src="supabase.js"></script>

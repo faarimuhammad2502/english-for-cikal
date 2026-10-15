@@ -1,5 +1,5 @@
 const G=[["beranda","🏠","Beranda"],["belajar","📖","Belajar"],["latihan","✍️","Latihan"],["tes","🎯","Tes"],["alat","🧰","Alat"]];
-const TG={home:"beranda",card:"belajar",srs:"belajar",audio:"belajar",list:"belajar",dict:"belajar",quiz:"latihan",lafal:"latihan",note:"latihan",test:"tes",prog:"tes",admin:"alat",my:"alat",tpl:"alat"};
+const TG={home:"beranda",card:"belajar",srs:"belajar",audio:"belajar",list:"belajar",dict:"belajar",quiz:"latihan",lafal:"latihan",note:"latihan",test:"tes",prog:"tes",acct:"alat",admin:"alat",my:"alat",tpl:"alat"};
 const gtab={beranda:"home",belajar:"card",latihan:"quiz",tes:"test",alat:"my"};
 function navUI(){const g=TG[tab]||"belajar";gtab[g]=tab;
  $("#gnav").innerHTML=G.map(x=>`<button class="${x[0]===g?"on":""}" data-g="${x[0]}" aria-label="${x[2]}"><span aria-hidden="true">${x[1]}</span>${x[2]}</button>`).join("");
@@ -53,8 +53,8 @@ function adminP0(){
  <div class="tcard"><h4>Fitur yang ditampilkan untuk pengguna</h4><p class="sub">Matikan tab yang belum dibutuhkan. Admin tetap melihat semuanya.</p><div class="chipsrow">${Object.keys(TN).map(k=>`<label class="chk"><input type="checkbox" data-cf="${k}" ${CFG.off.includes(k)?"":"checked"}> ${TN[k]}</label>`).join("")}</div></div>
  <div class="tcard"><h4>Alat</h4><div class="acts3"><button class="btn" data-a="admbk">Salin cadangan</button><button class="btn" data-a="admlo">Keluar</button><button class="btn bad" data-a="admrs">Hapus semua data</button></div><p class="bkm" id="admm"></p></div>`}
 view.addEventListener("change",e=>{const k=e.target.dataset&&e.target.dataset.cf;if(!k)return;CFG.off=CFG.off.filter(x=>x!==k);if(!e.target.checked)CFG.off.push(k);try{localStorage.setItem(CFGK,JSON.stringify(CFG))}catch(x){}toast("Pengaturan disimpan");navUI();if(typeof CLOUD!=="undefined"&&CLOUD&&ROLE==="admin")cloudCfgPush()});
-const NAVG=[["",["home"]],["Belajar",["card","srs","audio","list","dict"]],["Latihan",["quiz","lafal","note"]],["Tes",["test","prog"]],["Alat",["my","tpl","admin"]]];
-const TI={home:"🏠 Beranda",card:"🃏 Kartu",srs:"🔁 Ulang",audio:"🎧 Audio",list:"📋 Daftar",dict:"📚 Kamus",quiz:"✍️ Latihan",lafal:"🎤 Lafal",note:"📝 Catatan",test:"🎯 Tes Level",prog:"📈 Kemajuan",my:"➕ Kata Saya",tpl:"✉️ Template",admin:"🛠️ Admin"};
+const NAVG=[["",["home"]],["Belajar",["card","srs","audio","list","dict"]],["Latihan",["quiz","lafal","note"]],["Tes",["test","prog"]],["Alat",["my","tpl","acct","admin"]]];
+const TI={home:"🏠 Beranda",card:"🃏 Kartu",srs:"🔁 Ulang",audio:"🎧 Audio",list:"📋 Daftar",dict:"📚 Kamus",quiz:"✍️ Latihan",lafal:"🎤 Lafal",note:"📝 Catatan",test:"🎯 Tes Level",prog:"📈 Kemajuan",my:"➕ Kata Saya",tpl:"✉️ Template",acct:"👤 Akun",admin:"🛠️ Admin"};
 function sideNav(){const el=$("#sidenav");if(!el)return;
  el.innerHTML=NAVG.map(([h,ts])=>{const v=ts.filter(t=>t==="admin"?ROLE==="admin":(t==="home"||ROLE==="admin"||!CFG.off.includes(t)));return v.length?(h?`<div class="ngh">${h}</div>`:"")+v.map(t=>`<button class="nl ${t===tab?"on":""}" data-nav="${t}">${TI[t]}</button>`).join(""):""}).join("")}
 const goto=t=>{tab=t;render();window.scrollTo(0,0)};
