@@ -271,3 +271,7 @@ html[data-role="admin"] body{background-image:url("data:image/svg+xml,%3Csvg xml
 .uh{display:flex;align-items:center;gap:8px;margin-bottom:8px}.rb-user{background:var(--mute)}
 .ugrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px 12px;font-size:14px;margin-bottom:6px}.ugrid b{color:var(--pri)}
 @media (min-width:900px){.sidebar .syncst{order:0}}
+.hgrid{grid-template-columns:repeat(2,1fr)}
+.hgrid .lvl,.hgrid .adm{grid-column:1/-1}
+.lvl .tb{grid-template-columns:130px 1fr 52px}
+@media (max-width:700px){.hgrid{grid-template-columns:1fr}}
