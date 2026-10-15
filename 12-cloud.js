@@ -2,7 +2,7 @@ const CLOUD_MARK=1;
 let sb=null;
 try{if(window.SB_CFG&&SB_CFG.url&&SB_CFG.key&&window.supabase&&supabase.createClient)sb=supabase.createClient(SB_CFG.url,SB_CFG.key,{auth:{persistSession:true,autoRefreshToken:true,storageKey:"english-guru-cikal-sb"}})}catch(e){}
 const CLOUD=!!sb;
-const SYNC={uid:"",busy:false,snap:"",last:null,notePushed:null,started:false};
+const SYNC={uid:"",busy:false,snap:"",last:null,notePushed:null,started:false,err:""};
 const SKEYS=()=>({known:KEY,meta:MK,srs:KEY+"-srs",tpl:KEY+"-tpl",tests:KEY+"-tests",mine:KEY+"-mine",lafal:KEY+"-lafal"});
 function collect(){const o={},K=SKEYS();for(const n in K){try{const v=localStorage.getItem(K[n]);if(v!==null)o[n]=JSON.parse(v)}catch(e){}}return o}
 function summaryOf(){const t=dstr(0),last=TH[TH.length-1],lv=Object.values(LH).filter(x=>typeof x==="number");
@@ -31,7 +31,7 @@ function reloadState(){
  fillCats();rq=null;quiz=null;px=null;ts=null;board();render()}
 function applyData(d){const K=SKEYS();for(const n in K){if(d[n]!==undefined){try{localStorage.setItem(K[n],JSON.stringify(d[n]))}catch(e){}}}}
 function syncUI(st){const el=$("#syncst");if(!el)return;const t=SYNC.last?SYNC.last.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"}).replace(".",":"):"";
- el.textContent=st==="ok"?`☁️ Tersinkron ${t}`:st==="sync"?"☁️ Menyinkronkan...":st==="off"?"📴 Offline: data aman di perangkat":st==="err"?"⚠️ Sinkron gagal, dicoba lagi":""}
+ el.textContent=st==="ok"?`☁️ Tersinkron ${t}`:st==="sync"?"☁️ Menyinkronkan...":st==="off"?"📴 Offline: data aman di perangkat":st==="err"?"⚠️ Sinkron gagal"+(SYNC.err?" ("+String(SYNC.err).slice(0,40)+")":"")+", dicoba lagi":""}
 async function push(force){
  if(!sb||!SYNC.uid||SYNC.busy)return;
  const d=collect(),snap=JSON.stringify(d)+"|"+NOTE;
@@ -42,8 +42,8 @@ async function push(force){
   const r=await sb.from("progress").upsert({user_id:SYNC.uid,data:d,summary:summaryOf(),updated_at:now},{onConflict:"user_id"});
   if(r.error)throw r.error;
   if(NOTE!==SYNC.notePushed){const n=await sb.from("notes").upsert({user_id:SYNC.uid,body:NOTE,updated_at:now},{onConflict:"user_id"});if(n.error)throw n.error;SYNC.notePushed=NOTE;try{localStorage.setItem(KEY+"-note-pushed",NOTE)}catch(e){}}
-  SYNC.snap=snap;SYNC.last=new Date();syncUI("ok")
- }catch(e){syncUI(navigator.onLine?"err":"off")}
+  SYNC.snap=snap;SYNC.last=new Date();SYNC.err="";syncUI("ok")
+ }catch(e){SYNC.err=e&&(e.code||e.message)||"";syncUI(navigator.onLine?"err":"off")}
  SYNC.busy=false}
 async function pullMerge(){
  const r=await sb.from("progress").select("data,updated_at").eq("user_id",SYNC.uid).maybeSingle();
@@ -73,7 +73,7 @@ async function cloudStart(session){
   const pr=await sb.from("profiles").select("role").eq("id",SYNC.uid).maybeSingle();
   if(pr.data){const want=pr.data.role==="admin"?"admin":"1";let cur="";try{cur=localStorage.getItem(AUTHK)||""}catch(e){}if(cur!==want){try{localStorage.setItem(AUTHK,want)}catch(e){}location.reload();return}}
   await pullCfg();await pullMerge();
- }catch(e){syncUI(navigator.onLine?"err":"off")}
+ }catch(e){SYNC.err=e&&(e.code||e.message)||"";syncUI(navigator.onLine?"err":"off")}
  setInterval(()=>push(false),8000);setInterval(()=>{pullCfg().catch(()=>{})},300000);
  document.addEventListener("visibilitychange",()=>{if(document.hidden)push(false)});
  window.addEventListener("online",()=>push(true))}
@@ -85,9 +85,13 @@ function cloudBoot(av){
 async function cloudLogin(){
  const email=$("#nm").value.trim().toLowerCase(),password=$("#pw").value;
  const r=await sb.auth.signInWithPassword({email,password});
- if(r.error){throw new Error(/invalid|credential|password/i.test(r.error.message)?"bad":"net")}
+ if(r.error){const e=r.error,code=e.code||"",st=e.status||0,m=e.message||"";
+  const kind=(code==="invalid_credentials"||/invalid login credentials/i.test(m))?"bad":(code==="email_not_confirmed"||/not confirmed/i.test(m))?"unconfirmed":(/api key|apikey/i.test(m)||st===401)?"key":(st===0||/fetch|network|load failed/i.test(m))?"net":"other";
+  const er=new Error(kind);er.detail=(code||"-")+" ("+(st||"?")+")"+(kind==="bad"?"":": "+m);throw er}
  const pr=await sb.from("profiles").select("role").eq("id",r.data.user.id).maybeSingle();
- if(pr.error||!pr.data){try{await sb.auth.signOut()}catch(e){}throw new Error(pr.error?"net":"noprofile")}
+ if(pr.error||!pr.data){try{await sb.auth.signOut()}catch(e){}
+  if(pr.error){const e=pr.error,c=e.code||"",m=e.message||"";const er=new Error((/permission denied/i.test(m)||c==="42501")?"perm":(/relation|schema cache|PGRST205|PGRST106/i.test(m+c)?"notable":"dbfail"));er.detail=(c||"-")+" ("+(pr.status||"?")+"): "+m;throw er}
+  throw new Error("noprofile")}
  try{localStorage.setItem("english-guru-cikal-last-email",email)}catch(e){}
  return pr.data.role==="admin"?"admin":"user"}
 async function doLogout(){try{if(sb&&SYNC.uid)await push(true)}catch(e){}try{if(sb)await sb.auth.signOut()}catch(e){}try{localStorage.removeItem(AUTHK)}catch(e){}location.reload()}
