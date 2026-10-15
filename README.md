@@ -37,10 +37,16 @@ Semua file sejajar di akar repositori, tanpa folder: `index.html`, `style.css`, 
 - Jangan menulis data pribadi murid yang asli di tab Catatan.
 
 ## Menu
+Di komputer, menu berada di panel kiri. Di HP, menu berada di bilah bawah dengan sub-tab di atas isi.
+- **Beranda**: ringkasan belajar hari ini, statistik, tes level terakhir, penguasaan per level, jalan pintas, papan semangat
 - **Belajar**: Kartu, Ulang, Audio, Daftar, Kamus
-- **Latihan**: Latihan (tebak arti, dengar, isi kalimat, susun kalimat, ejaan), Lafal, Catatan
+- **Latihan**: Latihan (arti, dengar, isi kalimat, susun kalimat, ejaan), Lafal, Catatan
 - **Tes**: Tes Level (42 soal gaya Cambridge), Kemajuan (grafik)
-- **Alat**: Kata Saya, Template, Cadangan, Pasang aplikasi
+- **Alat**: Kata Saya, Template, Admin (khusus admin), Cadangan, Pasang aplikasi
+
+## Dua akun
+- **MICHELLE** (tema pink) dan **ADMIN** (tema biru-ungu, lencana ADMIN, panel Admin) memakai **data yang terpisah** di browser yang sama.
+- Pengaturan fitur yang dimatikan admin berlaku untuk menu pengguna di browser yang sama.
 
 ## Catatan teknis
 - Suara memakai Web Speech API bawaan browser. Kualitas dan suara bahasa Indonesia berbeda antar perangkat.

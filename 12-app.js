@@ -19,14 +19,14 @@ async function doLogin(){const n=$("#nm").value.trim().toLowerCase(),p=$("#pw").
  if(n==="admin")return(await pbk(p,AS))===AP?"admin":null;
  return null}
 function enter(r){ROLE=r==="admin"?"admin":"user";$("#login").hidden=true;document.body.classList.remove("lock");$("#who").textContent=ROLE==="admin"?"Admin":"Halo, Michelle";navUI()}
-function lock(){ROLE="user";if(tab==="admin")tab="card";$("#login").hidden=false;document.body.classList.add("lock");$("#pw").value="";$("#lerr").textContent=""}
+function lock(){ROLE="user";if(tab==="admin")tab="home";$("#login").hidden=false;document.body.classList.add("lock");$("#pw").value="";$("#lerr").textContent=""}
 $("#sp").addEventListener("change",e=>{$("#pw").type=e.target.checked?"text":"password"});
 $("#lf").addEventListener("submit",async e=>{e.preventDefault();let r=null;
  try{r=await doLogin()}catch(x){$("#lerr").textContent="Browser ini belum mendukung login.";return}
- if(r){try{localStorage.setItem(KEY+"-auth",r==="admin"?"admin":"1")}catch(x){}enter(r);render()}
+ if(r){let ok2=true;try{localStorage.setItem(AUTHK,r==="admin"?"admin":"1")}catch(x){ok2=false}if(ok2)location.reload();else{enter(r);render()}}
  else{$("#lerr").textContent="Nama atau password salah. Coba lagi.";const c=$("#lcard");c.classList.remove("shake");void c.offsetWidth;c.classList.add("shake")}});
-$("#logout").addEventListener("click",()=>{try{localStorage.removeItem(KEY+"-auth")}catch(x){}lock();render()});
-let av="";try{av=localStorage.getItem(KEY+"-auth")||""}catch(e){}
+$("#logout").addEventListener("click",()=>{try{localStorage.removeItem(AUTHK)}catch(x){}location.reload()});
+let av="";try{av=localStorage.getItem(AUTHK)||""}catch(e){}
 (av==="1"||av==="admin")?enter(av):lock();
 fillCats();render();
 

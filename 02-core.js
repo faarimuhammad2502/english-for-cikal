@@ -1,4 +1,5 @@
-const KEY="english-guru-cikal",MK=KEY+"-meta";
+const AUTHK="english-guru-cikal-auth",CFGK="english-guru-cikal-cfg";let _r="";try{_r=localStorage.getItem(AUTHK)||""}catch(e){}
+const KEY=_r==="admin"?"english-guru-cikal-admin":"english-guru-cikal",MK=KEY+"-meta";document.documentElement.dataset.role=_r==="admin"?"admin":"user";
 let known={},meta={xp:0,streak:0,last:""};
 try{known=JSON.parse(localStorage.getItem(KEY)||"{}")||{}}catch(e){}
 try{Object.assign(meta,JSON.parse(localStorage.getItem(MK)||"{}"))}catch(e){}
@@ -6,7 +7,7 @@ const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(known));localStorage
 const day=d=>d.toISOString().slice(0,10);
 function xp(n){const t=day(new Date());if(meta.last!==t){meta.streak=meta.last===day(new Date(Date.now()-864e5))?meta.streak+1:1;meta.last=t}meta.xp+=n;save();hdr()}
 const $=s=>document.querySelector(s),view=$("#view"),sel=$("#cat");
-let tab="card",lvl="Semua",cat="Semua",idx=0,flip=false,quiz=null,qm=0,q="";
+let tab="home",lvl="Semua",cat="Semua",idx=0,flip=false,quiz=null,qm=0,q="";
 const LV=["Semua","A1","A2","B1","B2","C1","C2"],lvOf=w=>w.cat.slice(0,2);
 const pool=()=>ALL.filter(w=>(lvl==="Semua"||lvOf(w)===lvl)&&(cat==="Semua"||w.cat===cat));
 const shuf=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
@@ -17,14 +18,14 @@ const pct=f=>{const p=ALL.filter(f);return p.length?Math.round(p.filter(w=>known
 function hdr(){
  const n=ALL.filter(w=>known[w.en]).length,r=n/ALL.length;
  $("#sprout").textContent=r<.1?"🌱":r<.35?"🌿":r<.7?"🪴":"🌳";
- $("#sub").textContent=`${ALL.length} kata tersedia, target 1000. Kurikulum Cambridge, dari A1 menuju C2.`;
+ $("#sub").textContent=`${ALL.length} kata tersedia. Kurikulum Cambridge, dari A1 menuju C2.`;
  {const t=dstr(0),c=Object.values(srs).filter(v=>v.d<=t).length;$('[data-tab="srs"]').textContent="Ulang"+(c?" · "+c:"")}
  {const pc=Math.round(r*100),td=meta.td&&meta.td.d===dstr(0)?meta.td.w.length:0,g=meta.goal||10;$("#stats").innerHTML=`<div class="c2 rc"><div class="ring" style="--p:${pc}"><b>${pc}%</b></div><div><small>Progres</small><br><strong>${n}/${ALL.length}</strong><br><span>kata dikuasai</span></div></div><div class="c2"><small>Streak</small><strong>🔥 ${meta.streak}</strong><span>hari berturut</span></div><div class="c2"><small>Poin</small><strong>⭐ ${meta.xp}</strong><span>XP terkumpul</span></div><div class="c2 tg"><small>Target hari ini</small><strong>${td}/${g}</strong><div class="bar" style="margin-top:6px"><i style="width:${Math.min(100,td/g*100)}%"></i></div><span>kata dipelajari</span></div>`}
  $("#lv").innerHTML=LV.map(l=>`<button class="chip ${l===lvl?"on":""}" data-lv="${l}">${l}<small>${pct(w=>l==="Semua"||lvOf(w)===l)}%</small></button>`).join("");
 }
 function fillCats(){const cs=["Semua",...Object.keys(RAW).filter(c=>lvl==="Semua"||c.startsWith(lvl)).sort((a,b)=>LV.indexOf(a.slice(0,2))-LV.indexOf(b.slice(0,2)))];sel.innerHTML=cs.map(c=>`<option>${c}</option>`).join("");if(!cs.includes(cat))cat="Semua";sel.value=cat}
 function progress(){const p=pool(),n=p.filter(w=>known[w.en]).length;return `<div class="bar"><i style="width:${p.length?n/p.length*100:0}%"></i></div><div class="meta"><span>Hafal: ${n} dari ${p.length}</span></div>`}
-function render(){if(ROLE!=="admin"&&(tab==="admin"||CFG.off.includes(tab)))tab=Object.keys(TG).find(t=>t!=="admin"&&!CFG.off.includes(t))||"card";audioStop(true);lfStop();navUI();hdr();$(".row").style.display=$("#lv").style.display=tab==="tpl"||tab==="dict"||tab==="test"||tab==="my"||tab==="note"||tab==="prog"||tab==="admin"?"none":"";tab==="card"?card():tab==="srs"?rv():tab==="quiz"?qz():tab==="list"?list():tab==="dict"?dict():tab==="test"?tst():tab==="my"?my():tab==="audio"?audio():tab==="note"?note():tab==="lafal"?lafal():tab==="prog"?prog():tab==="admin"?adminP():tpl()}
+function render(){if(ROLE!=="admin"&&(tab==="admin"||CFG.off.includes(tab)))tab=Object.keys(TG).find(t=>t!=="admin"&&!CFG.off.includes(t))||"card";audioStop(true);lfStop();navUI();hdr();$(".row").style.display=$("#lv").style.display=tab==="tpl"||tab==="dict"||tab==="test"||tab==="my"||tab==="note"||tab==="prog"||tab==="admin"||tab==="home"?"none":"";tab==="home"?home():tab==="card"?card():tab==="srs"?rv():tab==="quiz"?qz():tab==="list"?list():tab==="dict"?dict():tab==="test"?tst():tab==="my"?my():tab==="audio"?audio():tab==="note"?note():tab==="lafal"?lafal():tab==="prog"?prog():tab==="admin"?adminP():tpl()}
 function card(){
  const p=pool();if(idx>=p.length)idx=0;const w=p[idx];
  view.innerHTML=`<div id="prog">${progress()}</div><div class="scene in" data-a="flip" role="button" tabindex="0" aria-label="Balik kartu"><div class="card ${flip?"flipped":""}">

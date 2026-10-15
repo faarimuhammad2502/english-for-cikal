@@ -13,14 +13,14 @@
 </head>
 <body>
 <main>
-  <div class="topbar"><div class="brand"><span class="logo">M</span>English Academy</div><div class="clock" id="clock" aria-label="Tanggal dan jam"></div><div class="user"><span id="who"></span><button id="logout">Keluar</button></div></div>
-  <div class="layout"><aside class="side">
-  <header class="hero"><div class="sprout" id="sprout" aria-hidden="true">🌱</div><div><h1>English untuk Guru Cikal</h1><p class="sub" id="sub"></p></div></header>
-  <div class="dash" id="stats"></div>
-    <div class="tcard board" id="board"></div>
-  </aside><section class="content">
-  <nav class="gnav" id="gnav" aria-label="Menu utama"></nav>
-  <div class="tabs">
+ <div class="app">
+  <aside class="sidebar">
+   <div class="topbar"><div class="brand"><span class="logo">M</span>English Academy <span class="rolebadge" id="rolebadge" hidden>ADMIN</span></div><div class="clock" id="clock" aria-label="Tanggal dan jam"></div><div class="user"><span id="who"></span><button id="logout">Keluar</button></div></div>
+   <nav class="sidenav" id="sidenav" aria-label="Menu"></nav>
+  </aside>
+  <section class="content">
+   <nav class="gnav" id="gnav" aria-label="Menu utama"></nav>
+   <div class="tabs">
     <button data-tab="card" class="on">Kartu</button>
     <button data-tab="srs">Ulang</button>
     <button data-tab="quiz">Latihan</button>
@@ -35,12 +35,18 @@
     <button data-tab="tpl">Template</button>
     <button data-tab="admin" hidden>Admin</button>
   </div>
-  <div class="filters">
+   <div class="filters">
     <div class="chips" id="lv" role="group" aria-label="Level"></div>
     <div class="row"><select id="cat" aria-label="Pilih tema"></select></div>
   </div>
-  <div id="view"></div>
-  <details class="bk"><summary>Cadangan &amp; pemulihan data</summary>
+   <section id="home">
+    <header class="hero"><div class="sprout" id="sprout" aria-hidden="true">🌱</div><div><h1 id="greet"></h1><p class="sub" id="sub"></p></div></header>
+    <div class="dash" id="stats"></div>
+    <div id="homeinfo"></div>
+    <div class="tcard board" id="board"></div>
+   </section>
+   <div id="view" hidden></div>
+   <details class="bk"><summary>Cadangan &amp; pemulihan data</summary>
   <p class="sub">Progres tersimpan di browser perangkat ini. Unduh cadangan secara berkala, atau saat ingin pindah HP atau komputer.</p>
   <div class="acts3"><button class="btn" data-b="dl">Unduh file</button><button class="btn" data-b="cp">Salin teks</button><button class="btn" data-b="file">Pilih file</button></div>
   <input type="file" id="bkf" accept=".json,application/json" hidden>
@@ -52,7 +58,8 @@
   <button class="btn pri" id="pwabtn" hidden>Pasang sekarang</button>
   <p class="bkm" id="pwam" role="status"></p></details>
   <button class="reset" id="reset">Hapus progres hafalan</button>
-  </section></div>
+  </section>
+ </div>
 </main>
 <div id="login" class="login"><div class="lc" id="lcard"><div class="logo">M</div><h2>English untuk Guru Cikal</h2><p class="sub">Masuk untuk melanjutkan belajarmu.</p>
 <form id="lf" autocomplete="on"><label for="nm">Nama (MICHELLE atau ADMIN)</label><input class="search" id="nm" name="username" value="MICHELLE" autocomplete="username"><label for="pw">Password</label><input class="search" id="pw" name="password" type="password" autocomplete="current-password" placeholder="Masukkan password"><label class="show"><input type="checkbox" id="sp"> Tampilkan password</label><div class="lerr" id="lerr" role="alert"></div><button class="btn" type="submit">Masuk</button></form></div></div>

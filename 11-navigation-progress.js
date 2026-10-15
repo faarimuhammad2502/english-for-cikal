@@ -1,11 +1,11 @@
-const G=[["belajar","📖","Belajar"],["latihan","✍️","Latihan"],["tes","🎯","Tes"],["alat","🧰","Alat"]];
-const TG={card:"belajar",srs:"belajar",audio:"belajar",list:"belajar",dict:"belajar",quiz:"latihan",lafal:"latihan",note:"latihan",test:"tes",prog:"tes",admin:"alat",my:"alat",tpl:"alat"};
-const gtab={belajar:"card",latihan:"quiz",tes:"test",alat:"my"};
+const G=[["beranda","🏠","Beranda"],["belajar","📖","Belajar"],["latihan","✍️","Latihan"],["tes","🎯","Tes"],["alat","🧰","Alat"]];
+const TG={home:"beranda",card:"belajar",srs:"belajar",audio:"belajar",list:"belajar",dict:"belajar",quiz:"latihan",lafal:"latihan",note:"latihan",test:"tes",prog:"tes",admin:"alat",my:"alat",tpl:"alat"};
+const gtab={beranda:"home",belajar:"card",latihan:"quiz",tes:"test",alat:"my"};
 function navUI(){const g=TG[tab]||"belajar";gtab[g]=tab;
  $("#gnav").innerHTML=G.map(x=>`<button class="${x[0]===g?"on":""}" data-g="${x[0]}" aria-label="${x[2]}"><span aria-hidden="true">${x[1]}</span>${x[2]}</button>`).join("");
  let n=0;document.querySelectorAll(".tabs button").forEach(b=>{const t=b.dataset.tab,v=TG[t]===g&&(t==="admin"?ROLE==="admin":(ROLE==="admin"||!CFG.off.includes(t)));b.hidden=!v;if(v)n++;b.classList.toggle("on",b.dataset.tab===tab)});
  $(".tabs").style.display=n>1?"":"none";
- const a=g==="alat"?"":"none";document.querySelectorAll(".bk").forEach(x=>x.style.display=a);$("#reset").style.display=a}
+ const a=g==="alat"?"":"none";document.querySelectorAll(".bk").forEach(x=>x.style.display=a);$("#reset").style.display=a;sideNav();$("#home").hidden=tab!=="home";$("#view").hidden=tab==="home";{const rb=$("#rolebadge");if(rb)rb.hidden=ROLE!=="admin"}}
 $("#gnav").addEventListener("click",e=>{const b=e.target.closest("[data-g]");if(b){tab=gtab[b.dataset.g];render();window.scrollTo(0,0)}});
 function barsSVG(vals,labs){const W=320,H=130,m=8,mx=Math.max(1,...vals),bw=(W-m)/vals.length;
  return `<svg viewBox="0 0 ${W} ${H+26}" class="chart" role="img" aria-label="Grafik batang">${vals.map((v,i)=>{const h=Math.round(v/mx*(H-22)),x=m+i*bw+bw*.15,c=x+bw*.35;return `<rect x="${x}" y="${H-h}" width="${bw*.7}" height="${Math.max(h,v?2:0)}" rx="3" style="fill:var(--pri)"/><text x="${c}" y="${H-h-4}" text-anchor="middle" font-size="10" fill="currentColor">${v||""}</text><text x="${c}" y="${H+14}" text-anchor="middle" font-size="9" fill="currentColor" opacity=".7">${labs[i]}</text>`}).join("")}<line x1="${m}" y1="${H}" x2="${W}" y2="${H}" stroke="currentColor" opacity=".25"/></svg>`}
@@ -42,7 +42,7 @@ function clk(){const el=$("#clock");if(!el)return;const n=new Date();let t="";
  el.textContent=t}
 clk();setInterval(clk,1000);
 let CFG={off:[]};
-try{const c=JSON.parse(localStorage.getItem(KEY+"-cfg")||"{}");if(c&&Array.isArray(c.off))CFG.off=c.off.filter(x=>typeof x==="string")}catch(e){}
+try{const c=JSON.parse(localStorage.getItem(CFGK)||"{}");if(c&&Array.isArray(c.off))CFG.off=c.off.filter(x=>typeof x==="string")}catch(e){}
 const TN={card:"Kartu",srs:"Ulang",quiz:"Latihan",audio:"Audio",lafal:"Lafal",list:"Daftar",dict:"Kamus",test:"Tes Level",prog:"Kemajuan",my:"Kata Saya",note:"Catatan",tpl:"Template"};
 function adminP(){
  if(ROLE!=="admin"){view.innerHTML=`<div class="tcard"><p>Halaman ini hanya untuk admin.</p></div>`;return}
@@ -52,4 +52,18 @@ function adminP(){
  <div class="sum"><div class="c2"><small>Kata dikuasai</small><strong>${kn}</strong><span>dari ${ALL.length}</span></div><div class="c2"><small>Kata sendiri</small><strong>${MY.length}</strong><span>ditambahkan</span></div><div class="c2"><small>Tes level</small><strong>${TH.length}</strong><span>riwayat</span></div><div class="c2"><small>Data tersimpan</small><strong>${Math.round(bytes/1024)} KB</strong><span>${keys.length} kunci</span></div></div>
  <div class="tcard"><h4>Fitur yang ditampilkan untuk pengguna</h4><p class="sub">Matikan tab yang belum dibutuhkan. Admin tetap melihat semuanya.</p><div class="chipsrow">${Object.keys(TN).map(k=>`<label class="chk"><input type="checkbox" data-cf="${k}" ${CFG.off.includes(k)?"":"checked"}> ${TN[k]}</label>`).join("")}</div></div>
  <div class="tcard"><h4>Alat</h4><div class="acts3"><button class="btn" data-a="admbk">Salin cadangan</button><button class="btn" data-a="admlo">Keluar</button><button class="btn bad" data-a="admrs">Hapus semua data</button></div><p class="bkm" id="admm"></p></div>`}
-view.addEventListener("change",e=>{const k=e.target.dataset&&e.target.dataset.cf;if(!k)return;CFG.off=CFG.off.filter(x=>x!==k);if(!e.target.checked)CFG.off.push(k);try{localStorage.setItem(KEY+"-cfg",JSON.stringify(CFG))}catch(x){}toast("Pengaturan disimpan");navUI()});
+view.addEventListener("change",e=>{const k=e.target.dataset&&e.target.dataset.cf;if(!k)return;CFG.off=CFG.off.filter(x=>x!==k);if(!e.target.checked)CFG.off.push(k);try{localStorage.setItem(CFGK,JSON.stringify(CFG))}catch(x){}toast("Pengaturan disimpan");navUI()});
+const NAVG=[["",["home"]],["Belajar",["card","srs","audio","list","dict"]],["Latihan",["quiz","lafal","note"]],["Tes",["test","prog"]],["Alat",["my","tpl","admin"]]];
+const TI={home:"🏠 Beranda",card:"🃏 Kartu",srs:"🔁 Ulang",audio:"🎧 Audio",list:"📋 Daftar",dict:"📚 Kamus",quiz:"✍️ Latihan",lafal:"🎤 Lafal",note:"📝 Catatan",test:"🎯 Tes Level",prog:"📈 Kemajuan",my:"➕ Kata Saya",tpl:"✉️ Template",admin:"🛠️ Admin"};
+function sideNav(){const el=$("#sidenav");if(!el)return;
+ el.innerHTML=NAVG.map(([h,ts])=>{const v=ts.filter(t=>t==="admin"?ROLE==="admin":(t==="home"||ROLE==="admin"||!CFG.off.includes(t)));return v.length?(h?`<div class="ngh">${h}</div>`:"")+v.map(t=>`<button class="nl ${t===tab?"on":""}" data-nav="${t}">${TI[t]}</button>`).join(""):""}).join("")}
+const goto=t=>{tab=t;render();window.scrollTo(0,0)};
+$("#sidenav").addEventListener("click",e=>{const b=e.target.closest("[data-nav]");if(b)goto(b.dataset.nav)});
+$("#home").addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b)goto(b.dataset.go)});
+function greet(){const h=new Date().getHours();return h<11?"Selamat pagi":h<15?"Selamat siang":h<18?"Selamat sore":"Selamat malam"}
+function home(){
+ const t=dstr(0),due=Object.values(srs).filter(v=>v.d<=t).length,newn=ALL.filter(w=>!srs[w.en]).length,td=meta.td&&meta.td.d===t?meta.td.w.length:0,g=meta.goal||10,last=TH[TH.length-1];
+ $("#greet").textContent=ROLE==="admin"?"Halo, Admin":greet()+", Michelle";
+ const bars=LV.slice(1).map(l=>{const a=ALL.filter(w=>lvOf(w)===l),k=a.filter(w=>known[w.en]).length;return tbar(`${l} · ${k}/${a.length}`,a.length?Math.round(k/a.length*100):0)}).join("");
+ const tiles=[["card","🃏","Kartu"],["srs","🔁","Ulang"],["quiz","✍️","Latihan"],["audio","🎧","Audio"],["lafal","🎤","Lafal"],["test","🎯","Tes Level"],["note","📝","Catatan"],["prog","📈","Kemajuan"]].filter(x=>ROLE==="admin"||!CFG.off.includes(x[0]));
+ $("#homeinfo").innerHTML=`<div class="hgrid"><div class="tcard"><h4>Hari ini</h4><ul class="hl"><li><b>${due}</b> kartu ulangan jatuh tempo</li><li><b>${Math.max(0,g-td)}</b> kata lagi untuk target harian (${td}/${g})</li><li><b>${newn}</b> kata belum pernah dipelajari</li></ul><div class="acts"><button class="btn pri" data-go="srs">Mulai ulang</button><button class="btn" data-go="card">Belajar kartu</button></div></div><div class="tcard"><h4>Tes level terakhir</h4>${last?`<div class="hbig">${esc(String(last.est))}</div><p class="sub">Skor ${esc(String(last.tot))}% pada ${esc(String(last.d))}</p>`:`<p class="sub">Belum ada tes. Kerjakan Tes Level untuk tahu posisimu di skala A1 sampai C2.</p>`}<div class="acts"><button class="btn pri" data-go="test">${last?"Tes lagi":"Mulai tes"}</button><button class="btn" data-go="prog">Lihat kemajuan</button></div></div><div class="tcard"><h4>Penguasaan per level</h4>${bars}</div>${ROLE==="admin"?`<div class="tcard adm"><h4>🛠️ Info admin</h4><p class="sub">Kamu masuk sebagai admin. Data akun admin dipisah dari data Michelle, dan pengaturan di sini hanya berlaku di browser ini.</p><div class="acts"><button class="btn pri" data-go="admin">Buka panel admin</button><button class="btn" data-go="my">Kata Saya</button></div></div>`:""}</div><div class="tcard"><h4>Jalan pintas</h4><div class="qg">${tiles.map(x=>`<button class="qt" data-go="${x[0]}"><span>${x[1]}</span>${x[2]}</button>`).join("")}</div></div>`}

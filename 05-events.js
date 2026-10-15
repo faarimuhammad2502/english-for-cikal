@@ -13,7 +13,7 @@ view.addEventListener("click",e=>{
  else if(a==="sayw"){say(b.dataset.w)}
  else if(a==="jump"){idx=+b.dataset.i;flip=false;card();view.scrollIntoView({block:"start"})}
  else if(a==="admbk"){copy(bkOut());$("#admm").textContent="Cadangan disalin ke papan klip."}
- else if(a==="admlo"){try{localStorage.removeItem(KEY+"-auth")}catch(x){}lock();render()}
+ else if(a==="admlo"){try{localStorage.removeItem(AUTHK)}catch(x){}location.reload()}
  else if(a==="admrs"){if(confirm("Hapus SEMUA data aplikasi di browser ini? Tindakan ini tidak bisa dibatalkan.")){try{Object.keys(localStorage).filter(k=>k.startsWith(KEY)).forEach(k=>localStorage.removeItem(k))}catch(x){}location.reload()}}
  else if(a==="lmode"){lf.mode=+b.dataset.v;lf.msg="";lafal()}
  else if(a==="lstart"||a==="lhard"){if(a==="lhard")lf.mode=2;buildLf();if(!lf.qs.length){lf.run=0;lf.msg=lf.mode===1?"Belum ada kalimat di pilihan ini. Pilih level Semua atau tema lain.":lf.mode===2?"Belum ada kata sulit. Kerjakan sesi Kata dulu.":"Tidak ada kata di pilihan ini.";lafal();return}lf.msg="";lf.run=1;lafal()}
