@@ -13,7 +13,7 @@
 </head>
 <body>
 <main>
-  <div class="topbar"><div class="brand"><span class="logo">M</span>English Academy</div><div class="user"><span id="who"></span><button id="logout">Keluar</button></div></div>
+  <div class="topbar"><div class="brand"><span class="logo">M</span>English Academy</div><div class="clock" id="clock" aria-label="Tanggal dan jam"></div><div class="user"><span id="who"></span><button id="logout">Keluar</button></div></div>
   <div class="layout"><aside class="side">
   <header class="hero"><div class="sprout" id="sprout" aria-hidden="true">🌱</div><div><h1>English untuk Guru Cikal</h1><p class="sub" id="sub"></p></div></header>
   <div class="dash" id="stats"></div>
@@ -35,6 +35,7 @@
     <button data-tab="my">Kata Saya</button>
     <button data-tab="note">Catatan</button>
     <button data-tab="tpl">Template</button>
+    <button data-tab="admin" hidden>Admin</button>
   </div>
   <div id="view"></div>
   <details class="bk"><summary>Cadangan &amp; pemulihan data</summary>
@@ -52,7 +53,7 @@
   </section></div>
 </main>
 <div id="login" class="login"><div class="lc" id="lcard"><div class="logo">M</div><h2>English untuk Guru Cikal</h2><p class="sub">Masuk untuk melanjutkan belajarmu.</p>
-<form id="lf" autocomplete="on"><label for="nm">Nama</label><input class="search" id="nm" name="username" value="MICHELLE" autocomplete="username"><label for="pw">Password</label><input class="search" id="pw" name="password" type="password" autocomplete="current-password" placeholder="Masukkan password"><label class="show"><input type="checkbox" id="sp"> Tampilkan password</label><div class="lerr" id="lerr" role="alert"></div><button class="btn" type="submit">Masuk</button></form></div></div>
+<form id="lf" autocomplete="on"><label for="nm">Nama (admin: isi email admin)</label><input class="search" id="nm" name="username" value="MICHELLE" autocomplete="username"><label for="pw">Password</label><input class="search" id="pw" name="password" type="password" autocomplete="current-password" placeholder="Masukkan password"><label class="show"><input type="checkbox" id="sp"> Tampilkan password</label><div class="lerr" id="lerr" role="alert"></div><button class="btn" type="submit">Masuk</button></form></div></div>
 <div id="toast" class="toast" role="status"></div>
 <script src="01-data.js"></script>
 <script src="02-core.js"></script>

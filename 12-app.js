@@ -10,15 +10,23 @@ sel.addEventListener("change",()=>{cat=sel.value;idx=0;flip=false;quiz=null;px=n
 $("#reset").addEventListener("click",()=>{if(confirm("Hapus semua progres hafalan?")){known={};srs={};rq=null;save();saveS();render()}});
 const HASH="1a0c625d6115054f3ece36b71c32c2ad071cdb3d0a217aa600e7323e3574c34b";
 async function sha(t){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(t));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
-function enter(){$("#login").hidden=true;document.body.classList.remove("lock");$("#who").textContent="Halo, Michelle"}
-function lock(){$("#login").hidden=false;document.body.classList.add("lock");$("#pw").value="";$("#lerr").textContent=""}
+let ROLE="user";
+const AH="8607bc7e73f2ad500ee13e5f75ce04484f5d615e095bb45fd7a7ad1260240f29",AS="ef0bae720308359f465dde3e29228899",AP="d3d1aa456bb9e6035c684955b0af7147c89bb229d78f8156b99b786ff505e7ab";
+const hex2u8=h=>Uint8Array.from(h.match(/../g).map(x=>parseInt(x,16)));
+async function pbk(pw,salt){const k=await crypto.subtle.importKey("raw",new TextEncoder().encode(pw),"PBKDF2",false,["deriveBits"]);const b=await crypto.subtle.deriveBits({name:"PBKDF2",hash:"SHA-256",salt:hex2u8(salt),iterations:150000},k,256);return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
+async function doLogin(){const n=$("#nm").value.trim().toLowerCase(),p=$("#pw").value;
+ if(n==="michelle")return(await sha(n+"|"+p.trim().toLowerCase()))===HASH?"user":null;
+ if((await sha(n))===AH)return(await pbk(p,AS))===AP?"admin":null;
+ return null}
+function enter(r){ROLE=r==="admin"?"admin":"user";$("#login").hidden=true;document.body.classList.remove("lock");$("#who").textContent=ROLE==="admin"?"Admin":"Halo, Michelle";navUI()}
+function lock(){ROLE="user";if(tab==="admin")tab="card";$("#login").hidden=false;document.body.classList.add("lock");$("#pw").value="";$("#lerr").textContent=""}
 $("#sp").addEventListener("change",e=>{$("#pw").type=e.target.checked?"text":"password"});
-$("#lf").addEventListener("submit",async e=>{e.preventDefault();let ok=false;
- try{ok=(await sha($("#nm").value.trim().toLowerCase()+"|"+$("#pw").value.trim().toLowerCase()))===HASH}catch(x){$("#lerr").textContent="Browser ini belum mendukung login.";return}
- if(ok){try{localStorage.setItem(KEY+"-auth","1")}catch(x){}enter()}
+$("#lf").addEventListener("submit",async e=>{e.preventDefault();let r=null;
+ try{r=await doLogin()}catch(x){$("#lerr").textContent="Browser ini belum mendukung login.";return}
+ if(r){try{localStorage.setItem(KEY+"-auth",r==="admin"?"admin":"1")}catch(x){}enter(r);render()}
  else{$("#lerr").textContent="Nama atau password salah. Coba lagi.";const c=$("#lcard");c.classList.remove("shake");void c.offsetWidth;c.classList.add("shake")}});
-$("#logout").addEventListener("click",()=>{try{localStorage.removeItem(KEY+"-auth")}catch(x){}lock()});
-let authed=false;try{authed=localStorage.getItem(KEY+"-auth")==="1"}catch(e){}
-authed?enter():lock();
+$("#logout").addEventListener("click",()=>{try{localStorage.removeItem(KEY+"-auth")}catch(x){}lock();render()});
+let av="";try{av=localStorage.getItem(KEY+"-auth")||""}catch(e){}
+(av==="1"||av==="admin")?enter(av):lock();
 fillCats();render();
 

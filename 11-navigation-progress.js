@@ -1,9 +1,9 @@
 const G=[["belajar","📖","Belajar"],["latihan","✍️","Latihan"],["tes","🎯","Tes"],["alat","🧰","Alat"]];
-const TG={card:"belajar",srs:"belajar",audio:"belajar",list:"belajar",dict:"belajar",quiz:"latihan",lafal:"latihan",note:"latihan",test:"tes",prog:"tes",my:"alat",tpl:"alat"};
+const TG={card:"belajar",srs:"belajar",audio:"belajar",list:"belajar",dict:"belajar",quiz:"latihan",lafal:"latihan",note:"latihan",test:"tes",prog:"tes",admin:"alat",my:"alat",tpl:"alat"};
 const gtab={belajar:"card",latihan:"quiz",tes:"test",alat:"my"};
 function navUI(){const g=TG[tab]||"belajar";gtab[g]=tab;
  $("#gnav").innerHTML=G.map(x=>`<button class="${x[0]===g?"on":""}" data-g="${x[0]}" aria-label="${x[2]}"><span aria-hidden="true">${x[1]}</span>${x[2]}</button>`).join("");
- let n=0;document.querySelectorAll(".tabs button").forEach(b=>{const v=TG[b.dataset.tab]===g;b.hidden=!v;if(v)n++;b.classList.toggle("on",b.dataset.tab===tab)});
+ let n=0;document.querySelectorAll(".tabs button").forEach(b=>{const t=b.dataset.tab,v=TG[t]===g&&(t==="admin"?ROLE==="admin":(ROLE==="admin"||!CFG.off.includes(t)));b.hidden=!v;if(v)n++;b.classList.toggle("on",b.dataset.tab===tab)});
  $(".tabs").style.display=n>1?"":"none";
  const a=g==="alat"?"":"none";document.querySelectorAll(".bk").forEach(x=>x.style.display=a);$("#reset").style.display=a}
 $("#gnav").addEventListener("click",e=>{const b=e.target.closest("[data-g]");if(b){tab=gtab[b.dataset.g];render();window.scrollTo(0,0)}});
@@ -37,3 +37,19 @@ window.addEventListener("appinstalled",()=>{$("#pwabtn").hidden=true;pwaS()});
 $("#pwabtn").addEventListener("click",async()=>{if(!dip)return;dip.prompt();try{await dip.userChoice}catch(x){}dip=null;$("#pwabtn").hidden=true});
 if("serviceWorker" in navigator)navigator.serviceWorker.addEventListener("controllerchange",pwaS);
 pwaS();
+function clk(){const el=$("#clock");if(!el)return;const n=new Date();let t="";
+ try{t=n.toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"})+" · "+n.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false,timeZoneName:"short"}).replace(/\./g,":")}catch(e){t=n.toString()}
+ el.textContent=t}
+clk();setInterval(clk,1000);
+let CFG={off:[]};
+try{const c=JSON.parse(localStorage.getItem(KEY+"-cfg")||"{}");if(c&&Array.isArray(c.off))CFG.off=c.off.filter(x=>typeof x==="string")}catch(e){}
+const TN={card:"Kartu",srs:"Ulang",quiz:"Latihan",audio:"Audio",lafal:"Lafal",list:"Daftar",dict:"Kamus",test:"Tes Level",prog:"Kemajuan",my:"Kata Saya",note:"Catatan",tpl:"Template"};
+function adminP(){
+ if(ROLE!=="admin"){view.innerHTML=`<div class="tcard"><p>Halaman ini hanya untuk admin.</p></div>`;return}
+ let keys=[],bytes=0;try{keys=Object.keys(localStorage).filter(k=>k.startsWith(KEY));bytes=keys.reduce((a,k)=>a+(localStorage.getItem(k)||"").length,0)}catch(e){}
+ const kn=ALL.filter(w=>known[w.en]).length;
+ view.innerHTML=`<div class="tcard"><h3>Panel admin 🛠️</h3><p class="sub">Kamu masuk sebagai admin. Panel ini mengatur web di <b>browser dan perangkat ini saja</b>. Semua data dan pengaturan tersimpan di browser masing-masing, jadi admin tidak bisa melihat atau mengubah progres di HP Michelle dari sini.</p></div>
+ <div class="sum"><div class="c2"><small>Kata dikuasai</small><strong>${kn}</strong><span>dari ${ALL.length}</span></div><div class="c2"><small>Kata sendiri</small><strong>${MY.length}</strong><span>ditambahkan</span></div><div class="c2"><small>Tes level</small><strong>${TH.length}</strong><span>riwayat</span></div><div class="c2"><small>Data tersimpan</small><strong>${Math.round(bytes/1024)} KB</strong><span>${keys.length} kunci</span></div></div>
+ <div class="tcard"><h4>Fitur yang ditampilkan untuk pengguna</h4><p class="sub">Matikan tab yang belum dibutuhkan. Admin tetap melihat semuanya.</p><div class="chipsrow">${Object.keys(TN).map(k=>`<label class="chk"><input type="checkbox" data-cf="${k}" ${CFG.off.includes(k)?"":"checked"}> ${TN[k]}</label>`).join("")}</div></div>
+ <div class="tcard"><h4>Alat</h4><div class="acts3"><button class="btn" data-a="admbk">Salin cadangan</button><button class="btn" data-a="admlo">Keluar</button><button class="btn bad" data-a="admrs">Hapus semua data</button></div><p class="bkm" id="admm"></p></div>`}
+view.addEventListener("change",e=>{const k=e.target.dataset&&e.target.dataset.cf;if(!k)return;CFG.off=CFG.off.filter(x=>x!==k);if(!e.target.checked)CFG.off.push(k);try{localStorage.setItem(KEY+"-cfg",JSON.stringify(CFG))}catch(x){}toast("Pengaturan disimpan");navUI()});
