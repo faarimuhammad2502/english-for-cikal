@@ -88,7 +88,7 @@ mark.ph{background:none;color:var(--pri);border:1px dashed var(--pri)}
 .btn.bad{background:var(--badbg);border-color:var(--bad)}
 .btn small{display:block;font-weight:400;font-size:12px}
 @media (max-width:420px){.fields{grid-template-columns:1fr}}
-.seg{flex-wrap:wrap}.seg button{flex:1 1 40%}
+.seg{flex-wrap:nowrap}.seg button{flex:1 1 0;min-width:0;padding:10px 4px}
 .slots{min-height:56px;display:flex;flex-wrap:wrap;gap:8px;padding:10px;border:2px dashed var(--line);border-radius:14px;margin-bottom:12px;background:var(--card)}
 .bank{display:flex;flex-wrap:wrap;gap:8px}
 .chipw{padding:8px 14px;background:var(--card);border:2px solid var(--line);font-weight:700}
@@ -202,3 +202,30 @@ main{padding-bottom:100px}
 .clock{font-weight:700;font-size:14px;color:var(--mute);white-space:nowrap;font-variant-numeric:tabular-nums}
 .topbar{flex-wrap:wrap;gap:6px 12px}
 @media (max-width:700px){.clock{order:3;width:100%;font-size:13px}}
+.hero{padding:14px 16px}.hero .sub{display:none}.hero h1{font-size:22px}.hero .sprout{width:52px;height:52px;font-size:28px}
+.bmsg{font-weight:400;font-size:15px;line-height:1.55}
+.bdet summary{cursor:pointer;font-weight:700;display:flex;justify-content:space-between;gap:8px;align-items:center;list-style:none}
+.bdet summary::-webkit-details-marker{display:none}
+.bdet summary small{color:var(--mute);font-weight:400;font-size:12px}
+.bdet[open] summary{margin-bottom:8px}
+.filters{display:flex;gap:10px;align-items:stretch;margin-bottom:12px}
+.filters .chips{flex:1;margin:0}.filters .row{width:220px;margin:0}.filters select{height:100%}
+@media (min-width:900px){.dash .tg{grid-column:span 2}}
+@media (max-width:700px){
+.hero{display:none}
+.filters{flex-direction:column}.filters .row{width:100%}
+.topbar{flex-wrap:wrap}#who{display:none}.clock{font-size:12px;order:3;width:100%}
+.dash{grid-template-columns:repeat(4,1fr);gap:6px}
+.c2{padding:8px 4px;align-items:center;text-align:center}
+.c2 small{font-size:10px}.c2 strong{font-size:17px}.c2 span{display:none}
+.c2.rc{grid-column:auto;flex-direction:column;gap:4px}.c2.rc small,.c2.rc br{display:none}
+.ring{width:44px;height:44px}.ring::before{inset:5px}.ring b{font-size:11px}
+}
+.c2{justify-content:center}
+@media (max-width:700px){
+.tabs button{padding:10px 6px;font-size:13px}
+.tabs{padding:4px}
+.board{padding:12px 14px}
+.chip small{display:none}.chip{padding:10px 1px}
+}
+.lvs:not([open]){padding-bottom:0}

@@ -36,7 +36,7 @@ function rv(){
  <div id="rate">${rq.flip?rbtn():`<p class="center sub" style="margin-top:14px">Seberapa ingat kamu? Pilihan muncul setelah kartu dibalik.</p>`}</div>`;
 }
 let px=null;
-const segH=()=>`<div class="seg">${["Tebak arti","Dengar &amp; tebak","Isi kalimat","Susun kalimat","Ejaan"].map((t,i)=>`<button class="${qm===i?"on":""}" data-a="qm" data-m="${i}">${t}</button>`).join("")}</div>`;
+const segH=()=>`<div class="seg">${["Arti","Dengar","Isi","Susun","Ejaan"].map((t,i)=>`<button class="${qm===i?"on":""}" data-a="qm" data-m="${i}">${t}</button>`).join("")}</div>`;
 const isS=w=>/^[A-Z]/.test(w.en)&&/[.?!]$/.test(w.en)&&w.en.split(" ").length>=3;
 const bare=t=>t.replace(/[^A-Za-z']/g,"");
 function startP(){
