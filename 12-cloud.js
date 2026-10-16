@@ -3,10 +3,10 @@ let sb=null;
 try{if(window.SB_CFG&&SB_CFG.url&&SB_CFG.key&&window.supabase&&supabase.createClient)sb=supabase.createClient(SB_CFG.url,SB_CFG.key,{auth:{persistSession:true,autoRefreshToken:true,storageKey:"english-guru-cikal-sb"}})}catch(e){}
 const CLOUD=!!sb;
 const SYNC={uid:"",busy:false,snap:"",last:null,notePushed:null,started:false,err:"",email:"",pendingRole:"",enrollId:""};
-const SKEYS=()=>({known:KEY,meta:MK,srs:KEY+"-srs",tpl:KEY+"-tpl",tests:KEY+"-tests",mine:KEY+"-mine",lafal:KEY+"-lafal"});
+const SKEYS=()=>({known:KEY,meta:MK,srs:KEY+"-srs",tpl:KEY+"-tpl",tests:KEY+"-tests",mine:KEY+"-mine",lafal:KEY+"-lafal",mb:KEY+"-mb",plan:KEY+"-plan"});
 function collect(){const o={},K=SKEYS();for(const n in K){try{const v=localStorage.getItem(K[n]);if(v!==null)o[n]=JSON.parse(v)}catch(e){}}return o}
 function summaryOf(){const t=dstr(0),last=TH[TH.length-1],lv=Object.values(LH).filter(x=>typeof x==="number");
- return{known:ALL.filter(w=>known[w.en]).length,total:ALL.length,xp:meta.xp||0,streak:meta.streak||0,goal:meta.goal||10,today:(meta.td&&meta.td.d===t)?meta.td.w.length:0,due:Object.values(srs).filter(v=>v.d<=t).length,mine:MY.length,test:last?{est:last.est,tot:last.tot,d:last.d}:null,lafal:lv.length?Math.round(lv.reduce((a,b)=>a+b,0)/lv.length):null}}
+ return{known:ALL.filter(w=>known[w.en]).length,total:ALL.length,xp:meta.xp||0,streak:meta.streak||0,goal:meta.goal||10,today:(meta.td&&meta.td.d===t)?meta.td.w.length:0,due:Object.values(srs).filter(v=>v.d<=t).length,mine:MY.length,miss_n:Object.keys(MB).length,top_miss:mistList().slice(0,5).map(x=>({k:(x.t==="w"?x.k.slice(2):x.q.q).slice(0,50),n:x.n})),week:[...Array(7)].map((_,i)=>(meta.h||{})[dstr(i-6)]||0),plan:planStat(),test:last?{est:last.est,tot:last.tot,d:last.d}:null,lafal:lv.length?Math.round(lv.reduce((a,b)=>a+b,0)/lv.length):null}}
 function mergeData(L,R){const o={};L=L||{};R=R||{};
  o.known=Object.assign({},R.known||{},L.known||{});
  const ls=L.srs||{},rs=R.srs||{},sm={};new Set([...Object.keys(ls),...Object.keys(rs)]).forEach(k=>{const a=ls[k],b=rs[k];sm[k]=!a?b:!b?a:(String(a.d)>=String(b.d)?a:b)});o.srs=sm;
@@ -14,7 +14,8 @@ function mergeData(L,R){const o={};L=L||{};R=R||{};
  if((rm.last||"")>(lm.last||"")){m.last=rm.last;m.streak=rm.streak}else{m.last=lm.last;m.streak=lm.streak}
  m.h=Object.assign({},rm.h||{});for(const d in (lm.h||{}))m.h[d]=Math.max(m.h[d]||0,lm.h[d]);
  const a=lm.td,b=rm.td;m.td=!a?b:!b?a:(a.d>b.d?a:b.d>a.d?b:{d:a.d,w:[...new Set([...(a.w||[]),...(b.w||[])])],ok:a.ok||b.ok});
- if(m.td===undefined)delete m.td;o.meta=m;
+ if(m.td===undefined)delete m.td;m.pc=mergePc(lm.pc,rm.pc);if(m.pc===undefined)delete m.pc;o.meta=m;
+ o.mb=mergeMB(L.mb,R.mb);o.plan=mergePlan(L.plan,R.plan);
  const tk=new Set();o.tests=[...(L.tests||[]),...(R.tests||[])].filter(x=>{const k=x.d+"|"+x.tot+"|"+x.est;if(tk.has(k))return false;tk.add(k);return true}).sort((p,q)=>String(p.d).localeCompare(String(q.d))).slice(-10);
  const mk=new Set();o.mine=[...(L.mine||[]),...(R.mine||[])].filter(x=>{const k=String(x.en).toLowerCase();if(mk.has(k))return false;mk.add(k);return true});
  const lf=Object.assign({},R.lafal||{});for(const k in (L.lafal||{}))lf[k]=Math.max(lf[k]||0,L.lafal[k]);o.lafal=lf;
@@ -28,7 +29,7 @@ function reloadState(){
  try{LH=JSON.parse(localStorage.getItem(KEY+"-lafal")||"{}")||{}}catch(e){LH={}}
  try{NOTE=localStorage.getItem(KEY+"-note")||""}catch(e){}
  try{loadMine(JSON.parse(localStorage.getItem(KEY+"-mine")||"[]"))}catch(e){loadMine([])}
- fillCats();rq=null;quiz=null;px=null;ts=null;board();render()}
+ loadMB();fillCats();rq=null;quiz=null;px=null;ts=null;board();render()}
 function applyData(d){const K=SKEYS();for(const n in K){if(d[n]!==undefined){try{localStorage.setItem(K[n],JSON.stringify(d[n]))}catch(e){}}}}
 function syncUI(st){const el=$("#syncst");if(!el)return;const t=SYNC.last?SYNC.last.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"}).replace(".",":"):"";
  el.textContent=st==="ok"?`☁️ Tersinkron ${t}`:st==="sync"?"☁️ Menyinkronkan...":st==="off"?"📴 Offline: data aman di perangkat":st==="err"?"⚠️ Sinkron gagal"+(SYNC.err?" ("+String(SYNC.err).slice(0,40)+")":"")+", dicoba lagi":""}
@@ -72,11 +73,11 @@ async function cloudStart(session){
  try{
   const pr=await sb.from("profiles").select("role").eq("id",SYNC.uid).maybeSingle();
   if(pr.data){const want=pr.data.role==="admin"?"admin":"1";let cur="";try{cur=localStorage.getItem(AUTHK)||""}catch(e){}if(cur!==want){try{localStorage.setItem(AUTHK,want)}catch(e){}location.reload();return}}
-  await pullCfg();await pullMerge();
+  await pullCfg();await pullMerge();flushReports();
  }catch(e){SYNC.err=e&&(e.code||e.message)||"";syncUI(navigator.onLine?"err":"off")}
- setInterval(()=>push(false),8000);setInterval(()=>{pullCfg().catch(()=>{})},300000);
+ setInterval(()=>{push(false);flushReports()},8000);setInterval(()=>{pullCfg().catch(()=>{})},300000);
  document.addEventListener("visibilitychange",()=>{if(document.hidden)push(false)});
- window.addEventListener("online",()=>push(true))}
+ window.addEventListener("online",()=>{push(true);flushReports()})}
 function cloudBoot(av){
  if(!av)return;
  sb.auth.getSession().then(({data})=>{
@@ -105,8 +106,8 @@ async function loadUsers(){
  const [p,g]=await Promise.all([sb.from("profiles").select("id,display_name,role"),sb.from("progress").select("user_id,summary,updated_at")]);
  if(p.error||g.error){el.innerHTML=`<p class="lerr">Gagal memuat: ${esc((p.error||g.error).message)}</p>`;return}
  const gm={};(g.data||[]).forEach(r=>gm[r.user_id]=r);const N=x=>esc(String(x==null?"-":x));
- el.innerHTML=`<div class="ulist">${(p.data||[]).map(u=>{const r=gm[u.id],s=(r&&r.summary)||{};return `<div class="urow"><div class="uh"><b>${esc(u.display_name||"(tanpa nama)")}</b><span class="rolebadge${u.role==="admin"?"":" rb-user"}">${esc(u.role)}</span></div>${r?`<div class="ugrid"><span>Kata dikuasai <b>${N(s.known)}/${N(s.total)}</b></span><span>XP <b>${N(s.xp)}</b></span><span>Streak <b>${N(s.streak)}</b></span><span>Target hari ini <b>${N(s.today)}/${N(s.goal)}</b></span><span>Ulangan tertunda <b>${N(s.due)}</b></span><span>Tes terakhir <b>${s.test?N(s.test.est)+" · "+N(s.test.tot)+"%":"belum"}</b></span><span>Lafal <b>${s.lafal==null?"-":N(s.lafal)+"%"}</b></span></div><div class="sub">Aktif terakhir: ${ago(r.updated_at)}</div>`:`<div class="sub">Belum ada data. Pengguna ini belum pernah masuk.</div>`}${u.id!==SYNC.uid?`<div class="uact"><input class="search pwx" type="password" data-uid="${esc(u.id)}" placeholder="Password baru (min. 10)" autocomplete="new-password"><button class="btn" data-a="admpw" data-uid="${esc(u.id)}">Atur ulang password</button></div>`:""}</div>`}).join("")}</div>`}
-function adminP(){adminP0();if(ROLE!=="admin")return;
+ el.innerHTML=aggHtml(p.data||[],gm)+`<div class="ulist">${(p.data||[]).map(u=>{const r=gm[u.id],s=(r&&r.summary)||{};return `<div class="urow"><div class="uh"><b>${esc(u.display_name||"(tanpa nama)")}</b><span class="rolebadge${u.role==="admin"?"":" rb-user"}">${esc(u.role)}</span></div>${r?`<div class="ugrid"><span>Kata dikuasai <b>${N(s.known)}/${N(s.total)}</b></span><span>XP <b>${N(s.xp)}</b></span><span>Streak <b>${N(s.streak)}</b></span><span>Target hari ini <b>${N(s.today)}/${N(s.goal)}</b></span><span>Ulangan tertunda <b>${N(s.due)}</b></span><span>Tes terakhir <b>${s.test?N(s.test.est)+" · "+N(s.test.tot)+"%":"belum"}</b></span><span>Lafal <b>${s.lafal==null?"-":N(s.lafal)+"%"}</b></span></div>${insightRow(s)}<div class="sub">Aktif terakhir: ${ago(r.updated_at)}</div>`:`<div class="sub">Belum ada data. Pengguna ini belum pernah masuk.</div>`}${u.id!==SYNC.uid?`<div class="uact"><input class="search pwx" type="password" data-uid="${esc(u.id)}" placeholder="Password baru (min. 10)" autocomplete="new-password"><button class="btn" data-a="admpw" data-uid="${esc(u.id)}">Atur ulang password</button></div>`:""}</div>`}).join("")}</div>`}
+function adminP(){adminP0();if(ROLE!=="admin")return;setTimeout(()=>{if(view.firstElementChild)view.firstElementChild.insertAdjacentHTML("afterend",reportsCardHtml());loadReports()},0);
  view.firstElementChild.insertAdjacentHTML("afterend",`<div class="tcard"><h3>☁️ Pengguna dan progres</h3>${CLOUD?`<p class="sub">Ringkasan dari server. Catatan guru tidak ikut terlihat.</p><div id="admusers"><p class="sub">Memuat...</p></div><button class="btn" data-a="admref" style="margin-top:10px">Muat ulang</button>`:`<p class="sub">Mode lokal: web belum terhubung ke server, jadi daftar pengguna tidak tersedia.</p>`}</div><div class="tcard"><h4>📢 Pengumuman untuk semua pengguna</h4><textarea class="search" id="annx" rows="3" maxlength="300" placeholder="Tulis pengumuman (kosongkan untuk menghapus)"></textarea><button class="btn pri" data-a="annsave" style="margin-top:8px">Simpan pengumuman</button><p class="bkm" id="annm"></p></div>`);
  const a=$("#annx");if(a)a.value=CFG.ann||"";if(CLOUD)loadUsers()}
 const WEAK=["bambuapus","semangatbelajar","password","12345678","qwerty","englishacademy","cikal"];

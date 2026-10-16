@@ -18,7 +18,7 @@ function listen(){if(!SR)return;const r=new SR();r.lang="en-US";r.interimResults
  r.onend=()=>{if(lf.on){lf.on=false;lf.err=lf.err||"Tidak ada suara terdengar. Coba lagi.";lafal()}};
  try{r.start();lafal()}catch(x){lf.on=false;lf.err="Mikrofon belum bisa dipakai. Coba lagi.";lafal()}}
 function lfNext(skip){const w=lf.qs[lf.i];lf.res.push({w,score:skip?null:lf.best});lf.i++;lf.cur=null;lf.tries=0;lf.best=0;lf.paid=0;lf.err="";
- if(lf.i>=lf.qs.length&&lf.res.filter(r=>r.score!=null).length>=5){xp(10);toast("Sesi lafal selesai! +10 XP")}lafal()}
+ if(lf.i>=lf.qs.length&&lf.res.filter(r=>r.score!=null).length>=5){xp(10);bump("lafal");toast("Sesi lafal selesai! +10 XP")}lafal()}
 function lafal(){
  if(!lf.run){
   const M=["Kata","Kalimat","Kata sulit"];

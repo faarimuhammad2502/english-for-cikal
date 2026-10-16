@@ -1,4 +1,4 @@
-const BK=[KEY,MK,KEY+"-srs",KEY+"-tpl",KEY+"-tests",KEY+"-mine",KEY+"-note",KEY+"-lafal"];
+const BK=[KEY,MK,KEY+"-srs",KEY+"-tpl",KEY+"-tests",KEY+"-mine",KEY+"-note",KEY+"-lafal",KEY+"-mb",KEY+"-plan"];
 function bkOut(){const o={app:"english-guru-cikal",v:1,t:new Date().toISOString(),data:{}};BK.forEach(k=>{try{const v=localStorage.getItem(k);if(v!==null)o.data[k]=v}catch(e){}});return JSON.stringify(o)}
 function bkIn(txt){let o;try{o=JSON.parse(txt)}catch(e){return "Teks cadangan tidak valid."}
  if(!o||o.app!=="english-guru-cikal"||!o.data)return "File ini bukan cadangan web ini.";
@@ -12,7 +12,7 @@ function bkIn(txt){let o;try{o=JSON.parse(txt)}catch(e){return "Teks cadangan ti
  try{NOTE=localStorage.getItem(KEY+"-note")||""}catch(e){}
  try{LH=JSON.parse(localStorage.getItem(KEY+"-lafal")||"{}")||{}}catch(e){LH={}}
  try{bedit=false;board()}catch(e){}
- fillCats();rq=null;quiz=null;px=null;ts=null;render();return ""}
+ loadMB();fillCats();rq=null;quiz=null;px=null;ts=null;render();return ""}
 document.querySelector(".bk").addEventListener("click",e=>{const b=e.target.closest("[data-b]");if(!b)return;const k=b.dataset.b,m=$("#bkm");
  if(k==="dl"){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([bkOut()],{type:"application/json"}));a.download="cadangan-english-michelle-"+dstr(0)+".json";document.body.appendChild(a);a.click();a.remove();m.textContent="Jika file tidak terunduh, pakai tombol Salin teks."}
  else if(k==="cp"){copy(bkOut());m.textContent="Teks cadangan disalin. Tempel dan simpan di tempat aman."}

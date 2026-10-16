@@ -16,7 +16,7 @@ function rate(r){const w=rq.q[rq.i],b0=srs[w.en]?srs[w.en].b:0;
  srs[w.en]={b:nb,d:dstr(INT[nb])};
  if(nb>=2)known[w.en]=1;else delete known[w.en];
  saveS();tick(w.en);xp(r===2?3:1);rq.i++;rq.flip=false;rv()}
-function rv(){
+function rv0(){
  if(!rq){
   const due=dueList(),nw=newList(),all=Object.values(srs),tm=all.filter(v=>v.d===dstr(1)).length,tot=due.length+nw.length;
   view.innerHTML=`<p class="sub" style="margin-bottom:10px">Kata yang sulit muncul lebih sering, yang sudah lancar muncul makin jarang. Cukup 5 sampai 10 menit per hari.</p>
@@ -47,10 +47,10 @@ function startP(){
   if(qm===2){const k=big(w),c=bare(t[k]).toLowerCase(),d=[...new Set(shuf(all).map(x=>bare(x.en.split(" ")[big(x)]).toLowerCase()).filter(x=>x!==c&&x.length>3))].slice(0,3);return {w,t,k,c,o:shuf([c,...d])}}
   let b=t.map((x,i)=>i);for(let n=0;n<6;n++){b=shuf(b);if(b.some((x,i)=>x!==i))break}return {w,t,b}})};
 }
-function pz(){
+function pz0(){
  if(!px)startP();
  const T=px.qs.length,sg=segH();
- if(px.i>=T){const f=px.s===T;
+ if(px.i>=T){if(!px.cnt){px.cnt=1;bump(qm===2?"fill":qm===3?"order":"spell")}const f=px.s===T;
   view.innerHTML=sg+`<div class="score">${px.s}/${T}</div><p class="center sub">${f?"Sempurna!":"Ulangi untuk memperkuat."}</p>${px.miss.length?`<p class="meta" style="margin-top:16px">Perlu diulang:</p><div class="list">${px.miss.map(w=>`<div class="li"><div class="w"><b>${w.en}</b><span>${w.id}</span></div></div>`).join("")}</div>`:""}<div class="center"><button class="btn pri" data-a="prestart">Main lagi</button></div>`;
   if(f)confetti();return}
  const q=px.qs[px.i],d=px.ans!==null,hd=`<div class="bar"><i style="width:${px.i/T*100}%"></i></div><div class="meta"><span>Soal ${px.i+1} dari ${T}</span><span>Skor ${px.s}</span></div>${px.note?`<p class="sub">Belum ada kalimat di pilihan ini, jadi diambil dari semua tema.</p>`:""}<p class="sub" style="margin-bottom:8px">Arti: ${q.w.id}</p>`;
@@ -73,12 +73,23 @@ view.addEventListener("click",async e=>{
  else if(a==="again"){go(1)}
  else if(a==="know"){if(!known[w.en]){known[w.en]=1;srs[w.en]={b:2,d:dstr(3)};saveS();tick(w.en);xp(10);toast("+10 XP · Sudah hafal!")}go(1);hdr()}
  else if(a==="qm"){qm=+b.dataset.m;quiz=null;px=null;qz()}
- else if(a==="pick"){const k=quiz.qs[quiz.i],j=+b.dataset.k;quiz.ans=j;if(k.o[j].en===k.w.en){quiz.s++;xp(5);toast("Benar! +5 XP")}else{quiz.miss.push(k.w);toast("Belum tepat")}qz()}
+ else if(a==="pick"){const k=quiz.qs[quiz.i],j=+b.dataset.k;quiz.ans=j;if(k.o[j].en===k.w.en){quiz.s++;xp(5);toast("Benar! +5 XP")}else{(quiz.miss.push(k.w),logMiss(k.w));toast("Belum tepat")}qz()}
  else if(a==="next"){quiz.i++;quiz.ans=null;qz()}
  else if(a==="restart"){startQuiz();qz()}
  else if(a==="chk"){if(b.checked){known[b.dataset.w]=1;if(!srs[b.dataset.w])srs[b.dataset.w]={b:2,d:dstr(3)}}else{delete known[b.dataset.w];delete srs[b.dataset.w]}saveS();save();hdr();$("#prog").innerHTML=progress()}
  else if(a==="sayw"){say(b.dataset.w)}
  else if(a==="jump"){idx=+b.dataset.i;flip=false;card();view.scrollIntoView({block:"start"})}
+ else if(a==="rptcard"||a==="rptw"||a==="rptt"||a==="rptsrs"||a==="rptq"){rptOpen(rptCtx(a,b))}
+ else if(a==="repf"){REPF=b.dataset.v;renderReps()}
+ else if(a==="repdone"||a==="repopen"){await repSet(b.dataset.ids,a==="repdone")}
+ else if(a==="repcopy"){repCopy()}
+ else if(a==="repcsv"){repCsv()}
+ else if(a==="mstart"){mstart();mist()}
+ else if(a==="mpick"){const q=ms.qs[ms.i],j=+b.dataset.k;ms.ans=j;const ok=j===q.a,e=MB[q.k];if(e){if(ok){e.c=(e.c||0)+1;if(e.c>=3){delete MB[q.k];ms.grad++}}else{e.n++;e.c=0;e.d=dstr(0)}saveMB()}if(ok){ms.s++;xp(3);toast("Benar! +3 XP")}else toast("Belum tepat");mist()}
+ else if(a==="mnext"){ms.i++;ms.ans=null;mist()}
+ else if(a==="mend"){ms=null;mist()}
+ else if(a==="mclear"){if(confirm("Kosongkan seluruh buku kesalahan?")){MB={};saveMB();mist()}}
+ else if(a==="mplay"){const q=ms.qs[ms.i];say(q.au||q.w||"")}
  else if(a==="admref"){loadUsers()}
  else if(a==="admpw"){const uid=b.dataset.uid,inp=document.querySelector(`.pwx[data-uid="${uid}"]`),pw=inp?inp.value:"",e=pwCheck(pw,"");if(e){toast(e);return}
   if(!confirm("Atur ulang password pengguna ini? Ia harus masuk dengan password baru."))return;
@@ -131,11 +142,11 @@ view.addEventListener("click",async e=>{
  else if(a==="cnext"){go(1)}
  else if(a==="gprev"){const n=pool().length;idx=Math.max(0,(Math.floor(idx/40)-1)*40);flip=false;card()}
  else if(a==="gnext"){const n=pool().length;idx=Math.min(n-1,(Math.floor(idx/40)+1)*40);flip=false;card()}
- else if(a==="ppick"){const q=px.qs[px.i],j=+b.dataset.k;px.ans=j;if(q.o[j]===q.c){px.s++;xp(5);toast("Benar! +5 XP")}else{px.miss.push(q.w);toast("Belum tepat")}pz()}
+ else if(a==="ppick"){const q=px.qs[px.i],j=+b.dataset.k;px.ans=j;if(q.o[j]===q.c){px.s++;xp(5);toast("Benar! +5 XP")}else{(px.miss.push(q.w),logMiss(q.w));toast("Belum tepat")}pz()}
  else if(a==="padd"){px.ord.push(+b.dataset.i);pz()}
  else if(a==="prm"){px.ord.splice(+b.dataset.n,1);pz()}
  else if(a==="pclr"){px.ord=[];pz()}
- else if(a==="pchk"){const q=px.qs[px.i];if(px.ord.length<q.t.length){toast("Susun semua kata dulu");return}const ok=px.ord.map(i=>q.t[i]).join(" ")===q.w.en;px.ans=ok;if(ok){px.s++;xp(5);toast("Benar! +5 XP")}else px.miss.push(q.w);pz()}
+ else if(a==="pchk"){const q=px.qs[px.i];if(px.ord.length<q.t.length){toast("Susun semua kata dulu");return}const ok=px.ord.map(i=>q.t[i]).join(" ")===q.w.en;px.ans=ok;if(ok){px.s++;xp(5);toast("Benar! +5 XP")}else (px.miss.push(q.w),logMiss(q.w));pz()}
  else if(a==="pnext"){px.i++;px.ans=null;px.ord=[];px.said=0;px.val="";pz()}
  else if(a==="prestart"){startP();pz()}
  else if(a==="rstart"){const t=dstr(0),due=dueList(),nw=newList();if(nw.length)meta.nd={d:t,n:(meta.nd&&meta.nd.d===t?meta.nd.n:0)+nw.length};save();rq={q:shuf(due).concat(nw),i:0,flip:false,lap:new Set(),lapse:0,n:due.length+nw.length};rv()}

@@ -38,9 +38,9 @@ Semua file sejajar di akar repositori, tanpa folder: `index.html`, `style.css`, 
 
 ## Menu
 Di komputer, menu berada di panel kiri. Di HP, menu berada di bilah bawah dengan sub-tab di atas isi.
-- **Beranda**: ringkasan belajar hari ini, statistik, tes level terakhir, penguasaan per level, jalan pintas, papan semangat
+- **Beranda**: rencana belajar mingguan otomatis (dibuat dari hasil Tes Level), ringkasan hari ini, statistik, tes level terakhir, penguasaan per level, jalan pintas, papan semangat
 - **Belajar**: Kartu, Ulang, Audio, Daftar, Kamus
-- **Latihan**: Latihan (arti, dengar, isi kalimat, susun kalimat, ejaan), Lafal, Catatan
+- **Latihan**: Latihan (arti, dengar, isi kalimat, susun kalimat, ejaan), Kesalahan (buku kesalahan: jawaban salah dicatat dan dilatih ulang sampai benar 3 kali berturut-turut), Lafal, Catatan
 - **Tes**: Tes Level (42 soal gaya Cambridge), Kemajuan (grafik)
 - **Alat**: Kata Saya, Template, Admin (khusus admin), Cadangan, Pasang aplikasi
 
@@ -62,3 +62,14 @@ Di komputer, menu berada di panel kiri. Di HP, menu berada di bilah bawah dengan
 - Suara memakai Web Speech API bawaan browser. Kualitas dan suara bahasa Indonesia berbeda antar perangkat.
 - Tes Lafal butuh Chrome atau Edge, internet, dan izin mikrofon.
 - Tes Level adalah tes latihan, bukan sertifikat CEFR resmi.
+
+## Rencana belajar dan buku kesalahan
+- Buku kesalahan dan rencana mingguan tersimpan di `progress.data` (JSON) dan ikut tersinkron; tidak perlu perubahan SQL.
+- Ringkasan untuk admin (`progress.summary`) memuat jumlah soal salah, 5 kata tersulit, aktivitas 7 hari, dan kemajuan rencana. Daftar soal salah lengkap tidak terlihat admin.
+- Rencana dibuat ulang tiap Senin dan setelah Tes Level selesai. Tugas otomatis dihitung dari penghitung mingguan (`meta.pc`).
+
+## Laporan kesalahan
+- Tombol 🚩 ada di Kartu, Ulang, soal Latihan, Buku kesalahan, baris Daftar, dan Template. Laporan berisi kategori, catatan opsional, dan konteks item (kunci jawaban ikut tersimpan untuk peninjau, tetapi tidak ditampilkan ke pelapor).
+- Mode server: laporan masuk ke tabel `reports` (jalankan `supabase-laporan.sql` sekali). Jika offline atau gagal, laporan diantre di perangkat dan dikirim otomatis saat tersambung.
+- Admin meninjau di menu Admin: laporan sejenis digabung (dengan jumlah pelapor), bisa ditandai selesai, disalin sebagai daftar, atau diunduh CSV.
+- Mode lokal (tanpa server): laporan tersimpan di perangkat dan terlihat di panel Admin perangkat yang sama.

@@ -50,12 +50,12 @@ const tbar=(n,v)=>`<div class="tb"><span>${n}</span><div class="bar"><i style="w
 function hist(){return TH.length?`<div class="tcard"><h4>Riwayat tes</h4><div class="list">${TH.slice(-5).reverse().map(h=>`<div class="li"><div class="w"><b>${esc(String(h.d))}</b><span>Perkiraan ${esc(String(h.est))} · skor ${esc(String(h.tot))}%</span></div></div>`).join("")}</div></div>`:""}
 function finish(){
  const pl={},ps={v:[0,0],g:[0,0],r:[0,0],l:[0,0]};TL.forEach(l=>pl[l]=[0,0]);let ok=0;
- ts.qs.forEach((q,n)=>{const c=ts.ans[n]===q.a?1:0;ok+=c;pl[q.l][0]+=c;pl[q.l][1]++;ps[q.s][0]+=c;ps[q.s][1]++});
+ ts.qs.forEach((q,n)=>{const c=ts.ans[n]===q.a?1:0;if(!c)mbFromTest(q);ok+=c;pl[q.l][0]+=c;pl[q.l][1]++;ps[q.s][0]+=c;ps[q.s][1]++});
  let est="A1";for(const l of TL){if(pl[l][1]&&pl[l][0]/pl[l][1]>=.6)est=l;else break}
  ts.res={est,pl,ps,tot:Math.round(ok/ts.qs.length*100)};
  TH.push({d:dstr(0),est,tot:ts.res.tot,ps:{v:pc(ps.v),g:pc(ps.g),r:pc(ps.r),l:pc(ps.l)}});TH=TH.slice(-10);
  try{localStorage.setItem(KEY+"-tests",JSON.stringify(TH))}catch(e){}
- xp(30)}
+ xp(30);bump("test");try{PLAN=makePlan(PLAN);savePlan()}catch(e){}}
 function tst(){
  if(!ts){
   view.innerHTML=`<div class="tcard"><h3>Tes Level Bahasa Inggris</h3><p>Format mengikuti gaya ujian Cambridge: kosakata, tata bahasa (<i>Use of English</i>), membaca, dan menyimak. Ada ${buildTest().length} soal pilihan ganda, sekitar 20 sampai 25 menit. Kunci jawaban baru muncul setelah tes selesai, dan rekaman menyimak hanya bisa diputar 2 kali, seperti ujian sungguhan.</p><p class="sub">Catatan: ini tes latihan untuk memandu belajar. Hasilnya perkiraan level, bukan sertifikat CEFR resmi, dan belum menguji menulis dan berbicara.</p><div class="center" style="margin-top:14px"><button class="btn pri" data-a="tstart" style="padding:14px 28px">Mulai tes</button></div></div>`+hist();return}

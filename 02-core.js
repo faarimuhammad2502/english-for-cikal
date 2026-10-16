@@ -25,8 +25,8 @@ function hdr(){
 }
 function fillCats(){const cs=["Semua",...Object.keys(RAW).filter(c=>lvl==="Semua"||c.startsWith(lvl)).sort((a,b)=>LV.indexOf(a.slice(0,2))-LV.indexOf(b.slice(0,2)))];sel.innerHTML=cs.map(c=>`<option>${c}</option>`).join("");if(!cs.includes(cat))cat="Semua";sel.value=cat}
 function progress(){const p=pool(),n=p.filter(w=>known[w.en]).length;return `<div class="bar"><i style="width:${p.length?n/p.length*100:0}%"></i></div><div class="meta"><span>Hafal: ${n} dari ${p.length}</span></div>`}
-function render(){if(ROLE!=="admin"&&(tab==="admin"||CFG.off.includes(tab)))tab=Object.keys(TG).find(t=>t!=="admin"&&!CFG.off.includes(t))||"card";audioStop(true);lfStop();navUI();hdr();$(".row").style.display=$("#lv").style.display=tab==="tpl"||tab==="dict"||tab==="test"||tab==="my"||tab==="note"||tab==="prog"||tab==="admin"||tab==="home"||tab==="acct"?"none":"";tab==="home"?home():tab==="card"?card():tab==="srs"?rv():tab==="quiz"?qz():tab==="list"?list():tab==="dict"?dict():tab==="test"?tst():tab==="my"?my():tab==="audio"?audio():tab==="note"?note():tab==="lafal"?lafal():tab==="prog"?prog():tab==="acct"?acct():tab==="admin"?adminP():tpl()}
-function card(){
+function render(){if(ROLE!=="admin"&&(tab==="admin"||CFG.off.includes(tab)))tab=Object.keys(TG).find(t=>t!=="admin"&&!CFG.off.includes(t))||"card";audioStop(true);lfStop();navUI();hdr();$(".row").style.display=$("#lv").style.display=tab==="tpl"||tab==="dict"||tab==="test"||tab==="my"||tab==="note"||tab==="prog"||tab==="admin"||tab==="home"||tab==="acct"||tab==="mist"?"none":"";tab==="home"?home():tab==="card"?card():tab==="srs"?rv():tab==="quiz"?qz():tab==="list"?list():tab==="dict"?dict():tab==="test"?tst():tab==="my"?my():tab==="audio"?audio():tab==="note"?note():tab==="lafal"?lafal():tab==="prog"?prog():tab==="acct"?acct():tab==="admin"?adminP():tab==="mist"?mist():tpl()}
+function card0(){
  const p=pool();if(idx>=p.length)idx=0;const w=p[idx];
  view.innerHTML=`<div id="prog">${progress()}</div><div class="scene in" data-a="flip" role="button" tabindex="0" aria-label="Balik kartu"><div class="card ${flip?"flipped":""}">
  <div class="face front"><div class="tag">${w.cat}</div><div class="en${w.en.length>20?" long":""}">${w.en}</div><button class="say" data-a="say">🔊 Dengarkan</button><div class="hint">Ketuk kartu untuk melihat arti</div></div>
@@ -35,11 +35,12 @@ function card(){
  <div class="nav"><button class="btn" data-a="cprev">◀ Sebelumnya</button><span class="navc">Kartu ${idx+1} / ${p.length}</span><button class="btn" data-a="cnext">Berikutnya ▶</button></div><input class="range" type="range" min="1" max="${p.length}" value="${idx+1}" data-r="1" aria-label="Geser untuk memilih kartu"><div class="meta"><span>${known[w.en]?"✅ Sudah kamu hafal":"Geser slider, seret kartu, atau pakai tombol panah"}</span></div><div class="pg"><button class="btn" data-a="gprev" aria-label="40 kata sebelumnya">◀</button><span>Kata ${Math.floor(idx/40)*40+1} sampai ${Math.min(Math.floor(idx/40)*40+40,p.length)} dari ${p.length} (ketuk untuk membuka)</span><button class="btn" data-a="gnext" aria-label="40 kata berikutnya">▶</button></div><div class="wg mini">${p.slice(Math.floor(idx/40)*40,Math.floor(idx/40)*40+40).map((x,j)=>{const g=Math.floor(idx/40)*40+j;return `<button class="wb ${g===idx?"cur":""} ${known[x.en]?"kn":""}" data-a="jump" data-i="${g}"><b>${x.en}</b><span>${x.id}</span></button>`}).join("")}</div>`;
 }
 function startQuiz(){quiz={qs:shuf(pool()).slice(0,10).map(w=>({w,o:shuf([w,...shuf(ALL.filter(x=>x.en!==w.en&&x.id!==w.id&&isS(x)===isS(w))).slice(0,3)])})),i:0,s:0,ans:null,miss:[]}}
-function qz(){
+function qz0(){
  if(qm>=2)return pz();
  if(!quiz)startQuiz();
  const T=quiz.qs.length,seg=segH();
  if(quiz.i>=T){
+  if(!quiz.cnt){quiz.cnt=1;bump(qm===1?"listen":"quiz")}
   const f=quiz.s===T;
   view.innerHTML=seg+`<div class="score">${quiz.s}/${T}</div><p class="center sub">${f?"Sempurna! Tunasmu makin tinggi.":quiz.s>=T*.7?"Bagus! Ulangi untuk nilai penuh.":"Ulangi kartunya dulu, lalu coba lagi."}</p>${quiz.miss.length?`<p class="meta" style="margin-top:16px">Perlu diulang:</p><div class="list">${quiz.miss.map(w=>`<div class="li"><div class="w"><b>${w.en}</b><span>${w.id}</span></div></div>`).join("")}</div>`:""}<div class="center"><button class="btn pri" data-a="restart">Main lagi</button></div>`;
   if(f)confetti();return;
@@ -51,6 +52,6 @@ function qz(){
  ${d?`<div class="fb">${k.w.en} = ${k.w.id}</div><div class="acts"><button class="btn" data-a="say">🔊 Dengar lagi</button><button class="btn pri" data-a="next">Lanjut</button></div>`:""}`;
  if(qm&&!d)say(k.w.en);
 }
-function items(){const t=q.toLowerCase();$("#items").innerHTML=pool().filter(w=>!t||w.en.toLowerCase().includes(t)||w.id.toLowerCase().includes(t)).map(w=>`<div class="li"><input type="checkbox" data-a="chk" data-w="${w.en}" ${known[w.en]?"checked":""} aria-label="Hafal ${w.en}"><div class="w"><b>${w.en}</b><span>${w.id}</span></div><button data-a="sayw" data-w="${w.en}" aria-label="Dengarkan ${w.en}">🔊</button></div>`).join("")||"<p class='sub'>Tidak ada kata yang cocok.</p>"}
+function items(){const t=q.toLowerCase();$("#items").innerHTML=pool().filter(w=>!t||w.en.toLowerCase().includes(t)||w.id.toLowerCase().includes(t)).map(w=>`<div class="li"><input type="checkbox" data-a="chk" data-w="${w.en}" ${known[w.en]?"checked":""} aria-label="Hafal ${w.en}"><div class="w"><b>${w.en}</b><span>${w.id}</span></div><button data-a="sayw" data-w="${w.en}" aria-label="Dengarkan ${w.en}">🔊</button><button class="rpt" data-a="rptw" data-w="${w.en}" aria-label="Laporkan ${w.en}">🚩</button></div>`).join("")||"<p class='sub'>Tidak ada kata yang cocok.</p>"}
 function list(){view.innerHTML=`<div id="prog">${progress()}</div><input class="search" id="q" placeholder="Cari kata atau arti..." aria-label="Cari"><div class="list wg" id="items"></div>`;$("#q").value=q;items()}
 const go=d=>{const p=pool();idx=(idx+d+p.length)%p.length;flip=false;card()};
