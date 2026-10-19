@@ -1,16 +1,12 @@
 # English untuk Guru Cikal
 
-Web belajar bahasa Inggris untuk Michelle: level A1 sampai C2, 1170 kosakata guru Cikal / Cambridge / SEN-ABK. Berupa web statis (HTML, CSS, JavaScript biasa), tanpa server dan tanpa proses build.
+Web belajar bahasa Inggris untuk Michelle: level A1 sampai C2, 1170 kosakata guru Cikal / Cambridge / SEN-ABK. Antarmuka memakai HTML, CSS, dan JavaScript biasa tanpa proses build. Login dan sinkron memakai Supabase; fitur Speaking AI memakai satu Vercel Function.
 
 ## Struktur (versi datar)
-Semua file sejajar di akar repositori, tanpa folder: `index.html`, `style.css`, `manifest.webmanifest`, `sw.js`, `01-data.js` sampai `12-app.js` (dimuat berurutan, jangan ubah urutannya), dan empat file ikon `.png`.
+File antarmuka berada di akar repositori: `index.html`, `style.css`, `manifest.webmanifest`, `sw.js`, `01-data.js` sampai `14-speaking.js` (dimuat berurutan sesuai `index.html`), dan file ikon `.png`. `api/speaking.js` adalah endpoint server untuk Gemini dan tidak masuk ke cache offline.
 
 ## Memasang di GitHub Pages / Vercel
-1. Pilih **semua file** lalu unggah ke akar repositori (Add file > Upload files). Tidak perlu folder.
-
-1. Ekstrak zip, lalu unggah **seluruh isi folder** (termasuk folder `css`, `js`, `icons`) ke repositori.
-2. Settings > Pages > Branch `main`, folder `/ (root)`.
-3. Buka alamat `https://namakamu.github.io/namarepo`. Vercel juga bisa: impor repositori, tanpa pengaturan build.
+Vercel: impor repositori, tanpa pengaturan build. Speaking AI membutuhkan Vercel karena GitHub Pages tidak menjalankan `api/speaking.js`.
 
 ## Pasang seperti aplikasi dan mode offline
 - Harus lewat alamat **https** (GitHub Pages dan Vercel sudah https). Tidak jalan jika file dibuka langsung dari komputer.
@@ -40,7 +36,7 @@ Semua file sejajar di akar repositori, tanpa folder: `index.html`, `style.css`, 
 Di komputer, menu berada di panel kiri. Di HP, menu berada di bilah bawah dengan sub-tab di atas isi.
 - **Beranda**: rencana belajar mingguan otomatis (dibuat dari hasil Tes Level), ringkasan hari ini, statistik, tes level terakhir, penguasaan per level, jalan pintas, papan semangat
 - **Belajar**: Kartu, Ulang, Audio, Daftar, Kamus
-- **Latihan**: Latihan (arti, dengar, isi kalimat, susun kalimat, ejaan), Kesalahan (buku kesalahan: jawaban salah dicatat dan dilatih ulang sampai benar 3 kali berturut-turut), Lafal, Catatan
+- **Latihan**: Latihan (arti, dengar, isi kalimat, susun kalimat, ejaan), Kesalahan (buku kesalahan: jawaban salah dicatat dan dilatih ulang sampai benar 3 kali berturut-turut), Lafal, Speaking AI, Catatan
 - **Tes**: Tes Level (42 soal gaya Cambridge), Kemajuan (grafik)
 - **Alat**: Kata Saya, Template, Admin (khusus admin), Cadangan, Pasang aplikasi
 
@@ -62,6 +58,15 @@ Di komputer, menu berada di panel kiri. Di HP, menu berada di bilah bawah dengan
 - Suara memakai Web Speech API bawaan browser. Kualitas dan suara bahasa Indonesia berbeda antar perangkat.
 - Tes Lafal butuh Chrome atau Edge, internet, dan izin mikrofon.
 - Tes Level adalah tes latihan, bukan sertifikat CEFR resmi.
+
+## Speaking AI
+- Tab **Speaking AI** memakai Gemini Flash untuk membalas percakapan dan memberi koreksi bahasa Inggris singkat. Riwayat chat hanya berada di memori halaman dan tidak disimpan ke Supabase.
+- Input suara memakai Web Speech API di Chrome/Edge; browser mengubah ucapan menjadi teks. Suara balasan memakai `speechSynthesis` bawaan browser. Versi ini tidak memakai API audio langsung.
+- Permintaan AI hanya diterima dengan access token Supabase yang valid. Gemini API key disimpan di server sebagai secret, tidak ditaruh di `config.js` atau kode browser.
+- Di Vercel, buka Project Settings > Environment Variables, lalu tambahkan `GEMINI_API_KEY` sebagai **Secret** untuk Production (dan Preview bila diperlukan). Redeploy sesudah menyimpannya. `GEMINI_MODEL` opsional; jika kosong, endpoint memakai `gemini-2.5-flash`.
+- Endpoint membatasi jawaban hingga 260 token dan menerapkan batas best-effort 12 permintaan per menit per instance. Atur batas pemakaian Gemini di Google AI Studio/Cloud jika billing diaktifkan.
+- Jangan masukkan nama atau informasi pribadi murid. Kuota gratis Gemini dapat terbatas dan Google menyatakan data pada tier gratis dapat dipakai untuk meningkatkan produknya; cek [ketentuan dan harga Gemini API](https://ai.google.dev/gemini-api/docs/pricing) sebelum penggunaan rutin.
+- URL Supabase dan publishable key di `api/speaking.js` harus cocok dengan nilai publik di `config.js` jika proyek Supabase diganti.
 
 ## Rencana belajar dan buku kesalahan
 - Buku kesalahan dan rencana mingguan tersimpan di `progress.data` (JSON) dan ikut tersinkron; tidak perlu perubahan SQL.
