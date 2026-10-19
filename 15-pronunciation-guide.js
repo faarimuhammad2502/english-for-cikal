@@ -21,34 +21,9 @@
     row.classList.add("missing");
   }
 
-  function readable(ipa) {
-    const maps = [
-      ["t͡ʃ", "c"], ["t͜ʃ", "c"], ["d͡ʒ", "j"], ["d͜ʒ", "j"],
-      ["eɪ", "ei"], ["aɪ", "ai"], ["ɔɪ", "oi"], ["aʊ", "au"], ["oʊ", "ou"], ["əʊ", "ou"],
-      ["ɪə", "ia"], ["eə", "ea"], ["ʊə", "ua"],
-      ["iː", "ii"], ["uː", "uu"], ["ɑː", "aa"], ["ɔː", "oo"], ["ɜː", "er"],
-      ["ɝ", "er"], ["ɚ", "er"], ["æ", "a"], ["ɑ", "a"], ["ɒ", "o"], ["ɔ", "o"],
-      ["ɛ", "e"], ["ɪ", "i"], ["ʊ", "u"], ["ʌ", "a"], ["ə", "e"], ["ɐ", "a"],
-      ["θ", "th"], ["ð", "dh"], ["ʃ", "sy"], ["ʒ", "zh"], ["ŋ", "ng"], ["ɹ", "r"],
-      ["j", "y"], ["x", "kh"],
-    ];
-    let text = String(ipa || "").replace(/^\\/+|\\/+$/g, "").replace(/[͜͡]/g, "");
-    let syllables = text.split(/[.·]/).filter(Boolean);
-    if (syllables.length === 1 && syllables[0].includes("ˈ")) {
-      syllables = syllables[0].split(/(?=ˈ)/).filter(Boolean);
-    }
-    return syllables.map(part => {
-      const stressed = part.includes("ˈ");
-      let sound = part.replace(/[ˈˌːˑ]/g, "").toLowerCase();
-      maps.forEach(([from, to]) => { sound = sound.split(from).join(to); });
-      sound = sound.replace(/[^a-z]/g, "") || "?";
-      return stressed ? sound.toUpperCase() : sound;
-    }).join("-");
-  }
-
   function show(row, result) {
     row.classList.remove("missing");
-    row.textContent = "Cara baca (perkiraan): " + readable(result.ipa);
+    row.textContent = result.ipa;
     const sources = Array.isArray(result.sources) ? result.sources : [];
     const valid = sources.filter(url => /^https:\/\/en\.wiktionary\.org\/wiki\//i.test(url));
     if (valid.length) {
