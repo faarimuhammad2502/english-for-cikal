@@ -1,6 +1,6 @@
 /* Service worker: mode offline. Naikkan VERSION setiap kali file web diperbarui. */
-const VERSION = "v19-2026-10";
-const CORE = ["./", "index.html", "style.css", "manifest.webmanifest", "icon-192.png", "icon-512.png", "config.js", "supabase.js", "01-data.js", "02-core.js", "03-templates.js", "04-review-practice.js", "05-events.js", "06-tests.js", "07-backup-mywords.js", "08-audio-spelling.js", "09-notes-board.js", "10-pronunciation.js", "11-navigation-progress.js", "12-cloud.js", "14-speaking.js", "13-app.js"];
+const VERSION = "v20-2026-10";
+const CORE = ["./", "index.html", "style.css", "manifest.webmanifest", "icon-192.png", "icon-512.png", "config.js", "supabase.js", "01-data.js", "02-core.js", "03-templates.js", "04-review-practice.js", "05-events.js", "06-tests.js", "07-backup-mywords.js", "08-audio-spelling.js", "09-notes-board.js", "10-pronunciation.js", "11-navigation-progress.js", "12-cloud.js", "14-speaking.js", "15-pronunciation-guide.js", "13-app.js"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(VERSION).then((c) => c.addAll(CORE)).then(() => self.skipWaiting()));

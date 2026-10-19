@@ -297,3 +297,9 @@ code{background:var(--bg);padding:2px 6px;border-radius:6px;word-break:break-all
 .rmask{position:fixed;inset:0;background:rgba(20,10,25,.5);z-index:40;display:grid;place-items:center;padding:16px;overflow:auto}.rmask[hidden]{display:none}
 .rbox{background:var(--card);border-radius:20px;padding:20px;max-width:460px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3)}.rbox h3{margin:0 0 6px;font:600 20px Fredoka,Nunito,sans-serif}.rbox .stack{max-width:none}
 .rctx{white-space:pre-wrap;background:var(--bg);border-radius:12px;padding:8px 12px;font-size:14px;margin:8px 0 12px;word-break:break-word}
+
+
+.pron-guide{display:block;color:var(--mute);font-size:12px;line-height:1.35;margin:3px 0 6px;overflow-wrap:anywhere}
+.pron-guide.missing{font-style:italic}
+.pron-guide a{color:var(--pri);text-decoration:underline}
+.wb .pron-guide{font-size:11px;align-self:flex-start;margin:1px 0 0}
